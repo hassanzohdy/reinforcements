@@ -1,0 +1,17 @@
+{
+    "name": "@mongez/reinforcements",
+    "version": "1.0.5",
+    "description": "A package to give a massive reinforcements to variant types of data in Nodejs/Javascript",
+    "main": "src/index.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/hassanzohy/reinforcments"
+    },
+    "keywords": [
+        "array",
+        "object",
+        "string"
+    ],
+    "author": "hassanzohdy",
+    "license": "MIT"
+}
