@@ -1,1 +1,1 @@
-export { deepMerge as default } from "immutable";
+export { mergeDeep as default } from "immutable";
