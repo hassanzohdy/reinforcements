@@ -1,8 +1,11 @@
 {
     "name": "@mongez/reinforcements",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "description": "A lightweight package to give a massive reinforcements to variant types of data in Nodejs/Javascript",
     "main": "src/index.ts",
+    "dependencies": {
+        "immutable": "^4.0.0"
+    },
     "repository": {
         "type": "git",
         "url": "https://github.com/hassanzohdy/reinforcements"
