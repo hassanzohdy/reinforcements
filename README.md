@@ -697,6 +697,20 @@ const words = 'welcome home buddy, your are not safe at your home!';
 console.log(replaceAll(words, 'home', 'country')); // welcome country buddy, your are not safe at your country!
 ```
 
+### Remove last matched string
+
+Remove the last matched needle to the given string.
+
+`removeLast(string: string, needle: string): string`
+
+```js
+import { removeLast } from '@mongez/reinforcements';
+
+const words = 'welcome home buddy, your are not safe at your home!';
+
+console.log(removeLast(words, 'home')); // welcome home buddy, your are not safe at your ! 
+```
+
 ### Count repeats of needle in a string
 
 Count repeats of a needle in the given string.
@@ -725,20 +739,19 @@ console.log(repeatsOf(words, 'home')); // 1
 console.log(repeatsOf(words, 'home', false)); // 2
 ```
 
-### Remove last matched string
+### Trimming values from string
 
-Remove the last matched needle to the given string.
+Trim value from the start and the end of a string.
 
-`removeLast(string: string, needle: string): string`
+`trim(string: string, needle: string = ' '): string`
 
 ```js
-import { removeLast } from '@mongez/reinforcements';
+import { trim } from '@mongez/reinforcements';
 
-const words = 'welcome home buddy, your are not safe at your home!';
+const string = ' space at the start and at the end ';
 
-console.log(removeLast(words, 'home')); // welcome home buddy, your are not safe at your ! 
+console.log(trim(string)); // "space at the start and at the end"
 ```
-
 ## TODO
 
 - Create tests.
