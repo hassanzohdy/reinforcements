@@ -494,9 +494,9 @@ The following list defines all available string utilities
 - `ltrim`
 - `trim`
 - `rtrim`
+- `startsWithArabic`
 - `sprintf`
 - `vsprintf`
-- `startsWithArabic`
 
 ### Capitalize words
 
@@ -752,6 +752,117 @@ const string = ' space at the start and at the end ';
 
 console.log(trim(string)); // "space at the start and at the end"
 ```
+
+But why not use [String.trim()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/Trim) directly? well they both will give you same functionality except that `trim()` function trims any value not only white space.
+
+Remove certain value:
+
+```js
+import { trim } from '@mongez/reinforcements';
+
+const string = '/home/';
+
+console.log(trim(string, '/')); // home
+```
+
+### Left Trimming values from string
+
+Trim value from the start of a string.
+
+`ltrim(string: string, needle: string = ' '): string`
+
+```js
+import { ltrim } from '@mongez/reinforcements';
+
+const string = ' A space at the start and keep space at the end ';
+
+console.log(ltrim(string)); // "A space at the start and keep space at the end "
+```
+
+Remove certain value:
+
+```js
+import { ltrim } from '@mongez/reinforcements';
+
+const string = 'home/';
+
+console.log(ltrim(string, '/')); // home/
+```
+
+### Right Trimming values from string
+
+Trim value from the end of a string.
+
+`rtrim(string: string, needle: string = ' '): string`
+
+```js
+import { rtrim } from '@mongez/reinforcements';
+
+const string = ' Keep A space at the start and remove space at the end ';
+
+console.log(rtrim(string)); // " Keep A space at the start and remove space at the end"
+```
+
+Remove certain value:
+
+```js
+import { ltrim } from '@mongez/reinforcements';
+
+const string = 'home/';
+
+console.log(rtrim(string, '/')); // /home
+```
+
+## Detect if string starts with Arabic
+
+Determine if the string starts with Arabic letter.
+
+`startsWithArabic(text: string, trimmed: boolean = true):  boolean {`
+
+```js
+import { startsWithArabic } from '@mongez/reinforcements';
+
+const string = 'English Text';
+
+const arabicString = 'مرحبا';
+
+console.log(startsWithArabic(string)); // false
+console.log(startsWithArabic(arabicString)); // true
+```
+
+## Sprintf and Vsprintf
+
+A function to replace string placeholders with certain values.
+
+> These functions are only imported from [sprintf-js](https://www.npmjs.com/package/sprintf-js)
+
+`sprintf(string: string...replacements: any[]): string`
+
+```js
+import { sprintf } from '@mongez/reinforcements';
+
+const string = 'Welcome %s, your turn number is %d.';
+
+console.log(sprintf(string, 'Hasan', 12)); // Welcome Hasan, your turn number is 12.
+```
+
+So we set a placeholder `%s` that represents a string and `%d` that represents an integer, then we passed to `sprintf` 2nd and 3rd arguments its corresponding values.
+
+It's advisable also to be used with Throwing Errors.
+
+```js
+import { sprintf } from '@mongez/reinforcements';
+
+const type = 'select';
+
+const allowedTypes = ['checkbox', 'radio'];
+
+if (! allowedTypes.includes(type)) {
+    throw new Error(sprintf('Invalid Type %s, allowed types: %s', type, allowedTypes.join(', '))); // Error: Invalid Type select, allowed types: checkbox, radio
+}
+```
+
 ## TODO
 
 - Create tests.
+- Implements Array helpers list.
