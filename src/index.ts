@@ -1,6 +1,13 @@
 export { default as Arr } from "./arr";
 export { default as Obj } from "./obj";
 export { default as Random } from "./utilities/random";
+export { default as objMap } from "./utilities/object/objMap";
+export { default as objGet } from "./utilities/object/objGet";
+export { default as objSet } from "./utilities/object/objSet";
+export { default as objSort } from "./utilities/object/objSort";
+export { default as objOnly } from "./utilities/object/objOnly";
+export { default as objMerge } from "./utilities/object/objMerge";
+export { default as objClone } from "./utilities/object/objClone";
 export { default as trim } from "./utilities/str/trim";
 export { default as ltrim } from "./utilities/str/ltrim";
 export { default as rtrim } from "./utilities/str/rtrim";

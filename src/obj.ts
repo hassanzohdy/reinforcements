@@ -1,10 +1,10 @@
-import get from "./utilities/object/get";
-import set from "./utilities/object/set";
-import sort from "./utilities/object/sort";
-import clone from "./utilities/object/clone";
-import merge from "./utilities/object/merge";
-import only from "./utilities/object/only";
-import mapObject from "./utilities/object/map";
+import get from "./utilities/object/objGet";
+import set from "./utilities/object/objSet";
+import sort from "./utilities/object/objSort";
+import clone from "./utilities/object/objClone";
+import merge from "./utilities/object/objMerge";
+import only from "./utilities/object/objOnly";
+import mapObject from "./utilities/object/objMap";
 
 /**
  * Object Class Handler

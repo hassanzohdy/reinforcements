@@ -6,7 +6,7 @@
  * @param  {any} $default
  * @returns any
  */
-export default function get(
+export default function objGet(
   object: object,
   key: string,
   $default: any = null
