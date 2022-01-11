@@ -10,6 +10,12 @@ or using `npm`
 
 `npm i @mongez/reinforcements`
 
+## Table Of Contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+- [Working with objects](#working0with-objects)
+
 ## Usage
 
 The following list illustrates what's included in this package.
@@ -19,7 +25,7 @@ The following list illustrates what's included in this package.
 - `Str` object/functions.
 - Other utilities.
 
-### Working with objects (Obj)
+### Working with objects
 
 The following list illustrates all available object utilities, which are wrapped in `Obj` object.
 
