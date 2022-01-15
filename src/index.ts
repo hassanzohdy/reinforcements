@@ -7,6 +7,7 @@ export { default as objSet } from "./utilities/object/objSet";
 export { default as objSort } from "./utilities/object/objSort";
 export { default as objOnly } from "./utilities/object/objOnly";
 export { default as objMerge } from "./utilities/object/objMerge";
+export { default as objFlatten } from "./utilities/object/objFlatten";
 export { default as objClone } from "./utilities/object/objClone";
 export { default as trim } from "./utilities/str/trim";
 export { default as ltrim } from "./utilities/str/ltrim";

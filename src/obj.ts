@@ -5,6 +5,7 @@ import clone from "./utilities/object/objClone";
 import merge from "./utilities/object/objMerge";
 import only from "./utilities/object/objOnly";
 import mapObject from "./utilities/object/objMap";
+import flatten from "./utilities/object/objFlatten";
 
 /**
  * Object Class Handler
@@ -88,5 +89,17 @@ export default class Obj {
    */
   public static map(object: object, callback: Function): Array<any> {
     return mapObject(object, callback);
+  }
+
+  /**
+   * Flatten the given object into one big fat object
+   */
+  public static flatten(
+    object: any,
+    separator = ".",
+    parent: string | null = null,
+    root: any = {}
+  ): any {
+    return flatten(object, separator, parent, root);
   }
 }

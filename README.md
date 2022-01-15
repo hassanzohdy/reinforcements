@@ -2,6 +2,13 @@
 
 `Reinforcements` is a node js package written in `Typescript` to give a massive support for variant data like `Strings`, `Arrays`, `Objects` ... and so on.
 
+## Table Of Contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+- [Working with objects](#working0with-objects)
+- [Generating Random Values](#generating-random-values)
+
 ## Installation
 
 `yarn add @mongez/reinforcements`
@@ -9,12 +16,6 @@
 or using `npm`
 
 `npm i @mongez/reinforcements`
-
-## Table Of Contents
-
-- [Installation](#installation)
-- [Usage](#usage)
-- [Working with objects](#working0with-objects)
 
 ## Usage
 
@@ -25,7 +26,7 @@ The following list illustrates what's included in this package.
 - `Str` object/functions.
 - Other utilities.
 
-### Working with objects
+## Working with objects
 
 The following list illustrates all available object utilities, which are wrapped in `Obj` object.
 
@@ -35,6 +36,7 @@ The following list illustrates all available object utilities, which are wrapped
 - `objMerge` or `Obj.merge`
 - `objSort` or `Obj.sort`
 - `objOnly` or `Obj.only`
+- `objFlatten` or `Obj.flatten`
 
 ### Getting value from object
 
@@ -289,6 +291,88 @@ const user = {
 const simpleUserData = Obj.only(user, ['id', 'name', 'email']); // {id: 1, name: 'Hasan Zohdy', email: 'hassanzohdy@gmail.com'}
 ```
 
+### Flatten objects
+
+We can flatten any big fat objects into one object, with only one dimension.
+
+```js
+import { Obj } from '@mongez/reinforcements';
+
+const user = {
+    id: 1,
+    name: 'Hasan Zohdy',
+    email: 'hassanzohdy@gmail.com',
+    job: {
+        title: 'Software Engineer',
+    },
+    address: {
+        country: 'Egypt',
+        building: {
+            number: 12,
+            floor: {
+                number: 3,
+            }
+        }
+    }
+};
+
+console.log(Obj.flatten(user));
+```
+
+Output:
+
+```json
+{
+  "id": 1,
+  "name": "Hasan Zohdy",
+  "email": "hassanzohdy@gmail.com",
+  "job.title": "Software Engineer",
+  "address.country": "Egypt",
+  "address.building.number": 12,
+  "address.building.floor.number": 3
+}
+```
+
+You may set the separator by passing second argument to the function.
+
+```js
+import { Obj } from '@mongez/reinforcements';
+
+const user = {
+    id: 1,
+    name: 'Hasan Zohdy',
+    email: 'hassanzohdy@gmail.com',
+    job: {
+        title: 'Software Engineer',
+    },
+    address: {
+        country: 'Egypt',
+        building: {
+            number: 12,
+            floor: {
+                number: 3,
+            }
+        }
+    }
+};
+
+console.log(Obj.flatten(user, '->'));
+```
+
+Output:
+
+```json
+{
+  "id": 1,
+  "name": "Hasan Zohdy",
+  "email": "hassanzohdy@gmail.com",
+  "job->title": "Software Engineer",
+  "address->country": "Egypt",
+  "address->building->number": 12,
+  "address->building->floor->number": 3
+}
+```
+
 ### Sort object by its keys
 
 To sort objects based on their keys alphabets recursively use `Obj.sort(object: object, recursive: boolean = true): object` function.
@@ -387,7 +471,7 @@ Output:
 }
 ```
 
-## Generating Random Values (Random)
+## Generating Random Values
 
 Another good feature is `Random` object, which allows us to generate variant random values of different types.
 
@@ -867,6 +951,11 @@ if (! allowedTypes.includes(type)) {
     throw new Error(sprintf('Invalid Type %s, allowed types: %s', type, allowedTypes.join(', '))); // Error: Invalid Type select, allowed types: checkbox, radio
 }
 ```
+
+## Change Log
+
+- 1.0.18 (15 Jan 2022)
+  - Added [Flatten objects](#flatten-objects) function.
 
 ## TODO
 
