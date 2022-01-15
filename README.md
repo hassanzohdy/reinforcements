@@ -33,7 +33,7 @@ The following list illustrates all available object utilities, which are wrapped
 - `objGet` or `Obj.get`
 - `objSet` or `Obj.set`
 - `objMerge` or `Obj.merge`
-- `objMerge` or `Obj.merge`
+- `objClone` or `Obj.clone`
 - `objSort` or `Obj.sort`
 - `objOnly` or `Obj.only`
 - `objFlatten` or `Obj.flatten`
@@ -143,6 +143,8 @@ The final user object will be:
 ### Merging objects deeply
 
 Another good feature from `Obj` object is to merge objects deeply.
+
+You may use `Obj.merge` or import `objMerge` directly from the package.
 
 ```js
 import { Obj } from '@mongez/reinforcements';
@@ -261,6 +263,48 @@ const userWithJob = Object.assign({}, user, userJob);
         "level": "Senior"
     }
 }
+```
+
+### Clone objects
+
+You can also make a **deep copy** for the given object using `Obj.clone` or `objClone`
+
+```js
+const user = {
+    id: 1,
+    name: {
+        first: 'Hasan'
+    }
+};
+
+const normalClonedUser = {...user};
+
+normalClonedUser.name.first = 'Ali';
+
+// both will be the same as only the top level is deeply copied but nested objects are shallow copies
+console.log(normalClonedUser.name.first); // Ali
+console.log(user.name.first); // Ali
+```
+
+Now using `Obj.clone`
+
+```js
+import { Obj } from '@mongez/reinforcements';
+
+const user = {
+    id: 1,
+    name: {
+        first: 'Hasan'
+    }
+};
+
+const normalClonedUser = Obj.clone(user);
+
+cloned.name.first = 'Ali';
+
+console.log(cloned.name.first); // Ali
+// Here the original object is kept untouched
+console.log(user.name.first); // Hasan
 ```
 
 ### Getting certain values from object
@@ -952,8 +996,11 @@ if (! allowedTypes.includes(type)) {
 }
 ```
 
+
 ## Change Log
 
+- 1.0.19 (15 Jan 2022)
+  - Added [Clone objects](#clone-objects) function.
 - 1.0.18 (15 Jan 2022)
   - Added [Flatten objects](#flatten-objects) function.
 
