@@ -1,4 +1,4 @@
-import { fromJS } from "Immutable";
+import { fromJS } from "immutable";
 
 /**
  * Make a deep copy for the given object and its nested objects as well
