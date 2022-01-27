@@ -996,9 +996,10 @@ if (! allowedTypes.includes(type)) {
 }
 ```
 
-
 ## Change Log
 
+- 1.0.21 (28 Jan 2022)
+  - Fixed `objOnly` method that adds undefined values if key does not exist on the given object.
 - 1.0.19 (15 Jan 2022)
   - Added [Clone objects](#clone-objects) function.
 - 1.0.18 (15 Jan 2022)

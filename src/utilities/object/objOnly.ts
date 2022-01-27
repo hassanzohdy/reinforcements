@@ -6,10 +6,12 @@
  * @returns {object}
  */
 export default function objOnly(object: object, keys: Array<string>): object {
-  let newObject: object = {};
+  const newObject: object = {};
 
-  for (let key of keys) {
-    newObject[key] = object[key];
+  for (const key of keys) {
+    if (object.hasOwnProperty(key)) {
+      newObject[key] = object[key];
+    }
   }
 
   return newObject;
