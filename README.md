@@ -36,6 +36,7 @@ The following list illustrates all available object utilities, which are wrapped
 - `objClone` or `Obj.clone`
 - `objSort` or `Obj.sort`
 - `objOnly` or `Obj.only`
+- `objExcept` or `Obj.except`
 - `objFlatten` or `Obj.flatten`
 
 ### Getting value from object
@@ -333,6 +334,34 @@ const user = {
 };
 
 const simpleUserData = Obj.only(user, ['id', 'name', 'email']); // {id: 1, name: 'Hasan Zohdy', email: 'hassanzohdy@gmail.com'}
+```
+
+### Getting all object except for certain keys
+
+This is the reverse of `obj.only`, which returns the entire object except for the given keys.
+
+```js
+import { Obj } from '@mongez/reinforcements';
+
+const user = {
+    id: 1,
+    name: 'Hasan Zohdy',
+    email: 'hassanzohdy@gmail.com',
+    job: {
+        title: 'Software Engineer',
+    },
+    address: {
+        country: 'Egypt',
+        building: {
+            number: 12,
+            floor: {
+                number: 3,
+            }
+        }
+    }
+};
+
+const simpleUserData = Obj.except(user, ['id', 'address', 'email']); // { name: 'Hasan Zohdy', email: 'hassanzohdy@gmail.com', job: {title: 'Software Engineer'}}
 ```
 
 ### Flatten objects
@@ -998,6 +1027,8 @@ if (! allowedTypes.includes(type)) {
 
 ## Change Log
 
+- 1.0.22 (10 Feb 2022)
+  - Added [Obj.except](#getting-all-object-except-for-certain-keys) method.
 - 1.0.21 (28 Jan 2022)
   - Fixed `objOnly` method that adds undefined values if key does not exist on the given object.
 - 1.0.19 (15 Jan 2022)

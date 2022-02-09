@@ -4,6 +4,7 @@ import sort from "./utilities/object/objSort";
 import clone from "./utilities/object/objClone";
 import merge from "./utilities/object/objMerge";
 import only from "./utilities/object/objOnly";
+import except from "./utilities/object/objExcept";
 import mapObject from "./utilities/object/objMap";
 import flatten from "./utilities/object/objFlatten";
 
@@ -78,6 +79,17 @@ export default class Obj {
    */
   public static only(object: object, keys: Array<string>): object {
     return only(object, keys);
+  }
+
+  /**
+   * Get all object data except for the given keys
+   *
+   * @param   {object} object
+   * @param   {array} keys
+   * @returns {object}
+   */
+  public static except(object: object, keys: Array<string>): object {
+    return except(object, keys);
   }
 
   /**
