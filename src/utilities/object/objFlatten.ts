@@ -18,7 +18,9 @@ export default function flatten(
 
     const keyChain = parent ? parent + separator + key : key;
 
-    if (canBeFlatten(value) === true) {
+    if (Array.isArray(value) && value.length === 0) {
+      root[keyChain] = value;
+    } else if (canBeFlatten(value) === true) {
       flatten(value, separator, keyChain, root);
     } else {
       root[keyChain] = value;

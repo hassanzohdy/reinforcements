@@ -1,6 +1,6 @@
 {
     "name": "@mongez/reinforcements",
-    "version": "1.0.22",
+    "version": "1.0.24",
     "description": "A lightweight package to give a massive reinforcements to variant types of data in Nodejs/Javascript",
     "main": "src/index.ts",
     "dependencies": {
@@ -10,6 +10,13 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/hassanzohdy/reinforcements"
+    },
+    "devDependencies": {
+        "@types/jest": "^27.5.1",
+        "jest": "^28.1.0",
+        "jest-esm-jsx-transform": "^1.0.0",
+        "ts-jest": "^28.0.2",
+        "typescript": "^4.6.4"
     },
     "keywords": [
         "array",

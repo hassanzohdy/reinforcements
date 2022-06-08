@@ -1,13 +1,18 @@
 /**
-* Convert current string to snake case
-* i.e hello-world will become: hello_world
-*
-* @return string
-*/
+ * Convert current string to snake case
+ * i.e hello-world will become: hello_world
+ *
+ * @return string
+ */
 export default function toSnakeCase(string: string, lowerAll: boolean = true) {
-    return string.replace(/(\-|\s|([A-Z]))+/g, function (match, v2, matchedUpperLetter, offset, string) {
-        if (!matchedUpperLetter) return '_';
+  return string.replace(
+    /(\-|\/|\s|([A-Z]))+/g,
+    function (_match, _v2, matchedUpperLetter) {
+      if (!matchedUpperLetter) return "_";
 
-        return '_' + (lowerAll ? matchedUpperLetter.toLowerCase() : matchedUpperLetter);
-    });
-};
+      return (
+        "_" + (lowerAll ? matchedUpperLetter.toLowerCase() : matchedUpperLetter)
+      );
+    }
+  );
+}
