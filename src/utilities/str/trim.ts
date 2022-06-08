@@ -1,20 +1,20 @@
-import escapeRegex from "../escapeRegex";
+import escapeRegex from "../utils/escapeRegex";
 
 /**
-* Remove the given needle from the start and the end of string
-*
-* @param string $needle
-* @return string
-*/
-export default function trim(string: string, needle: string = ' '): string {
-    if (needle == ' ') {
-        return string.replace(/^\s+|\s+$/g, '');
-    }
+ * Remove the given needle from the start and the end of string
+ *
+ * @param string $needle
+ * @return string
+ */
+export default function trim(string: string, needle: string = " "): string {
+  if (needle == " ") {
+    return string.replace(/^\s+|\s+$/g, "");
+  }
 
-    needle = escapeRegex(needle);
+  needle = escapeRegex(needle);
 
-    var pattern = '^' + needle + '+|' + needle + '+$',
-        regex = new RegExp(pattern, 'g');
+  var pattern = "^" + needle + "+|" + needle + "+$",
+    regex = new RegExp(pattern, "g");
 
-    return string.replace(regex, "");
-};
+  return string.replace(regex, "");
+}

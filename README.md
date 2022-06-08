@@ -1076,7 +1076,7 @@ function sendEmail(e: any) {
 
 ## Change Log
 
-- 1.0.24 (3 Jun 2022)
+- 1.0.25 (8 Jun 2022)
   - Fixed Flatten method with empty arrays.
 - 1.0.23 (3 Jun 2022)
   - Added [debounce](#debounce) function.

@@ -1,4 +1,4 @@
-import escapeRegex from "../escapeRegex";
+import escapeRegex from "../utils/escapeRegex";
 
 /**
  * Replace all matched occurrence with the given string
