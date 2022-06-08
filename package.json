@@ -1,11 +1,10 @@
 {
     "name": "@mongez/reinforcements",
-    "version": "1.0.25",
+    "version": "1.0.26",
     "description": "A lightweight package to give a massive reinforcements to variant types of data in Nodejs/Javascript",
     "main": "src/index.ts",
     "dependencies": {
-        "immutable": "^4.0.0",
-        "sprintf-js": "^1.1.2"
+        "immutable": "^4.0.0"
     },
     "repository": {
         "type": "git",

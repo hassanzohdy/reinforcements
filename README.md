@@ -656,8 +656,6 @@ The following list defines all available string utilities
 - `trim`
 - `rtrim`
 - `startsWithArabic`
-- `sprintf`
-- `vsprintf`
 
 ### Capitalize words
 
@@ -987,40 +985,6 @@ console.log(startsWithArabic(string)); // false
 console.log(startsWithArabic(arabicString)); // true
 ```
 
-## Sprintf and Vsprintf
-
-A function to replace string placeholders with certain values.
-
-> These functions are only imported from [sprintf-js](https://www.npmjs.com/package/sprintf-js)
-
-`sprintf(string: string...replacements: any[]): string`
-
-```js
-import { sprintf } from "@mongez/reinforcements";
-
-const string = "Welcome %s, your turn number is %d.";
-
-console.log(sprintf(string, "Hasan", 12)); // Welcome Hasan, your turn number is 12.
-```
-
-So we set a placeholder `%s` that represents a string and `%d` that represents an integer, then we passed to `sprintf` 2nd and 3rd arguments its corresponding values.
-
-It's advisable also to be used with Throwing Errors.
-
-```js
-import { sprintf } from "@mongez/reinforcements";
-
-const type = "select";
-
-const allowedTypes = ["checkbox", "radio"];
-
-if (!allowedTypes.includes(type)) {
-  throw new Error(
-    sprintf("Invalid Type %s, allowed types: %s", type, allowedTypes.join(", "))
-  ); // Error: Invalid Type select, allowed types: checkbox, radio
-}
-```
-
 ## Debounce
 
 `debounce(callback: Function, timer: number = 0): void`
@@ -1076,6 +1040,8 @@ function sendEmail(e: any) {
 
 ## Change Log
 
+- 1.0.26 (8 Jun 2022)
+  - Removed `sprintf-js` from dependencies.
 - 1.0.25 (8 Jun 2022)
   - Fixed Flatten method with empty arrays.
 - 1.0.23 (3 Jun 2022)

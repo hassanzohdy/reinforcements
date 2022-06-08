@@ -29,7 +29,6 @@ export { default as replaceLast } from "./utilities/str/replaceLast";
 export { default as removeFirst } from "./utilities/str/removeFirst";
 export { default as replaceFirst } from "./utilities/str/replaceFirst";
 export { default as toStudlyCase } from "./utilities/str/toStudlyCase";
-export { default as sprintf, vsprintf } from "./utilities/str/sprintf";
 export { default as readMoreWords } from "./utilities/str/readMoreWords";
 export { default as readMoreChars } from "./utilities/str/readMoreChars";
 export {
