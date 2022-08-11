@@ -10,9 +10,9 @@ import capitalize from "./capitalize";
  */
 export default function toStudlyCase(
   string: string,
-  separator: string = "-|_|/|\\s"
+  separator: string = "-|\\.|_|/|\\s"
 ): string {
-  let regex = new RegExp(separator, "g");
+  const regex = new RegExp(separator, "g");
   return string
     .split(regex)
     .map((word) => capitalize(word))

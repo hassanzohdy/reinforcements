@@ -57,7 +57,7 @@ export default class Obj {
    * @return {object}
    */
   public static merge(...objects: any): object {
-    return merge(...objects);
+    return merge(arguments);
   }
 
   /**
@@ -99,7 +99,10 @@ export default class Obj {
    * @param   {array} keys
    * @returns {Array<any>}
    */
-  public static map(object: object, callback: Function): Array<any> {
+  public static map(
+    object: object,
+    callback: (key: string, value: any) => any
+  ): Array<any> {
     return mapObject(object, callback);
   }
 

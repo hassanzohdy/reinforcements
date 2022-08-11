@@ -1,8 +1,10 @@
 import capitalize from "./capitalize";
 
-export default function toCamelCase(string: string): string {
-  let separator = "\\s+|-|/|_|(?=[A-Z])",
-    regex = new RegExp(separator, "g");
+export default function toCamelCase(
+  string: string,
+  separator: string = "\\s+|-|/|_|\\."
+): string {
+  const regex = new RegExp(separator + "|(?=[A-Z])", "g");
 
   return string
     .split(regex)

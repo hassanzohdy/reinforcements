@@ -5,8 +5,8 @@
  * @param   {array} keys
  * @returns {object}
  */
-export default function objOnly(object: object, keys: Array<string>): object {
-  const newObject: object = {};
+export default function objOnly(object: any, keys: Array<string>): object {
+  const newObject: any = {};
 
   for (const key of keys) {
     if (object.hasOwnProperty(key)) {

@@ -7,7 +7,7 @@
  * @param  {any} value
  * @returns {object}
  */
-export default function set(object: object, key: string, value: any): object {
+export default function set(object: any, key: string, value: any): object {
   if (!key.includes(".")) {
     object[key] = value;
 
@@ -15,7 +15,7 @@ export default function set(object: object, key: string, value: any): object {
   }
 
   let keys: Array<string> = key.split("."),
-    currentObject: object = object;
+    currentObject: any = object;
 
   for (let i = 0; i < keys.length; i++) {
     let key: string = keys[i];

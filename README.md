@@ -671,7 +671,7 @@ console.log(capitalize(words)); // Hello World
 
 ### Convert string to camel case
 
-Convert string to camel case, each word in string Separated by **whitespace** **underscores** or **dashes** `toCamelCase(string: string): string`.
+Convert string to camel case, each word in string Separated by **whitespace** **underscores** or **dashes** `toCamelCase(string: string, separator: string = "\\s+|-|/|_|\\."): string`.
 
 ```js
 import { toCamelCase } from "@mongez/reinforcements";
@@ -680,6 +680,8 @@ const words = "hello world";
 
 console.log(toCamelCase(words)); // helloWorld
 ```
+
+Any of following will be used as a separator for the text, `.` | `-` | `whitespace` | `/`, you can set the separator as second argument though.
 
 ### Convert string to snake case
 
@@ -697,7 +699,7 @@ console.log(toSnakeCase(words)); // hello_world
 
 ### Convert string to studly case
 
-Convert string to studly case, each word in string Separated by **whitespace**, **underscores** or **dashes** `toStudlyCase(string: string, separator: string = "-|_|\\s"): string`.
+Convert string to studly case, each word in string Separated by **whitespace**, **underscores** or **dashes** `toStudlyCase(string: string, separator: string = "-|\\.|_|\\s"): string`.
 
 The final output will be capitalizing each word and glue it together without any separators such as **whitespace**, **under scores** or **dashes**.
 
@@ -1038,13 +1040,21 @@ function sendEmail(e: any) {
 <button click={sendEmail}>Send Email</button>;
 ```
 
+## Tests
+
+To run tests run `npm run test` or `yarn test`
+
 ## Change Log
 
-- 1.0.26 (8 Jun 2022)
+- 1.0.27 (11 Aug 2022)
+  - Added test.
+  - `toCamelCase` now will use the dot `.` as separator.
+  - `toCamelCase`'s separator is not explicit as second argument.
+- 1.0.26 (08 Jun 2022)
   - Removed `sprintf-js` from dependencies.
-- 1.0.25 (8 Jun 2022)
+- 1.0.25 (08 Jun 2022)
   - Fixed Flatten method with empty arrays.
-- 1.0.23 (3 Jun 2022)
+- 1.0.23 (03 Jun 2022)
   - Added [debounce](#debounce) function.
   - Added `/` to be replaced in `toCamelCase` `toStudlyCase` and `toSnakeCase`.
 - 1.0.22 (10 Feb 2022)

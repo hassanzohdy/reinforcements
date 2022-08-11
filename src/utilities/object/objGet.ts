@@ -12,7 +12,9 @@ export default function objGet(
   $default: any = null
 ): any {
   try {
-    let value = key.split(".").reduce((obj, property) => obj[property], object);
+    let value = key
+      .split(".")
+      .reduce((obj: any, property: string) => obj[property], object);
 
     return undefined === value ? $default : value;
   } catch (err) {
