@@ -1046,6 +1046,8 @@ To run tests run `npm run test` or `yarn test`
 
 ## Change Log
 
+- 1.0.28 (11 Aug 2022)
+  - Fixed object merge call.
 - 1.0.27 (11 Aug 2022)
   - Added test.
   - `toCamelCase` now will use the dot `.` as separator.

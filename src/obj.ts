@@ -57,7 +57,7 @@ export default class Obj {
    * @return {object}
    */
   public static merge(...objects: any): object {
-    return merge(arguments);
+    return merge(objects[0], ...objects.slice(1));
   }
 
   /**
