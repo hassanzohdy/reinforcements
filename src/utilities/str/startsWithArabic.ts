@@ -4,7 +4,7 @@ export const ARABIC_PATTERN = /[\u0600-\u06FF]/;
 
 export default function startsWithArabic(
   text: string,
-  trimmed: boolean = true
+  trimmed = true,
 ): boolean {
   if (trimmed === true) {
     text = trim(String(text));

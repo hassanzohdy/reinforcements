@@ -6,14 +6,14 @@ import escapeRegex from "../utils/escapeRegex";
  * @param string $needle
  * @return string
  */
-export default function trim(string: string, needle: string = " "): string {
-  if (needle == " ") {
+export default function trim(string: string, needle = " "): string {
+  if (needle === " ") {
     return string.replace(/^\s+|\s+$/g, "");
   }
 
   needle = escapeRegex(needle);
 
-  var pattern = "^" + needle + "+|" + needle + "+$",
+  const pattern = "^" + needle + "+|" + needle + "+$",
     regex = new RegExp(pattern, "g");
 
   return string.replace(regex, "");

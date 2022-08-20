@@ -1,15 +1,16 @@
+import { GenericObject } from "../../types";
+
 /**
  * Get only the given keys from the given object
- *
- * @param   {object} object
- * @param   {array} keys
- * @returns {object}
  */
-export default function objOnly(object: any, keys: Array<string>): object {
-  const newObject: any = {};
+export default function objOnly(
+  object: GenericObject,
+  keys: Array<string>,
+): object {
+  const newObject: GenericObject = {};
 
   for (const key of keys) {
-    if (object.hasOwnProperty(key)) {
+    if (Object.hasOwn(object, key)) {
       newObject[key] = object[key];
     }
   }

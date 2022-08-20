@@ -1,31 +1,31 @@
 /**
  * Set the given value to the given key
- * The key is a dot.notation syntax
- *
- * @param  {object} object
- * @param  {string} key
- * @param  {any} value
- * @returns {object}
+ * The key supports dot.notation syntax
  */
-export default function set(object: any, key: string, value: any): object {
+export default function set(
+  object: Record<string, unknown>,
+  key: string,
+  value: unknown,
+): object {
   if (!key.includes(".")) {
     object[key] = value;
 
     return object;
   }
 
-  let keys: Array<string> = key.split("."),
-    currentObject: any = object;
+  const keys: Array<string> = key.split(".");
+
+  let currentObject = object;
 
   for (let i = 0; i < keys.length; i++) {
-    let key: string = keys[i];
-    if (i + 1 == keys.length) {
+    const key: string = keys[i];
+    if (i + 1 === keys.length) {
       currentObject[key] = value;
     } else {
-      if (typeof currentObject[key] == "undefined") {
+      if (typeof currentObject[key] === "undefined") {
         currentObject = currentObject[key] = {};
       } else {
-        currentObject = currentObject[key];
+        currentObject = currentObject[key] as Record<string, unknown>;
       }
     }
   }

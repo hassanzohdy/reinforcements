@@ -5,10 +5,10 @@
 export default function readMoreWords(
   string: string,
   length: number,
-  readMoreDots: string = "..."
+  readMoreDots = "...",
 ): string {
-  let wordsList = string.split(" ");
-  let words = wordsList.slice(0, length);
+  const wordsList = string.split(" ");
+  const words = wordsList.slice(0, length);
 
   return (
     words.join(" ") + (words.length < wordsList.length ? readMoreDots : "")

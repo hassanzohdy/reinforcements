@@ -7,7 +7,7 @@
  */
 export default function areEqual<T>(
   array1: Array<T>,
-  array2: Array<T>
+  array2: Array<T>,
 ): boolean {
   return JSON.stringify(array1.sort()) === JSON.stringify(array2.sort());
 }

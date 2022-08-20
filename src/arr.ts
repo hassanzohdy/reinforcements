@@ -1,11 +1,11 @@
-import Obj from "./obj";
 import Arrayable from "./contracts/arrayable";
+import Obj from "./obj";
 
 declare type ArrayType = number | string | object | any;
 declare type ArrayCallback<T> = (value: T, index: number, array: T[]) => any;
 
 function values(array: Array<ArrayType>): Array<ArrayType> {
-  let newArray = [];
+  const newArray = [];
   newArray.push(...array);
   return newArray;
 }
@@ -20,7 +20,7 @@ export default class Arr<T> implements Arrayable<T> {
    *
    * @type {number}
    */
-  private counter: number = 0;
+  private counter = 0;
 
   /**
    * {@inheritdoc}
@@ -44,10 +44,10 @@ export default class Arr<T> implements Arrayable<T> {
 
     let minValue: number = Number.MIN_VALUE;
 
-    for (let item of this.items) {
+    for (const item of this.items) {
       if (item !== null && typeof item === "object") continue;
 
-      let itemValue: number = Number(Obj.get(item, key));
+      let itemValue = Number(Obj.get(item, key));
 
       if (isNaN(itemValue)) continue;
 
@@ -69,10 +69,10 @@ export default class Arr<T> implements Arrayable<T> {
 
     let maxValue: number = Number.MAX_VALUE;
 
-    for (let item of this.items) {
+    for (const item of this.items) {
       if (item !== null && typeof item === "object") continue;
 
-      let itemValue: number = Number(Obj.get(item, key));
+      const itemValue = Number(Obj.get(item, key));
 
       if (isNaN(itemValue)) continue;
 
@@ -154,9 +154,9 @@ export default class Arr<T> implements Arrayable<T> {
    * {@inheritdoc}
    */
   public unique(key?: string): Arrayable<T> {
-    let newItems: Arrayable<T> = new Arr();
+    const newItems: Arrayable<T> = new Arr();
 
-    for (let item of this.items) {
+    for (const item of this.items) {
       newItems.pushOnce(key ? Obj.get(item, key) : item);
     }
 
@@ -175,7 +175,7 @@ export default class Arr<T> implements Arrayable<T> {
   public toggle(
     value: any,
     toggleIn: boolean,
-    indexFilter: Function = defaultIndexFilter
+    indexFilter: Function = defaultIndexFilter,
   ): Arrayable<T> {
     const array = this.items;
 
@@ -184,8 +184,8 @@ export default class Arr<T> implements Arrayable<T> {
 
       array.push(value);
     } else {
-      const valueIndex = array.findIndex((arrayValue) =>
-        indexFilter(arrayValue, value)
+      const valueIndex = array.findIndex(arrayValue =>
+        indexFilter(arrayValue, value),
       );
 
       array.splice(valueIndex, 1);
@@ -222,7 +222,7 @@ export default class Arr<T> implements Arrayable<T> {
    * {@inheritdoc}
    */
   public pushOnce(...items: any[]): Arrayable<T> {
-    for (let item of items) {
+    for (const item of items) {
       if (!this.items.includes(item)) {
         this.items.push(item);
       }
@@ -250,10 +250,10 @@ export default class Arr<T> implements Arrayable<T> {
    */
   public remove(value: any): Arrayable<T> {
     let found = false;
-    this.items = this.items.filter((item) => {
+    this.items = this.items.filter(item => {
       if (found) return true;
 
-      if (item == value) {
+      if (item === value) {
         found = true;
         return false;
       }
@@ -268,7 +268,7 @@ export default class Arr<T> implements Arrayable<T> {
    * {@inheritdoc}
    */
   public removeAll(value: any): Arrayable<T> {
-    this.items = this.items.filter((item) => item != value);
+    this.items = this.items.filter(item => item != value);
 
     return this;
   }
@@ -279,10 +279,10 @@ export default class Arr<T> implements Arrayable<T> {
   public first(key?: Function): any {
     if (key === undefined) return this.items[0];
 
-    let callback: Function = key as Function;
+    const callback: Function = key as Function;
 
     for (let i = 0; i < this.length; i++) {
-      let item = this.items[i];
+      const item = this.items[i];
 
       if (callback(item, i) === true) return item;
     }
@@ -384,7 +384,7 @@ export default class Arr<T> implements Arrayable<T> {
    * {@inheritdoc}
    */
   public reduce(callback: Function, initialValue?: any) {
-    this.items.forEach((item) => {
+    this.items.forEach(item => {
       initialValue = callback(initialValue, item);
     });
 
@@ -463,9 +463,9 @@ export default class Arr<T> implements Arrayable<T> {
    */
   public replace(oldValue: any, newValue: any): Arrayable<T> {
     for (let i = 0; i < this.length; i++) {
-      let item: any = this.get(i);
+      const item: any = this.get(i);
 
-      if (item == oldValue) {
+      if (item === oldValue) {
         this.set(i, newValue);
         break;
       }
@@ -479,9 +479,9 @@ export default class Arr<T> implements Arrayable<T> {
    */
   public replaceAll(oldValue: any, newValue: any): Arrayable<T> {
     for (let i = 0; i < this.length; i++) {
-      let item: any = this.get(i);
+      const item: any = this.get(i);
 
-      if (item == oldValue) {
+      if (item === oldValue) {
         this.set(i, newValue);
       }
     }
@@ -514,7 +514,7 @@ export default class Arr<T> implements Arrayable<T> {
    */
   public slice(
     begin?: number | undefined,
-    end?: number | undefined
+    end?: number | undefined,
   ): Arrayable<T> {
     return new Arr(this.items.slice(begin, end));
   }
@@ -523,7 +523,7 @@ export default class Arr<T> implements Arrayable<T> {
    * {@inheritdoc}
    */
   public splice(start: number, deleteCount: number, ...items: T[]): any {
-    let removedItems = this.items.splice(start, deleteCount, ...items);
+    const removedItems = this.items.splice(start, deleteCount, ...items);
     return removedItems;
   }
 
@@ -531,7 +531,7 @@ export default class Arr<T> implements Arrayable<T> {
    * {@inheritdoc}
    */
   public some(
-    callback: (value: T, index: number, array: T[]) => unknown
+    callback: (value: T, index: number, array: T[]) => unknown,
   ): boolean {
     return this.items.some(callback);
   }
@@ -540,7 +540,7 @@ export default class Arr<T> implements Arrayable<T> {
    * {@inheritdoc}
    */
   public every(
-    callback: (value: T, index: number, array: T[]) => unknown
+    callback: (value: T, index: number, array: T[]) => unknown,
   ): boolean {
     return this.items.every(callback);
   }
@@ -549,7 +549,7 @@ export default class Arr<T> implements Arrayable<T> {
    * {@inheritdoc}
    */
   public unset(...keys: number[]): void {
-    for (let key of keys) {
+    for (const key of keys) {
       this.items.splice(key, 1);
     }
   }
@@ -565,9 +565,9 @@ export default class Arr<T> implements Arrayable<T> {
    * {@inheritdoc}
    */
   public pluck(key: string): Arrayable<T> {
-    let data: Arr<T> = new Arr();
+    const data: Arr<T> = new Arr();
 
-    for (let item of this.items) {
+    for (const item of this.items) {
       data.pushOnce(Obj.get(item, key));
     }
 
@@ -580,7 +580,7 @@ export default class Arr<T> implements Arrayable<T> {
   public where(
     key: string,
     operator: any = null,
-    value: any = null
+    value: any = null,
   ): Arrayable<T> {
     let comparisonOperator = operator;
     let comparisonValue = value;
@@ -715,7 +715,7 @@ export default class Arr<T> implements Arrayable<T> {
     return {
       next: (): IteratorResult<ArrayType> => {
         return {
-          done: this.length == this.counter,
+          done: this.length === this.counter,
           value: this.items[this.counter++],
         };
       },

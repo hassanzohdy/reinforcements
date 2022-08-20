@@ -2,7 +2,7 @@ import capitalize from "./capitalize";
 
 export default function toCamelCase(
   string: string,
-  separator: string = "\\s+|-|/|_|\\."
+  separator = "\\s+|-|/|_|\\.",
 ): string {
   const regex = new RegExp(separator + "|(?=[A-Z])", "g");
 

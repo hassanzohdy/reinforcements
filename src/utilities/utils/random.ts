@@ -6,7 +6,7 @@ export default class Random {
    * @param  {number} max
    * @return {number}
    */
-  static int(min: number = 1, max: number = 9999999): number {
+  static int(min = 1, max = 9999999): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
@@ -17,9 +17,9 @@ export default class Random {
    * @param  {string} startsWith
    * @return {string}
    */
-  static string(length: number = 32): string {
-    let text: string = "";
-    let possible: string =
+  static string(length = 32): string {
+    let text = "";
+    const possible =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     for (let i = 0; i < length; i++) {
@@ -36,7 +36,7 @@ export default class Random {
    * @param  {string} startsWith
    * @return {string}
    */
-  static id(length: number = 6, startsWith: string = "el-"): string {
+  static id(length = 6, startsWith = "el-"): string {
     return startsWith + Random.string(length);
   }
 

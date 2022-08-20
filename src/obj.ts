@@ -1,12 +1,12 @@
-import get from "./utilities/object/objGet";
-import set from "./utilities/object/objSet";
-import sort from "./utilities/object/objSort";
 import clone from "./utilities/object/objClone";
+import except from "./utilities/object/objExcept";
+import flatten from "./utilities/object/objFlatten";
+import get from "./utilities/object/objGet";
+import mapObject from "./utilities/object/objMap";
 import merge from "./utilities/object/objMerge";
 import only from "./utilities/object/objOnly";
-import except from "./utilities/object/objExcept";
-import mapObject from "./utilities/object/objMap";
-import flatten from "./utilities/object/objFlatten";
+import set from "./utilities/object/objSet";
+import sort from "./utilities/object/objSort";
 
 /**
  * Object Class Handler
@@ -101,7 +101,7 @@ export default class Obj {
    */
   public static map(
     object: object,
-    callback: (key: string, value: any) => any
+    callback: (key: string, value: any) => any,
   ): Array<any> {
     return mapObject(object, callback);
   }
@@ -113,7 +113,7 @@ export default class Obj {
     object: any,
     separator = ".",
     parent: string | null = null,
-    root: any = {}
+    root: any = {},
   ): any {
     return flatten(object, separator, parent, root);
   }

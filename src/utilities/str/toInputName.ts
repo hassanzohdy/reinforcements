@@ -3,27 +3,27 @@ import rtrim from "./rtrim";
 /**
  * Convert the current a dot notation string to compound input name
  * my.input.name >> my[input][name]
- * 
+ *
  * @param   {string} string
  * @returns {string}
  */
 export default function toInputName(string: string): string {
-    if (! string) return '';
-    
-    if (! string.includes('.')) return string;
+  if (!string) return "";
 
-    let namesList = string.split('.'),
-        mainName = namesList.shift() || '';
+  if (!string.includes(".")) return string;
 
-    for (let name of namesList) {
-        let outBrackets = '';
-        if (name.endsWith('[]')) {
-            name = rtrim(name, '[]');            
-            outBrackets = '[]';
-        }
+  const namesList = string.split(".");
+  let mainName = namesList.shift() || "";
 
-        mainName += `[${name}]${outBrackets}`;
+  for (let name of namesList) {
+    let outBrackets = "";
+    if (name.endsWith("[]")) {
+      name = rtrim(name, "[]");
+      outBrackets = "[]";
     }
 
-    return mainName;
+    mainName += `[${name}]${outBrackets}`;
+  }
+
+  return mainName;
 }

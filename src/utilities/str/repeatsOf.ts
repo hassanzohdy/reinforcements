@@ -7,14 +7,14 @@
 export default function repeatsOf(
   string: string,
   needle: string,
-  caseSensitive: boolean = true
+  caseSensitive = true,
 ): number {
   let flags = "g";
   if (caseSensitive === false) {
     flags += "i";
   }
 
-  let regex = new RegExp(`${needle}`, flags);
+  const regex = new RegExp(`${needle}`, flags);
 
   return string.split(regex).length - 1;
 }

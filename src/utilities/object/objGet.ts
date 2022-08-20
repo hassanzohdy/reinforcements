@@ -9,10 +9,10 @@
 export default function objGet(
   object: object,
   key: string,
-  $default: any = null
+  $default: any = null,
 ): any {
   try {
-    let value = key
+    const value = key
       .split(".")
       .reduce((obj: any, property: string) => obj[property], object);
 

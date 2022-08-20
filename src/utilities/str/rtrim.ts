@@ -6,8 +6,8 @@ import escapeRegex from "../utils/escapeRegex";
  * @param string needle
  * @return string
  */
-export default function rtrim(string: string, needle: string = " "): string {
-  var pattern = escapeRegex(needle) + "+$",
+export default function rtrim(string: string, needle = " "): string {
+  const pattern = escapeRegex(needle) + "+$",
     regex = new RegExp(pattern, "g");
 
   return string.replace(regex, "");

@@ -10,7 +10,7 @@ import escapeRegex from "../utils/escapeRegex";
 export default function replaceFirst(
   string: string,
   needle: string,
-  replacement: string
+  replacement: string,
 ): string {
   return string.replace(escapeRegex(needle), replacement);
 }

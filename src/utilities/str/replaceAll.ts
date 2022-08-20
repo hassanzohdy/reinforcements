@@ -10,7 +10,7 @@ import escapeRegex from "../utils/escapeRegex";
 export default function replaceAll(
   string: string,
   searchText: string,
-  replacement: string
+  replacement: string,
 ): string {
   return string.replace(new RegExp(escapeRegex(searchText), "g"), replacement);
 }

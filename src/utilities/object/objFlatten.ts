@@ -9,7 +9,7 @@ export default function flatten(
   object: any,
   separator = ".",
   parent: string | null = null,
-  root: any = {}
+  root: any = {},
 ): any {
   if (canBeFlatten(object) === false) return object;
 

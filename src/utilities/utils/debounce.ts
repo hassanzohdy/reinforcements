@@ -1,6 +1,6 @@
-let timeoutId: any;
+let timeoutId: NodeJS.Timeout | undefined;
 
-export default function debounce(callback: any, wait: number = 0) {
+export default function debounce(callback: () => void, wait = 0) {
   // Clear previous delayed action, if existent
   if (timeoutId !== undefined) {
     clearTimeout(timeoutId);

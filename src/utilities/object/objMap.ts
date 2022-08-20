@@ -7,9 +7,9 @@
  */
 export default function objMap(
   object: any,
-  callback: (key: string, value: any) => any
+  callback: (key: string, value: any) => any,
 ): Array<any> {
-  return Object.keys(object).map((key) => {
+  return Object.keys(object).map(key => {
     return callback(key, object[key]);
   });
 }
