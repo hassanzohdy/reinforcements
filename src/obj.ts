@@ -1,3 +1,4 @@
+import { GenericObject } from "./types";
 import clone from "./utilities/object/objClone";
 import except from "./utilities/object/objExcept";
 import flatten from "./utilities/object/objFlatten";
@@ -18,25 +19,23 @@ export default class Obj {
   /**
    * Set the given value to the given key
    * The key is a dot.notation syntax
-   *
-   * @param  {object} object
-   * @param  {string} key
-   * @param  {any} value
-   * @returns {object}
    */
-  public static set(object: object, key: string, value: any): object {
+  public static set(
+    object: GenericObject,
+    key: string,
+    value: unknown,
+  ): object {
     return set(object, key, value);
   }
 
   /**
    * Get the value of the given key
-   *
-   * @param  {object} object
-   * @param  {string} key
-   * @param  {any} $default
-   * @returns any
    */
-  public static get(object: object, key: string, $default: any = null): any {
+  public static get(
+    object: GenericObject,
+    key: string,
+    $default: unknown = null,
+  ): unknown {
     return get(object, key, $default);
   }
 
@@ -46,7 +45,7 @@ export default class Obj {
    * @param {object} object
    * @return {object}
    */
-  public static clone(object: object): object {
+  public static clone(object: GenericObject): GenericObject {
     return clone(object);
   }
 
@@ -56,17 +55,15 @@ export default class Obj {
    * @param {any} objects
    * @return {object}
    */
-  public static merge(...objects: any): object {
+  public static merge(...objects: GenericObject[]): GenericObject {
     return merge(objects[0], ...objects.slice(1));
   }
 
   /**
    * Sort the given object by its keys
    *
-   * @param   {object} object
-   * @returns {object}
    */
-  public static sort(object: object): object {
+  public static sort(object: GenericObject): GenericObject {
     return sort(object);
   }
 
@@ -77,7 +74,10 @@ export default class Obj {
    * @param   {array} keys
    * @returns {object}
    */
-  public static only(object: object, keys: Array<string>): object {
+  public static only(
+    object: GenericObject,
+    keys: Array<string>,
+  ): GenericObject {
     return only(object, keys);
   }
 
@@ -88,7 +88,10 @@ export default class Obj {
    * @param   {array} keys
    * @returns {object}
    */
-  public static except(object: object, keys: Array<string>): object {
+  public static except(
+    object: GenericObject,
+    keys: Array<string>,
+  ): GenericObject {
     return except(object, keys);
   }
 
@@ -100,9 +103,9 @@ export default class Obj {
    * @returns {Array<any>}
    */
   public static map(
-    object: object,
-    callback: (key: string, value: any) => any,
-  ): Array<any> {
+    object: GenericObject,
+    callback: (key: string, value: unknown) => unknown,
+  ): Array<unknown> {
     return mapObject(object, callback);
   }
 
@@ -110,11 +113,11 @@ export default class Obj {
    * Flatten the given object into one big fat object
    */
   public static flatten(
-    object: any,
+    object: GenericObject,
     separator = ".",
     parent: string | null = null,
-    root: any = {},
-  ): any {
+    root: GenericObject = {},
+  ): GenericObject {
     return flatten(object, separator, parent, root);
   }
 }

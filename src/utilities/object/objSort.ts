@@ -1,19 +1,22 @@
+import { GenericObject } from "../../types";
+
 /**
  * Sort the given object by its keys
  */
 export default function objSort(
-  object: Record<string, unknown> | unknown[],
+  object: GenericObject,
   recursive = true,
-): object {
-  if (typeof object !== "object" || Array.isArray(object)) return object;
+): GenericObject {
+  if (!object || typeof object !== "object" || Array.isArray(object))
+    return object;
 
-  const sortedObject: Record<string, unknown> = {};
+  const sortedObject: GenericObject = {};
 
   const keys = Object.keys(object).sort();
 
   keys.forEach((key: string) => {
     sortedObject[key] = recursive
-      ? objSort(object[key] as Record<string, unknown>)
+      ? objSort(object[key] as GenericObject)
       : object[key];
   });
 

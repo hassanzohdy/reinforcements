@@ -1,4 +1,4 @@
-export { default as Arr } from "./arr";
+export { default as Collection } from "./Collection";
 export { default as Obj } from "./obj";
 export { default as round } from "./utilities/number/round";
 export { default as objClone } from "./utilities/object/objClone";

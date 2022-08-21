@@ -6,7 +6,7 @@ import { GenericObject } from "../../types";
 export default function objOnly(
   object: GenericObject,
   keys: Array<string>,
-): object {
+): GenericObject {
   const newObject: GenericObject = {};
 
   for (const key of keys) {
