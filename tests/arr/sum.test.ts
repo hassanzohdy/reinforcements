@@ -48,6 +48,14 @@ test("Sum not a number value", () => {
   expect(totalAmounts).toEqual(0);
 });
 
+test("Sum array of numbers", () => {
+  const totalAmounts = sum([1, 2, 3, 4]);
+
+  expect(totalAmounts).toEqual(10);
+});
+
+// validation tests
+
 test("Sum non existing key", () => {
   const totalAmounts = sum(orders, "__NON__EXISTING__KEY__");
 
@@ -59,3 +67,4 @@ test("Sum invalid array", () => {
 
   expect(totalAmounts).toEqual(0);
 });
+// unknown

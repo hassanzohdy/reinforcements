@@ -40,13 +40,17 @@ export default interface Collectable extends Iterable<unknown> {
    */
   concat(...arrays: Array<unknown>[]): Collectable;
   /**
-   * Get even values of the array
+   * Get the even values of the array or the given array of objects using the given key
+   *
+   * The key supports dot notation. syntax: "key1.key2.key3"
    */
-  even(): Collectable;
+  even(key?: string): Collectable;
   /**
-   * Get odd values of the array
+   * Get the odd values of the array or the given array of objects using the given key
+   *
+   * The key supports dot notation. syntax: "key1.key2.key3"
    */
-  odd(): Collectable;
+  odd(key?: string): Collectable;
   /**
    * Get even indexes of the array
    */
@@ -283,7 +287,7 @@ export default interface Collectable extends Iterable<unknown> {
    * Pluck a column of value form array of objects
    * The key should implement dot notation syntax.
    */
-  pluck(key: string): Collectable;
+  pluck(key: string | string[]): Collectable;
   /**
    * Filter the items using the given criteria
    * The key should implement dot notation syntax.
