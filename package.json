@@ -12,9 +12,9 @@
     "fix": "eslint --fix -c ./.eslintrc.json ./src",
     "format": "prettier --write ./src/**/*.{js,jsx,ts,tsx,css,md,json} --config ./.prettierrc.json",
     "test": "jest ./src",
-    "test:coverage": "jest --coverage",
+    "test:coverage": "jest ./src --coverage",
     "test:watch": "jest ./src --watch",
-    "test:one": "jest"
+    "test:file": "jest"
   },
   "repository": {
     "type": "git",
