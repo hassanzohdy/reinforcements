@@ -1,37 +1,5 @@
-import groupBy from "./../../src/utilities/array/groupBy";
-
-const students = [
-  {
-    id: 1,
-    class: "A",
-    grade: 1,
-  },
-  {
-    id: 2,
-    class: "B",
-    grade: 2,
-  },
-  {
-    id: 3,
-    class: "A",
-    grade: 3,
-  },
-  {
-    id: 4,
-    class: "B",
-    grade: 2,
-  },
-  {
-    id: 5,
-    class: "B",
-    grade: 2,
-  },
-  {
-    id: 6,
-    class: "C",
-    grade: 5,
-  },
-];
+import { students } from "../../../tests/data";
+import groupBy from "./groupBy";
 
 test("Group by key", () => {
   const studentsGroupedByClass = groupBy(students, "class");

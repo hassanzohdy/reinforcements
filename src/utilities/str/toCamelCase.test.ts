@@ -1,4 +1,4 @@
-import { toCamelCase } from "../../src";
+import toCamelCase from "./toCamelCase";
 
 test("proper camel case", () => {
   expect(toCamelCase("my-name")).toBe("myName");

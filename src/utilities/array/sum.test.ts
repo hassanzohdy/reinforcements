@@ -1,34 +1,6 @@
-import sum from "../../src/utilities/array/sum";
-
-const orders = [
-  {
-    id: 1,
-    customer: "A",
-    amount: 100,
-    taxes: 50,
-    total: {
-      price: 150,
-    },
-  },
-  {
-    id: 2,
-    customer: "B",
-    amount: 200,
-    taxes: 50,
-    total: {
-      price: 250,
-    },
-  },
-  {
-    id: 3,
-    customer: "A",
-    amount: 300,
-    taxes: 50,
-    total: {
-      price: 350,
-    },
-  },
-];
+import { orders } from "../../../tests/data";
+import { unknownValue } from "../../../tests/utils";
+import sum from "./sum";
 
 test("Sum value in the array using numbers", () => {
   const totalAmounts = sum(orders, "amount");
@@ -63,7 +35,7 @@ test("Sum non existing key", () => {
 });
 
 test("Sum invalid array", () => {
-  const totalAmounts = sum(undefined as any, "__NON__EXISTING__KEY__");
+  const totalAmounts = sum(unknownValue(undefined), "__NON__EXISTING__KEY__");
 
   expect(totalAmounts).toEqual(0);
 });

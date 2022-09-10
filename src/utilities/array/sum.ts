@@ -1,3 +1,4 @@
+import { GenericObject } from "../../types";
 import objGet from "../object/objGet";
 
 /**
@@ -5,11 +6,13 @@ import objGet from "../object/objGet";
  *
  * The key supports dot notation. syntax: "key1.key2.key3"
  */
-export default function sum(array: unknown[], key?: string): number {
+export default function sum<T = unknown>(array: T[], key?: string): number {
   if (!Array.isArray(array)) return 0;
 
   return array.reduce((total, item) => {
-    const value = key ? Number(objGet(item, key)) : Number(item);
+    const value = key
+      ? Number(objGet(item as GenericObject, key))
+      : Number(item);
 
     return isNaN(value) ? total : total + value;
   }, 0);

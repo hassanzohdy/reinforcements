@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1662804205644" clover="3.2.0">
+  <project timestamp="1662804205644" name="All files">
+    <metrics statements="269" coveredstatements="142" conditionals="86" coveredconditionals="19" methods="96" coveredmethods="14" elements="451" coveredelements="175" complexity="0" loc="269" ncloc="269" packages="7" files="41" classes="41"/>
+    <package name="src">
+      <metrics statements="58" coveredstatements="47" conditionals="4" coveredconditionals="0" methods="45" coveredmethods="1"/>
+      <file name="Collection.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\Collection.ts">
+        <metrics statements="3" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="5" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+      </file>
+      <file name="index.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\index.ts">
+        <metrics statements="36" coveredstatements="36" conditionals="0" coveredconditionals="0" methods="35" coveredmethods="1"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="13" count="1" type="stmt"/>
+        <line num="14" count="1" type="stmt"/>
+        <line num="15" count="1" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="17" count="1" type="stmt"/>
+        <line num="18" count="1" type="stmt"/>
+        <line num="19" count="1" type="stmt"/>
+        <line num="20" count="1" type="stmt"/>
+        <line num="21" count="1" type="stmt"/>
+        <line num="22" count="1" type="stmt"/>
+        <line num="23" count="1" type="stmt"/>
+        <line num="24" count="1" type="stmt"/>
+        <line num="25" count="1" type="stmt"/>
+        <line num="26" count="1" type="stmt"/>
+        <line num="27" count="1" type="stmt"/>
+        <line num="29" count="10" type="stmt"/>
+        <line num="30" count="1" type="stmt"/>
+        <line num="31" count="1" type="stmt"/>
+        <line num="32" count="1" type="stmt"/>
+        <line num="33" count="1" type="stmt"/>
+        <line num="34" count="1" type="stmt"/>
+        <line num="35" count="1" type="stmt"/>
+        <line num="36" count="1" type="stmt"/>
+        <line num="37" count="1" type="stmt"/>
+      </file>
+      <file name="obj.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\obj.ts">
+        <metrics statements="19" coveredstatements="10" conditionals="4" coveredconditionals="0" methods="9" coveredmethods="0"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="18" count="1" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="39" count="0" type="stmt"/>
+        <line num="49" count="0" type="stmt"/>
+        <line num="59" count="0" type="stmt"/>
+        <line num="67" count="0" type="stmt"/>
+        <line num="81" count="0" type="stmt"/>
+        <line num="95" count="0" type="stmt"/>
+        <line num="109" count="0" type="stmt"/>
+        <line num="121" count="0" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.utilities.array">
+      <metrics statements="36" coveredstatements="36" conditionals="14" coveredconditionals="13" methods="5" coveredmethods="5"/>
+      <file name="average.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\array\average.ts">
+        <metrics statements="4" coveredstatements="4" conditionals="1" coveredconditionals="1" methods="1" coveredmethods="1"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="11" type="cond" truecount="1" falsecount="0"/>
+        <line num="11" count="5" type="stmt"/>
+      </file>
+      <file name="chunk.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\array\chunk.ts">
+        <metrics statements="6" coveredstatements="6" conditionals="3" coveredconditionals="3" methods="1" coveredmethods="1"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="8" count="8" type="cond" truecount="3" falsecount="0"/>
+        <line num="10" count="3" type="stmt"/>
+        <line num="12" count="3" type="stmt"/>
+        <line num="13" count="8" type="stmt"/>
+        <line num="16" count="3" type="stmt"/>
+      </file>
+      <file name="groupBy.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\array\groupBy.ts">
+        <metrics statements="20" coveredstatements="20" conditionals="5" coveredconditionals="4" methods="1" coveredmethods="1"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="18" count="2" type="stmt"/>
+        <line num="21" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="23" count="2" type="stmt"/>
+        <line num="27" count="12" type="stmt"/>
+        <line num="29" count="12" type="stmt"/>
+        <line num="30" count="18" type="cond" truecount="0" falsecount="1"/>
+        <line num="32" count="18" type="stmt"/>
+        <line num="38" count="12" type="stmt"/>
+        <line num="40" count="12" type="cond" truecount="1" falsecount="0"/>
+        <line num="43" count="7" type="stmt"/>
+        <line num="47" count="7" type="stmt"/>
+        <line num="48" count="11" type="stmt"/>
+        <line num="51" count="7" type="stmt"/>
+        <line num="54" count="12" type="stmt"/>
+        <line num="57" count="2" type="stmt"/>
+        <line num="59" count="2" type="stmt"/>
+        <line num="60" count="7" type="stmt"/>
+        <line num="62" count="7" type="stmt"/>
+        <line num="68" count="2" type="stmt"/>
+      </file>
+      <file name="sum.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\array\sum.ts">
+        <metrics statements="6" coveredstatements="6" conditionals="5" coveredconditionals="5" methods="2" coveredmethods="2"/>
+        <line num="2" count="2" type="stmt"/>
+        <line num="9" count="2" type="stmt"/>
+        <line num="10" count="11" type="cond" truecount="1" falsecount="0"/>
+        <line num="12" count="10" type="stmt"/>
+        <line num="13" count="32" type="cond" truecount="2" falsecount="0"/>
+        <line num="17" count="32" type="cond" truecount="2" falsecount="0"/>
+      </file>
+    </package>
+    <package name="src.utilities.number">
+      <metrics statements="3" coveredstatements="1" conditionals="1" coveredconditionals="0" methods="1" coveredmethods="0"/>
+      <file name="round.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\number\round.ts">
+        <metrics statements="3" coveredstatements="1" conditionals="1" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="8" count="1" type="cond" truecount="0" falsecount="1"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.utilities.object">
+      <metrics statements="59" coveredstatements="14" conditionals="31" coveredconditionals="3" methods="13" coveredmethods="2"/>
+      <file name="objClone.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\object\objClone.ts">
+        <metrics statements="3" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+      </file>
+      <file name="objExcept.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\object\objExcept.ts">
+        <metrics statements="6" coveredstatements="1" conditionals="1" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+      </file>
+      <file name="objFlatten.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\object\objFlatten.ts">
+        <metrics statements="12" coveredstatements="1" conditionals="14" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <line num="2" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="14" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="19" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="21" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="22" count="0" type="stmt"/>
+        <line num="23" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="24" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="30" count="0" type="stmt"/>
+      </file>
+      <file name="objGet.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\object\objGet.ts">
+        <metrics statements="6" coveredstatements="5" conditionals="3" coveredconditionals="3" methods="2" coveredmethods="2"/>
+        <line num="9" count="3" type="stmt"/>
+        <line num="14" count="24" type="stmt"/>
+        <line num="15" count="24" type="stmt"/>
+        <line num="17" count="30" type="stmt"/>
+        <line num="19" count="24" type="cond" truecount="2" falsecount="0"/>
+        <line num="21" count="0" type="stmt"/>
+      </file>
+      <file name="objMap.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\object\objMap.ts">
+        <metrics statements="3" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+      </file>
+      <file name="objMerge.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\object\objMerge.ts">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+      </file>
+      <file name="objOnly.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\object\objOnly.ts">
+        <metrics statements="6" coveredstatements="1" conditionals="1" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+      </file>
+      <file name="objSet.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\object\objSet.ts">
+        <metrics statements="14" coveredstatements="1" conditionals="5" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="10" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="20" count="0" type="stmt"/>
+        <line num="21" count="0" type="stmt"/>
+        <line num="22" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="25" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="33" count="0" type="stmt"/>
+      </file>
+      <file name="objSort.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\object\objSort.ts">
+        <metrics statements="8" coveredstatements="1" conditionals="7" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="10" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="18" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="23" count="0" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.utilities.str">
+      <metrics statements="91" coveredstatements="38" conditionals="29" coveredconditionals="3" methods="23" coveredmethods="5"/>
+      <file name="capitalize.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\str\capitalize.ts">
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="6" type="stmt"/>
+        <line num="11" count="6" type="stmt"/>
+      </file>
+      <file name="extension.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\str\extension.ts">
+        <metrics statements="4" coveredstatements="1" conditionals="2" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="0" type="stmt"/>
+        <line num="6" count="0" type="stmt"/>
+        <line num="8" count="0" type="cond" truecount="0" falsecount="2"/>
+      </file>
+      <file name="ltrim.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\str\ltrim.ts">
+        <metrics statements="5" coveredstatements="2" conditionals="1" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="9" count="1" type="cond" truecount="0" falsecount="1"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+      </file>
+      <file name="readMoreChars.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\str\readMoreChars.ts">
+        <metrics statements="3" coveredstatements="1" conditionals="2" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="10" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="12" count="0" type="stmt"/>
+      </file>
+      <file name="readMoreWords.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\str\readMoreWords.ts">
+        <metrics statements="4" coveredstatements="1" conditionals="3" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+      </file>
+      <file name="removeFirst.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\str\removeFirst.ts">
+        <metrics statements="3" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+      </file>
+      <file name="removeLast.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\str\removeLast.ts">
+        <metrics statements="3" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+      </file>
+      <file name="repeatsOf.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\str\repeatsOf.ts">
+        <metrics statements="6" coveredstatements="1" conditionals="2" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="19" count="0" type="stmt"/>
+      </file>
+      <file name="replaceAll.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\str\replaceAll.ts">
+        <metrics statements="3" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
+      </file>
+      <file name="replaceFirst.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\str\replaceFirst.ts">
+        <metrics statements="3" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
+      </file>
+      <file name="replaceLast.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\str\replaceLast.ts">
+        <metrics statements="5" coveredstatements="1" conditionals="1" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="15" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="19" count="0" type="stmt"/>
+      </file>
+      <file name="rtrim.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\str\rtrim.ts">
+        <metrics statements="5" coveredstatements="2" conditionals="1" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="9" count="1" type="cond" truecount="0" falsecount="1"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+      </file>
+      <file name="startsWithArabic.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\str\startsWithArabic.ts">
+        <metrics statements="6" coveredstatements="3" conditionals="2" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="5" count="1" type="stmt"/>
+        <line num="9" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+      </file>
+      <file name="toCamelCase.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\str\toCamelCase.ts">
+        <metrics statements="5" coveredstatements="5" conditionals="3" coveredconditionals="3" methods="2" coveredmethods="2"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="7" count="9" type="stmt"/>
+        <line num="9" count="9" type="stmt"/>
+        <line num="11" count="15" type="cond" truecount="2" falsecount="0"/>
+      </file>
+      <file name="toInputName.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\str\toInputName.ts">
+        <metrics statements="13" coveredstatements="2" conditionals="5" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="11" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="13" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="15" count="0" type="stmt"/>
+        <line num="16" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="18" count="0" type="stmt"/>
+        <line num="19" count="0" type="stmt"/>
+        <line num="20" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="21" count="0" type="stmt"/>
+        <line num="22" count="0" type="stmt"/>
+        <line num="25" count="0" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
+      </file>
+      <file name="toSnakeCase.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\str\toSnakeCase.ts">
+        <metrics statements="4" coveredstatements="1" conditionals="4" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <line num="7" count="1" type="cond" truecount="0" falsecount="1"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="11" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="13" count="0" type="stmt"/>
+      </file>
+      <file name="toStudlyCase.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\str\toStudlyCase.ts">
+        <metrics statements="5" coveredstatements="2" conditionals="1" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="18" count="0" type="stmt"/>
+      </file>
+      <file name="trim.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\str\trim.ts">
+        <metrics statements="8" coveredstatements="2" conditionals="2" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="9" count="1" type="cond" truecount="0" falsecount="1"/>
+        <line num="10" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="19" count="0" type="stmt"/>
+      </file>
+      <file name="ucfirst.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\str\ucfirst.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="6" count="1" type="stmt"/>
+        <line num="7" count="6" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.utilities.utils">
+      <metrics statements="19" coveredstatements="3" conditionals="7" coveredconditionals="0" methods="8" coveredmethods="0"/>
+      <file name="debounce.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\utils\debounce.ts">
+        <metrics statements="7" coveredstatements="1" conditionals="2" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <line num="3" count="1" type="cond" truecount="0" falsecount="1"/>
+        <line num="5" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="6" count="0" type="stmt"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="12" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+      </file>
+      <file name="escapeRegex.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\utils\escapeRegex.ts">
+        <metrics statements="2" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
+        <line num="4" count="1" type="stmt"/>
+        <line num="5" count="0" type="stmt"/>
+      </file>
+      <file name="random.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\src\utilities\utils\random.ts">
+        <metrics statements="10" coveredstatements="1" conditionals="5" coveredconditionals="0" methods="5" coveredmethods="0"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="21" count="0" type="stmt"/>
+        <line num="23" count="0" type="stmt"/>
+        <line num="25" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="29" count="0" type="stmt"/>
+        <line num="40" count="0" type="stmt"/>
+        <line num="47" count="0" type="stmt"/>
+        <line num="56" count="0" type="stmt"/>
+      </file>
+    </package>
+    <package name="tests">
+      <metrics statements="3" coveredstatements="3" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+      <file name="data.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\tests\data.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="1" count="4" type="stmt"/>
+        <line num="31" count="4" type="stmt"/>
+      </file>
+      <file name="utils.ts" path="D:\xampp\htdocs\mongez\react\reinforcements\tests\utils.ts">
+        <metrics statements="1" coveredstatements="1" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="1" count="12" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>

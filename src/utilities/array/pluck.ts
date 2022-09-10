@@ -5,7 +5,7 @@
  *
  * The key supports dot notation. syntax: "key1.key2.key3"
  */
-export default function pluck(
-  array: unknown[],
+export default function pluck<T = unknown>(
+  array: T[],
   key?: string | string[],
 ): any[] {}
