@@ -28,7 +28,50 @@ export const orders = [
   },
 ];
 
-export const students = [
+export const users = [
+  {
+    id: 1,
+    name: "John",
+    age: 20,
+  },
+  {
+    id: 2,
+    name: "Jane",
+    age: 25,
+  },
+  {
+    id: 3,
+    name: "Jack",
+    age: 30,
+  },
+  {
+    id: 4,
+    name: "Jill",
+    age: 35,
+  },
+  {
+    id: 5,
+    name: "Joe",
+    age: 40,
+  },
+  {
+    id: 6,
+    name: "Jenny",
+    age: 45,
+  },
+  {
+    id: 7,
+    name: "Jen",
+    age: 50,
+  },
+  {
+    id: 8,
+    name: "Jenna",
+    age: 55,
+  },
+];
+
+export const studentsClasses = [
   {
     id: 1,
     class: "A",

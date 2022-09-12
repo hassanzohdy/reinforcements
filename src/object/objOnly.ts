@@ -1,4 +1,4 @@
-import { GenericObject } from "../../types";
+import { GenericObject } from "../types";
 
 /**
  * Get only the given keys from the given object
@@ -10,7 +10,8 @@ export default function objOnly(
   const newObject: GenericObject = {};
 
   for (const key of keys) {
-    if (Object.hasOwn(object, key)) {
+    // eslint-disable-next-line no-prototype-builtins
+    if (object.hasOwnProperty(key)) {
       newObject[key] = object[key];
     }
   }

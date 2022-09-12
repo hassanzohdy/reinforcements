@@ -1,10 +1,6 @@
 import Iterable from "./iterable";
 
-type ArrayCallback = (
-  item: unknown,
-  index: number,
-  items: unknown[],
-) => boolean;
+export type ArrayCallback = (item: any, index: number, items: any[]) => boolean;
 
 export default interface Collectable extends Iterable<unknown> {
   /**
@@ -28,7 +24,7 @@ export default interface Collectable extends Iterable<unknown> {
    */
   avg(key?: string): number;
   /**
-   * Get the midian value of the given key or array
+   * Get the median value of the given key or array
    */
   median(key?: string): number;
   /**
@@ -95,7 +91,7 @@ export default interface Collectable extends Iterable<unknown> {
   /**
    * Count data by the given key or callback
    */
-  countBy(key: string | ArrayCallback): number;
+  count(key: string | ArrayCallback): number;
   /**
    * Remove the first matched value with the given from the array
    */
@@ -173,15 +169,7 @@ export default interface Collectable extends Iterable<unknown> {
   /**
    * Execute a reducer function (that you provide) on each element of the array, resulting in a single output value.
    */
-  reduce(
-    callback: (
-      total: unknown,
-      item: unknown,
-      index: number,
-      array: unknown[],
-    ) => unknown,
-    initialValue: unknown,
-  ): unknown;
+  reduce: typeof Array.prototype.reduce;
   /**
    * Chunk the array into groups of arrays based on the given size
    */
@@ -217,11 +205,11 @@ export default interface Collectable extends Iterable<unknown> {
   /**
    * Get the first index of the given value
    */
-  indexOf(value: unknown): number;
+  indexOf: typeof Array.prototype.indexOf;
   /**
    * Get the last index of the given value
    */
-  lastIndexOf(value: unknown): number;
+  lastIndexOf: typeof Array.prototype.lastIndexOf;
   /**
    * Determine if the array is empty
    */

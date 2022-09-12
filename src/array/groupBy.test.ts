@@ -1,8 +1,8 @@
-import { students } from "../../tests/data";
+import { studentsClasses } from "../../tests/data";
 import groupBy from "./groupBy";
 
 test("Group by key", () => {
-  const studentsGroupedByClass = groupBy(students, "class");
+  const studentsGroupedByClass = groupBy(studentsClasses, "class");
 
   expect(studentsGroupedByClass.length).toEqual(3);
   expect(studentsGroupedByClass[0].class).toEqual("A");
@@ -30,7 +30,10 @@ test("Group by key", () => {
 });
 
 test("Group by multiple keys", () => {
-  const studentsGroupedByClassAndGrade = groupBy(students, ["class", "grade"]);
+  const studentsGroupedByClassAndGrade = groupBy(studentsClasses, [
+    "class",
+    "grade",
+  ]);
 
   expect(studentsGroupedByClassAndGrade.length).toEqual(4);
   expect(studentsGroupedByClassAndGrade[0].class).toEqual("A");
