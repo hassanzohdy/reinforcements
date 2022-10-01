@@ -36,8 +36,12 @@ export default class ImmutableCollection {
   public constructor(items: any[] | ImmutableCollection = []) {
     if (items instanceof ImmutableCollection) {
       this.items = [...items.toArray()];
-    } else {
+    } else if (Array.isArray(items)) {
       this.items = [...items];
+    } else {
+      throw new Error(
+        "Invalid items type, it should be an array or an instance of ImmutableCollection",
+      );
     }
   }
 
@@ -46,6 +50,13 @@ export default class ImmutableCollection {
    */
   public static fromIterator(iterator: Iterable<any>) {
     return new ImmutableCollection([...iterator]);
+  }
+
+  /**
+   * Create an empty collection with the given length
+   */
+  public static create(length: number, initialValue?: any) {
+    return new ImmutableCollection(Array.from({ length }, () => initialValue));
   }
 
   /**
@@ -332,6 +343,27 @@ export default class ImmutableCollection {
   }
 
   /**
+   * Get only first unique items for the given key
+   */
+  public uniqueList(key: string) {
+    const foundValues: any[] = [];
+
+    return new ImmutableCollection(
+      this.items.filter(item => {
+        const value = get(item, key);
+
+        if (foundValues.includes(value)) {
+          return false;
+        }
+
+        foundValues.push(value);
+
+        return true;
+      }),
+    );
+  }
+
+  /**
    * Remove and return the first item in the array
    */
   public shift() {
@@ -435,7 +467,7 @@ export default class ImmutableCollection {
   }
 
   /**
-   * Count by the given key total occurrences
+   * Count by the given key total occurrences of each value
    */
   public countBy(key: string) {
     return countBy(this.items, key);
@@ -451,22 +483,14 @@ export default class ImmutableCollection {
   /**
    * Get first item in the array
    */
-  public first(callback?: Parameters<typeof Array.prototype.find>[0]) {
-    if (this.items.length === 0) {
-      return null;
-    }
-
-    if (callback) {
-      return this.items.find(callback);
-    }
-
-    return this.items[0];
+  public first() {
+    return this.items[0] ?? null;
   }
 
   /**
    * Get the first item's value for the given key
    */
-  public value(key: string, defaultValue = null) {
+  public value(key: string, defaultValue: any = null) {
     for (let item of this.items) {
       let itemValue = get(item, key, NotExists);
       if (itemValue !== NotExists) {
@@ -480,14 +504,14 @@ export default class ImmutableCollection {
   /**
    * Get value for the given key at the given index
    */
-  public valueAt(index: number, key: string, defaultValue = null) {
+  public valueAt(index: number, key: string, defaultValue: any = null) {
     return get(this.items, `${index}.${key}`, defaultValue);
   }
 
   /**
    * Get the last's item value for the given key
    */
-  public lastValue(key: string, defaultValue = null) {
+  public lastValue(key: string, defaultValue: any = null) {
     return this.reverse().value(key, defaultValue);
   }
 
@@ -503,6 +527,15 @@ export default class ImmutableCollection {
    */
   public contains(value: any): boolean {
     return this.items.includes(value);
+  }
+
+  /**
+   * Check if the array has the given callback
+   */
+  public has(
+    callback: Parameters<typeof Array.prototype.findIndex>[0],
+  ): boolean {
+    return this.items.findIndex(callback) !== -1;
   }
 
   /**
@@ -602,6 +635,13 @@ export default class ImmutableCollection {
   /**
    * @alias filter
    */
+  public takeWhile(callback: Parameters<typeof Array.prototype.filter>[0]) {
+    return new ImmutableCollection(this.items.filter(callback));
+  }
+
+  /**
+   * @alias filter
+   */
   public removeAll(value: Parameters<typeof Array.prototype.filter>[0]) {
     return this.filter(value);
   }
@@ -623,52 +663,58 @@ export default class ImmutableCollection {
     [key: string]: "asc" | "desc";
   }): ImmutableCollection;
   public sortBy(sortType: any) {
-    if (sortType === "string") {
-      // sort items by the given key
+    if (typeof sortType === "string") {
+      // sort items by the given key in asc order
 
-      return new ImmutableCollection(
-        this.items.sort((a: any, b: any) => {
-          const aValue: any = get(a, sortType as string);
-          const bValue: any = get(b, sortType as string);
+      const items = [...this.items];
 
-          if (aValue < bValue) {
-            return -1;
-          }
+      items.sort((a: any, b: any) => {
+        const aValue: any = get(a, sortType as string);
+        const bValue: any = get(b, sortType as string);
 
-          if (aValue > bValue) {
-            return 1;
-          }
+        if (aValue < bValue) {
+          return -1;
+        }
 
-          return 0;
-        }),
-      );
+        if (aValue > bValue) {
+          return 1;
+        }
+
+        return 0;
+      });
+
+      return new ImmutableCollection(items);
     }
 
     if (typeof sortType === "object") {
       // sort items by multiple keys
 
-      return new ImmutableCollection(
-        this.items.sort((a: any, b: any) => {
-          const keys = Object.keys(sortType);
+      const items = [...this.items];
 
-          for (let i = 0; i < keys.length; i++) {
-            const key = keys[i];
-            const aValue: any = get(a, key);
-            const bValue: any = get(b, key);
+      items.sort((a: any, b: any) => {
+        const keys = Object.keys(sortType);
 
-            if (aValue < bValue) {
-              return sortType[key] === "asc" ? -1 : 1;
-            }
+        for (let i = 0; i < keys.length; i++) {
+          const key = keys[i];
+          const aValue: any = get(a, key);
+          const bValue: any = get(b, key);
 
-            if (aValue > bValue) {
-              return sortType[key] === "asc" ? 1 : -1;
-            }
+          if (aValue < bValue) {
+            return sortType[key] === "asc" ? -1 : 1;
           }
 
-          return 0;
-        }),
-      );
+          if (aValue > bValue) {
+            return sortType[key] === "asc" ? 1 : -1;
+          }
+        }
+
+        return 0;
+      });
+
+      return new ImmutableCollection(items);
     }
+
+    return this;
   }
 
   /**
@@ -696,21 +742,7 @@ export default class ImmutableCollection {
   /**
    * Get all items that are not valid against the given callback
    */
-  public reject(
-    callback:
-      | string
-      | number
-      | boolean
-      | Parameters<typeof Array.prototype.filter>[0],
-  ) {
-    if (
-      typeof callback === "string" ||
-      typeof callback === "number" ||
-      typeof callback === "boolean"
-    ) {
-      return this.filter((item: any) => item !== callback);
-    }
-
+  public reject(callback: Parameters<typeof Array.prototype.filter>[0]) {
     return new ImmutableCollection(
       this.items.filter((item, index, array) => {
         return !callback(item, index, array);
@@ -721,86 +753,60 @@ export default class ImmutableCollection {
   /**
    * @alias reject
    */
-  public not(
-    callback:
-      | string
-      | number
-      | boolean
-      | Parameters<typeof Array.prototype.filter>[0],
-  ) {
+  public except(callback: Parameters<typeof Array.prototype.filter>[0]) {
     return this.reject(callback);
+  }
+
+  /**
+   * Get all values that are not equal to the given value
+   */
+  public not(exceptValue: any) {
+    return this.reject(value => value === exceptValue);
   }
 
   /**
    * @alias reject
    */
-  public except(
-    callback:
-      | string
-      | number
-      | boolean
-      | Parameters<typeof Array.prototype.filter>[0],
-  ) {
+  public skipWhile(callback: Parameters<typeof Array.prototype.filter>[0]) {
     return this.reject(callback);
   }
 
   /**
-   * @alias reject
+   * Skip last items while matching the given callback
+   *
    */
-  public exceptAll(
-    callback:
-      | string
-      | number
-      | boolean
-      | Parameters<typeof Array.prototype.filter>[0],
-  ) {
-    return this.reject(callback);
-  }
+  public skipLastWhile(callback: Parameters<typeof Array.prototype.filter>[0]) {
+    // [1, 2, 3, 4, 5] skip last while (item) => item > 3 should return [1, 2, 3]
 
-  /**
-   * @alias reject
-   */
-  public skipWhile(
-    callback:
-      | string
-      | number
-      | boolean
-      | Parameters<typeof Array.prototype.filter>[0],
-  ) {
-    return this.reject(callback);
+    const items = this.items.slice();
+
+    for (let i = items.length - 1; i >= 0; i--) {
+      if (!callback(items[i], i, items)) {
+        break;
+      }
+
+      items.pop();
+    }
+
+    return new ImmutableCollection(items);
   }
 
   /**
    * Get all items except the first matched callback
    */
-  public rejectFirst(
-    callback:
-      | string
-      | number
-      | boolean
-      | Parameters<typeof Array.prototype.filter>[0],
-  ) {
+  public rejectFirst(callback: Parameters<typeof Array.prototype.filter>[0]) {
     // return all items except first matched callback
     const newItems: any[] = [];
 
+    let found = false;
+
     for (let i = 0; i < this.items.length; i++) {
       const item = this.items[i];
-      if (
-        typeof callback === "string" ||
-        typeof callback === "number" ||
-        typeof callback === "boolean"
-      ) {
-        if (item !== callback) {
-          newItems.push(item);
-        } else {
-          break;
-        }
+      if (!found && callback(item, i, this.items) === true) {
+        found = true;
+        continue;
       } else {
-        if (callback(item, i, this.items) === false) {
-          newItems.push(item);
-        } else {
-          break;
-        }
+        newItems.push(item);
       }
     }
 
@@ -810,26 +816,7 @@ export default class ImmutableCollection {
   /**
    * @alias rejectFirst
    */
-  public exceptFirst(
-    callback:
-      | string
-      | number
-      | boolean
-      | Parameters<typeof Array.prototype.filter>[0],
-  ) {
-    return this.rejectFirst(callback);
-  }
-
-  /**
-   * @alias rejectFirst
-   */
-  public skipFirst(
-    callback:
-      | string
-      | number
-      | boolean
-      | Parameters<typeof Array.prototype.filter>[0],
-  ) {
+  public exceptFirst(callback: Parameters<typeof Array.prototype.filter>[0]) {
     return this.rejectFirst(callback);
   }
 
@@ -899,6 +886,13 @@ export default class ImmutableCollection {
   /**
    * @alias skip
    */
+  public skipFirst(number: number) {
+    return this.skip(number);
+  }
+
+  /**
+   * @alias skip
+   */
   public skipTo(number: number) {
     return this.skip(number);
   }
@@ -919,6 +913,18 @@ export default class ImmutableCollection {
   public skipUntil(callback: Parameters<typeof Array.prototype.findIndex>[0]) {
     // get all items after the given callback
     const newItems = this.items.slice(this.findIndex(callback));
+
+    return new ImmutableCollection(newItems);
+  }
+
+  /**
+   * Skip last items until the given callback returns true
+   */
+  public skipLastUntil(
+    callback: Parameters<typeof Array.prototype.findIndex>[0],
+  ) {
+    // get all items before the given callback
+    const newItems = this.items.slice(0, this.findIndex(callback));
 
     return new ImmutableCollection(newItems);
   }
@@ -955,14 +961,14 @@ export default class ImmutableCollection {
    * Determine if the collection is empty.
    */
   public isEmpty(): boolean {
-    return this.whereEmpty().length === 0;
+    return this.items.length === 0;
   }
 
   /**
    * Determine if the collection is not empty.
    */
   public isNotEmpty(): boolean {
-    return !this.isEmpty();
+    return this.items.length > 0;
   }
 
   /**
@@ -1010,6 +1016,13 @@ export default class ImmutableCollection {
    */
   public take(number: number) {
     return new ImmutableCollection(this.items.slice(0, number));
+  }
+
+  /**
+   * @alias take
+   */
+  public limit(number: number) {
+    return this.take(number);
   }
 
   /**
@@ -1116,20 +1129,24 @@ export default class ImmutableCollection {
 
     let isDate = false;
 
+    let isObjectValue = false;
+
     if (args.length === 2) {
       if (Operators.includes(args[0])) {
         isPrimitive = true;
+      } else if (!Operators.includes(args[1])) {
+        value = operator;
+
+        operator = "=";
       }
-
-      value = operator;
-
-      operator = "=";
     }
 
-    if (value instanceof RegExp) {
+    if (value instanceof RegExp || operator === "regex") {
       isRegex = true;
     } else if (value instanceof Date) {
       isDate = true;
+    } else if (value && typeof value === "object") {
+      isObjectValue = true;
     }
 
     return this.filter((item: any) => {
@@ -1138,7 +1155,7 @@ export default class ImmutableCollection {
         : get(item as object, key, NotExists);
 
       if (isRegex) {
-        return value.test(itemValue);
+        return (value as RegExp).test(String(itemValue));
       }
 
       switch (operator) {
@@ -1148,10 +1165,22 @@ export default class ImmutableCollection {
             return +itemValue === +value;
           }
 
+          if (isObjectValue) {
+            return areEqual(itemValue, value);
+          }
+
           return itemValue === value;
         case "!=":
-        case "notEquals":
+        case "not equals":
         case "not":
+          if (isDate) {
+            return +itemValue !== +value;
+          }
+
+          if (isObjectValue) {
+            return areEqual(itemValue, value) === false;
+          }
+
           return itemValue !== value;
         case ">":
         case "gt":
@@ -1188,9 +1217,11 @@ export default class ImmutableCollection {
         case "!<>":
           return itemValue < value[0] || itemValue > value[1];
         case "contains":
+          if (!itemValue.includes) return false;
           return itemValue.includes(value);
         case "not contains":
         case "!contains":
+          if (!itemValue.includes) return false;
           return !itemValue.includes(value);
         case "starts with":
           return itemValue.startsWith(value);
@@ -1202,19 +1233,15 @@ export default class ImmutableCollection {
         case "not ends with":
         case "!ends with":
           return !itemValue.endsWith(value);
-        case null:
         case "is null":
         case "null":
           return itemValue === null;
-        case !null:
         case "is not null":
         case "!null":
           return itemValue !== null;
         case "is undefined":
-        case undefined:
         case "undefined":
           return itemValue === undefined;
-        case !undefined:
         case "!undefined":
         case "is not undefined":
           return itemValue !== undefined;
@@ -1223,19 +1250,15 @@ export default class ImmutableCollection {
         case "not exists":
         case "!exists":
           return itemValue === NotExists;
-        case true:
         case "true":
         case "is true":
           return itemValue === true;
-        case !true:
         case "!true":
         case "is not true":
           return itemValue !== true;
-        case false:
         case "false":
         case "is false":
           return itemValue === false;
-        case !false:
         case "!false":
         case "is not false":
           return itemValue !== false;
@@ -1255,10 +1278,43 @@ export default class ImmutableCollection {
         case "is not a":
         case "!is a":
           return !(itemValue instanceof value);
+        case "empty":
+        case "is empty":
+          return Is.empty(itemValue);
+        case "not empty":
+        case "is not empty":
+        case "!empty":
+          return !Is.empty(itemValue);
         default:
           return false;
       }
     });
+  }
+
+  /**
+   * Get first matching item
+   */
+  public firstWhere(key: string, value: any);
+  public firstWhere(operator: ComparisonOperator, value: any);
+  public firstWhere(key: string, operator: ComparisonOperator, value: any);
+  public firstWhere(...args: any[]) {
+    return this.where(
+      ...(args as Parameters<typeof ImmutableCollection.prototype.where>),
+    ).first();
+  }
+
+  /**
+   * Get items where the given key exists
+   */
+  public whereExists(key: string) {
+    return this.where(key, "exists");
+  }
+
+  /**
+   * Get items where the given key does not exist
+   */
+  public whereNotExists(key: string) {
+    return this.where(key, "not exists");
   }
 
   /**
@@ -1436,17 +1492,6 @@ export default class ImmutableCollection {
   }
 
   /**
-   * Get first matching item
-   */
-  public firstWhere(callback: Parameters<typeof Array.prototype.find>[0]);
-  public firstWhere(key: any, operator?: ComparisonOperator, value?: any);
-  public firstWhere(...args: any[]) {
-    return this.where(
-      ...(args as Parameters<typeof ImmutableCollection.prototype.where>),
-    ).first();
-  }
-
-  /**
    * Get last matching item
    */
   public lastWhere(callback: Parameters<typeof Array.prototype.find>[0]);
@@ -1497,8 +1542,24 @@ export default class ImmutableCollection {
   /**
    * Group by the given key or keys
    */
-  public groupBy(keys: string | string[]) {
-    return new ImmutableCollection(groupBy(this.items, keys));
+  public groupBy(keys: string | string[], listAs = "items") {
+    return new ImmutableCollection(groupBy(this.items, keys, listAs));
+  }
+
+  /**
+   * Return a new collection given key from the given index
+   */
+  public collectFrom(key: string);
+  public collectFrom(index: number | string, key?: string);
+  public collectFrom(...args) {
+    return new ImmutableCollection(get(this.items, args.join(".")));
+  }
+
+  /**
+   * Return a new collection given key from the first element
+   */
+  public collectFromFirst(key: string) {
+    return this.collectFrom(0, key);
   }
 
   /**

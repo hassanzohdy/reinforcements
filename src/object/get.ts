@@ -1,3 +1,5 @@
+import flatten from "./flatten";
+
 /**
  * Get the value of the given key
  */
@@ -6,13 +8,13 @@ export default function get(
   key: string,
   defaultValue: any = null,
 ): any {
-  try {
-    const value = key
-      .split(".")
-      .reduce((obj: any, property: string) => obj[property], object);
+  const flattenObject = flatten(object, ".", true);
 
-    return undefined === value ? defaultValue : value;
-  } catch (err) {
-    return defaultValue;
+  if (!flattenObject) return defaultValue;
+
+  if (flattenObject.hasOwnProperty(key)) {
+    return flattenObject[key];
   }
+
+  return defaultValue;
 }

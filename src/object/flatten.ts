@@ -1,5 +1,5 @@
 function canBeFlatten(value: any): boolean {
-  return value && typeof value === "object";
+  return value !== null && typeof value === "object";
 }
 
 /**
@@ -8,6 +8,7 @@ function canBeFlatten(value: any): boolean {
 export default function flatten(
   object: any,
   separator = ".",
+  keepNestedOriginalObject = false,
   parent?: string,
   root: any = {},
 ): any {
@@ -21,7 +22,11 @@ export default function flatten(
     if (Array.isArray(value) && value.length === 0) {
       root[keyChain] = value;
     } else if (canBeFlatten(value) === true) {
-      flatten(value, separator, keyChain, root);
+      if (keepNestedOriginalObject) {
+        root[keyChain] = value; // add the original object/array as well
+      }
+
+      flatten(value, separator, keepNestedOriginalObject, keyChain, root);
     } else {
       root[keyChain] = value;
     }
