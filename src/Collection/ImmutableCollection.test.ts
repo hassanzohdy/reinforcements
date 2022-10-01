@@ -473,7 +473,7 @@ describe("reinforcements/ImmutableCollection/original", () => {
   });
 });
 
-describe("reinforcements/ImmutableCollection/ordering", () => {
+describe("reinforcements/ImmutableCollection/reordering", () => {
   it("should swap between two indexes", () => {
     const collection = collect([1, 2, 3, 4, 5]).swap(0, 4);
 
@@ -717,6 +717,29 @@ describe("reinforcements/ImmutableCollection/math", () => {
     expect(() => collection.divide("age", 0)).toThrowError(
       "Cannot divide by zero",
     );
+  });
+
+  it("should count the occurrences of values for the given key", () => {
+    const collection = collect([
+      { name: "Ahmed", age: 20 },
+      { name: "Mohamed", age: 25 },
+      { name: "Ali", age: 30 },
+    ]);
+
+    expect(collection.count("age")).toEqual(3);
+  });
+
+  it("should count the occurrences of values for the given key", () => {
+    const collection = collect([
+      { name: "Ahmed", age: 20 },
+      { name: "Ahmed", age: 25 },
+      { name: "Ali", age: 30 },
+    ]);
+
+    expect(collection.countBy("name")).toEqual({
+      Ahmed: 2,
+      Ali: 1,
+    });
   });
 });
 

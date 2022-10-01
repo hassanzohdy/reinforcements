@@ -1,4 +1,5 @@
 import Is from "@mongez/supportive-is";
+import countBy from "src/array/countBy";
 import prependUnique from "src/array/prependUnique";
 import average from "../array/average";
 import chunk from "../array/chunk";
@@ -431,6 +432,13 @@ export default class ImmutableCollection {
     key: string | Parameters<typeof Array.prototype.filter>[0],
   ): number {
     return count(this.items, key);
+  }
+
+  /**
+   * Count by the given key total occurrences
+   */
+  public countBy(key: string) {
+    return countBy(this.items, key);
   }
 
   /**
