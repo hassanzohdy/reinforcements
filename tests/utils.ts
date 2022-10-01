@@ -1,1 +1,1 @@
-export const unknownValue = (value: unknown): any => value;
+export const anyValue = (value: unknown): any => value;

@@ -1,5 +1,5 @@
-import { orders } from "../../tests/data";
-import { unknownValue } from "../../tests/utils";
+import { orders } from "tests/data";
+import { anyValue } from "tests/utils";
 import max from "./max";
 
 test("Get max value of the array using the given key", () => {
@@ -35,8 +35,8 @@ test("max value of non existing key", () => {
 });
 
 test("max Value of invalid array", () => {
-  const maxValue = max(unknownValue(undefined), "__NON__EXISTING__KEY__");
+  const maxValue = max(anyValue(undefined), "__NON__EXISTING__KEY__");
 
   expect(maxValue).toEqual(0);
 });
-// unknown
+// any

@@ -1,4 +1,4 @@
-import { unknownValue } from "../../tests/utils";
+import { anyValue } from "tests/utils";
 import median from "./median";
 
 describe("reinforcements/arrays/median", () => {
@@ -29,14 +29,14 @@ describe("reinforcements/arrays/median", () => {
   });
 
   it("should return zero if the given value is not array", () => {
-    expect(median(unknownValue(undefined))).toEqual(0);
-    expect(median(unknownValue(""))).toEqual(0);
-    expect(median(unknownValue(null))).toEqual(0);
-    expect(median(unknownValue(0))).toEqual(0);
-    expect(median(unknownValue(true))).toEqual(0);
-    expect(median(unknownValue(false))).toEqual(0);
-    expect(median(unknownValue({}))).toEqual(0);
-    expect(median(unknownValue(new Set()))).toEqual(0);
+    expect(median(anyValue(undefined))).toEqual(0);
+    expect(median(anyValue(""))).toEqual(0);
+    expect(median(anyValue(null))).toEqual(0);
+    expect(median(anyValue(0))).toEqual(0);
+    expect(median(anyValue(true))).toEqual(0);
+    expect(median(anyValue(false))).toEqual(0);
+    expect(median(anyValue({}))).toEqual(0);
+    expect(median(anyValue(new Set()))).toEqual(0);
   });
 
   it("should return the median of the given array of objects", () => {

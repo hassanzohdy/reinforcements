@@ -1,5 +1,5 @@
-import { orders } from "../../tests/data";
-import { unknownValue } from "../../tests/utils";
+import { orders } from "tests/data";
+import { anyValue } from "tests/utils";
 import average from "./average";
 
 test("Average amount in the array using numbers", () => {
@@ -35,11 +35,11 @@ test("Average non existing key", () => {
 });
 
 test("Average invalid array", () => {
-  expect(average(unknownValue(undefined), "__NON__EXISTING__KEY__")).toEqual(0);
-  expect(average(unknownValue(true), "__NON__EXISTING__KEY__")).toEqual(0);
-  expect(average(unknownValue(false), "__NON__EXISTING__KEY__")).toEqual(0);
-  expect(average(unknownValue(""), "__NON__EXISTING__KEY__")).toEqual(0);
-  expect(average(unknownValue(1), "__NON__EXISTING__KEY__")).toEqual(0);
-  expect(average(unknownValue(1.5), "__NON__EXISTING__KEY__")).toEqual(0);
+  expect(average(anyValue(undefined), "__NON__EXISTING__KEY__")).toEqual(0);
+  expect(average(anyValue(true), "__NON__EXISTING__KEY__")).toEqual(0);
+  expect(average(anyValue(false), "__NON__EXISTING__KEY__")).toEqual(0);
+  expect(average(anyValue(""), "__NON__EXISTING__KEY__")).toEqual(0);
+  expect(average(anyValue(1), "__NON__EXISTING__KEY__")).toEqual(0);
+  expect(average(anyValue(1.5), "__NON__EXISTING__KEY__")).toEqual(0);
 });
-// unknown
+// any

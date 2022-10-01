@@ -1,5 +1,5 @@
-import { numbers } from "../../tests/data";
-import { unknownValue } from "../../tests/utils";
+import { numbers } from "tests/data";
+import { anyValue } from "tests/utils";
 import oddIndexes from "./oddIndexes";
 
 test("Get elements of the array using odd indexes", () => {
@@ -11,8 +11,8 @@ test("Get elements of the array using odd indexes", () => {
 // validation tests
 
 test("odd Value of invalid array", () => {
-  const oddArray = oddIndexes(unknownValue(undefined));
+  const oddArray = oddIndexes(anyValue(undefined));
 
   expect(oddArray.length).toEqual(0);
 });
-// unknown
+// any

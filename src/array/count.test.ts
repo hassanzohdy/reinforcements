@@ -1,5 +1,5 @@
-import { unknownValue } from "../../tests/utils";
-import { count } from "./count";
+import { anyValue } from "tests/utils";
+import count from "./count";
 
 describe("reinforcements/arrays/count", () => {
   it("should count the items of the given array", () => {
@@ -36,12 +36,12 @@ describe("reinforcements/arrays/count", () => {
   });
 
   it("should return 0 if the given data is not an array", () => {
-    expect(count(unknownValue(null), "missingKey")).toEqual(0);
-    expect(count(unknownValue(null), () => true)).toEqual(0);
-    expect(count(unknownValue(undefined), () => true)).toEqual(0);
-    expect(count(unknownValue({}), () => true)).toEqual(0);
-    expect(count(unknownValue(""), () => true)).toEqual(0);
-    expect(count(unknownValue(0), () => true)).toEqual(0);
-    expect(count(unknownValue(false), () => true)).toEqual(0);
+    expect(count(anyValue(null), "missingKey")).toEqual(0);
+    expect(count(anyValue(null), () => true)).toEqual(0);
+    expect(count(anyValue(undefined), () => true)).toEqual(0);
+    expect(count(anyValue({}), () => true)).toEqual(0);
+    expect(count(anyValue(""), () => true)).toEqual(0);
+    expect(count(anyValue(0), () => true)).toEqual(0);
+    expect(count(anyValue(false), () => true)).toEqual(0);
   });
 });

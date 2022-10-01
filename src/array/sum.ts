@@ -1,16 +1,16 @@
-import objGet from "./../object/objGet";
+import get from "./../object/get";
 
 /**
  * Sum the total value of the array
  *
  * The key supports dot notation. syntax: "key1.key2.key3"
  */
-export default function sum(array: unknown[], key?: string): number {
+export default function sum(array: any[], key?: string): number {
   if (!Array.isArray(array)) return 0;
 
   if (key) {
     return array.reduce((total, item) => {
-      const value = objGet(item, key, 0);
+      const value = get(item, key, 0);
 
       if (typeof value !== "number" || isNaN(value)) {
         return total;

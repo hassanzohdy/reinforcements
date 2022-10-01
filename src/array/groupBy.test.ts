@@ -1,4 +1,4 @@
-import { studentsClasses } from "../../tests/data";
+import { studentsClasses } from "tests/data";
 import groupBy from "./groupBy";
 
 test("Group by key", () => {

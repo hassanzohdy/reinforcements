@@ -1,15 +1,33 @@
-export { default as Collection } from "./Collection";
+export { default as average, default as avg } from "./array/average";
+export { default as chunk } from "./array/chunk";
+export { default as count } from "./array/count";
+export { default as even } from "./array/even";
+export { default as evenIndexes } from "./array/evenIndexes";
+export { default as groupBy } from "./array/groupBy";
+export { default as max } from "./array/max";
+export { default as median } from "./array/median";
+export { default as min } from "./array/min";
+export { default as odd } from "./array/odd";
+export { default as oddIndexes } from "./array/oddIndexes";
+export { default as pluck } from "./array/pluck";
+export { default as pushUnique } from "./array/pushUnique";
+export { default as sum } from "./array/sum";
+export { default as unique } from "./array/unique";
+export { collect, default as ImmutableCollection } from "./Collection/ImmutableCollection";
+export { default as areEqual } from "./mixed/areEqual/areEqual";
+export { default as clone } from "./mixed/clone/clone";
+export { default as shuffle } from "./mixed/shuffle/shuffle";
 export { default as round } from "./number/round";
-export { default as Obj } from "./obj";
-export { default as objClone } from "./object/objClone";
-export { default as objExcept } from "./object/objExcept";
-export { default as objFlatten } from "./object/objFlatten";
-export { default as objGet } from "./object/objGet";
-export { default as objMap } from "./object/objMap";
-export { default as objMerge } from "./object/objMerge";
-export { default as objOnly } from "./object/objOnly";
-export { default as objSet } from "./object/objSet";
-export { default as objSort } from "./object/objSort";
+export { default as except } from "./object/except";
+export { default as flatten } from "./object/flatten";
+export { default as get } from "./object/get";
+export { default as map } from "./object/map";
+export { default as merge } from "./object/merge";
+export { default as Obj } from "./object/obj";
+export { default as only } from "./object/only";
+export { default as set } from "./object/set";
+export { default as sort } from "./object/sort";
+export { default as Random } from "./Random/random";
 export { default as capitalize } from "./string/capitalize";
 export { default as extension } from "./string/extension";
 export { default as ltrim } from "./string/ltrim";
@@ -24,7 +42,7 @@ export { default as replaceLast } from "./string/replaceLast";
 export { default as rtrim } from "./string/rtrim";
 export {
   ARABIC_PATTERN,
-  default as startsWithArabic,
+  default as startsWithArabic
 } from "./string/startsWithArabic";
 export { default as toCamelCase } from "./string/toCamelCase";
 export { default as toInputName } from "./string/toInputName";
@@ -34,4 +52,4 @@ export { default as trim } from "./string/trim";
 export { default as ucfirst } from "./string/ucfirst";
 export { default as debounce } from "./utils/debounce";
 export { default as escapeRegex } from "./utils/escapeRegex";
-export { default as Random } from "./utils/random";
+

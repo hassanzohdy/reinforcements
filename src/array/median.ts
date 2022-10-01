@@ -5,7 +5,7 @@ import pluck from "./pluck";
  *
  * The key supports dot notation. syntax: "key1.key2.key3"
  */
-export default function median(array: unknown[], key?: string): number {
+export default function median(array: any[], key?: string): number {
   if (!Array.isArray(array)) return 0;
 
   if (key) {

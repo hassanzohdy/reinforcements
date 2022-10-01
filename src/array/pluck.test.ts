@@ -1,5 +1,5 @@
-import { users } from "../../tests/data";
-import { unknownValue } from "../../tests/utils";
+import { users } from "tests/data";
+import { anyValue } from "tests/utils";
 import pluck from "./pluck";
 
 describe("reinforcements/arrays/pluck", () => {
@@ -34,6 +34,6 @@ describe("reinforcements/arrays/pluck", () => {
   });
 
   it("should return an empty array if the given array is not an array", () => {
-    expect(pluck(unknownValue(undefined))).toEqual([]);
+    expect(pluck(anyValue(undefined))).toEqual([]);
   });
 });

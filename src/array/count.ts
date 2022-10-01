@@ -1,21 +1,19 @@
-import { ArrayCallback } from "../contracts/Collectable";
-import objGet from "../object/objGet";
+import get from "../object/get";
+
+const notFound = Symbol("notFound");
 
 /**
  * Count data by the given key or callback
  */
 export default function count(
-  data: unknown[],
-  key: string | ArrayCallback,
+  data: any[],
+  key: string | Parameters<typeof Array.prototype.filter>[0],
 ): number {
   if (!Array.isArray(data)) return 0;
 
   if (typeof key === "string") {
-    return data.filter(
-      item =>
-        objGet(item as object, key, "__MISSING__KEY__COUNT__") !==
-        "__MISSING__KEY__COUNT__",
-    ).length;
+    return data.filter(item => get(item as object, key, notFound) !== notFound)
+      .length;
   }
 
   return data.filter(key).length;

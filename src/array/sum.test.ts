@@ -1,5 +1,5 @@
-import { numbers, orders } from "../../tests/data";
-import { unknownValue } from "../../tests/utils";
+import { numbers, orders } from "tests/data";
+import { anyValue } from "tests/utils";
 import sum from "./sum";
 
 test("Sum value in the array using numbers", () => {
@@ -35,7 +35,7 @@ test("Sum non existing key", () => {
 });
 
 test("Sum invalid array", () => {
-  const totalAmounts = sum(unknownValue(undefined), "__NON__EXISTING__KEY__");
+  const totalAmounts = sum(anyValue(undefined), "__NON__EXISTING__KEY__");
 
   expect(totalAmounts).toEqual(0);
 });

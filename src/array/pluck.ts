@@ -1,5 +1,5 @@
-import objGet from "../object/objGet";
-import objOnly from "../object/objOnly";
+import get from "../object/get";
+import only from "../object/only";
 
 /**
  * Pluck the given array by the given key
@@ -13,11 +13,11 @@ export default function pluck(array: any[], key?: string | string[]): any[] {
 
   if (key) {
     if (typeof key === "string") {
-      return array.map(item => objGet(item, key));
+      return array.map(item => get(item, key));
     }
 
     if (Array.isArray(key)) {
-      return array.map(item => objOnly(item, key));
+      return array.map(item => only(item, key));
     }
   }
 

@@ -1,5 +1,5 @@
-import { numbers, orders } from "../../tests/data";
-import { unknownValue } from "../../tests/utils";
+import { numbers, orders } from "tests/data";
+import { anyValue } from "tests/utils";
 import even from "./even";
 
 test("Get even values of the array", () => {
@@ -29,8 +29,8 @@ test("even value of non existing key", () => {
 });
 
 test("even Value of invalid array", () => {
-  const evenOrders = even(unknownValue(undefined), "__NON__EXISTING__KEY__");
+  const evenOrders = even(anyValue(undefined), "__NON__EXISTING__KEY__");
 
   expect(evenOrders.length).toEqual(0);
 });
-// unknown
+// any

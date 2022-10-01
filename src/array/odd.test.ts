@@ -1,5 +1,5 @@
-import { numbers, orders } from "../../tests/data";
-import { unknownValue } from "../../tests/utils";
+import { numbers, orders } from "tests/data";
+import { anyValue } from "tests/utils";
 import odd from "./odd";
 
 test("Get odd values of the array", () => {
@@ -29,8 +29,8 @@ test("odd value of non existing key", () => {
 });
 
 test("odd Value of invalid array", () => {
-  const oddOrders = odd(unknownValue(undefined), "__NON__EXISTING__KEY__");
+  const oddOrders = odd(anyValue(undefined), "__NON__EXISTING__KEY__");
 
   expect(oddOrders.length).toEqual(0);
 });
-// unknown
+// any

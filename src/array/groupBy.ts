@@ -12,7 +12,7 @@ export default function groupBy(
 ): GenericObject[] {
   const newData: {
     [key: string]: {
-      [key: string]: unknown;
+      [key: string]: any;
       data?: GenericObject[];
     };
   } = {};
@@ -23,7 +23,7 @@ export default function groupBy(
   for (const item of array) {
     const baseKeys: Array<{
       key: string;
-      value: unknown;
+      value: any;
     }> = [];
 
     for (const groupByKey of groupByKeys) {
@@ -39,7 +39,7 @@ export default function groupBy(
 
     if (!newData[dataKey]) {
       const groupedDataList: {
-        [key: string]: unknown;
+        [key: string]: any;
       } = {
         data: [],
       };

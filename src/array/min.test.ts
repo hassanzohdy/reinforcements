@@ -1,5 +1,5 @@
-import { orders } from "../../tests/data";
-import { unknownValue } from "../../tests/utils";
+import { orders } from "tests/data";
+import { anyValue } from "tests/utils";
 import min from "./min";
 
 test("Get min value of the array using the given key", () => {
@@ -35,8 +35,8 @@ test("Min value of non existing key", () => {
 });
 
 test("Min Value of invalid array", () => {
-  const minValue = min(unknownValue(undefined), "__NON__EXISTING__KEY__");
+  const minValue = min(anyValue(undefined), "__NON__EXISTING__KEY__");
 
   expect(minValue).toEqual(0);
 });
-// unknown
+// any

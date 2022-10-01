@@ -3,9 +3,9 @@
  * The key supports dot.notation syntax
  */
 export default function set(
-  object: Record<string, unknown>,
+  object: Record<string, any>,
   key: string,
-  value: unknown,
+  value: any,
 ): object {
   if (!key.includes(".")) {
     object[key] = value;
@@ -25,7 +25,7 @@ export default function set(
       if (typeof currentObject[key] === "undefined") {
         currentObject = currentObject[key] = {};
       } else {
-        currentObject = currentObject[key] as Record<string, unknown>;
+        currentObject = currentObject[key] as Record<string, any>;
       }
     }
   }

@@ -1,5 +1,5 @@
-import { orders } from "../../tests/data";
-import { unknownValue } from "../../tests/utils";
+import { orders } from "tests/data";
+import { anyValue } from "tests/utils";
 import chunk from "./chunk";
 
 test("Chunk array by the given size", () => {
@@ -16,9 +16,9 @@ test("Chunk string by the given size", () => {
 });
 
 test("Invalid given value", () => {
-  expect(chunk(unknownValue(12), 2).length).toEqual(0);
-  expect(chunk(unknownValue(true), 2).length).toEqual(0);
-  expect(chunk(unknownValue(false), 2).length).toEqual(0);
-  expect(chunk(unknownValue(undefined), 2).length).toEqual(0);
-  expect(chunk(unknownValue(null), 2).length).toEqual(0);
+  expect(chunk(anyValue(12), 2).length).toEqual(0);
+  expect(chunk(anyValue(true), 2).length).toEqual(0);
+  expect(chunk(anyValue(false), 2).length).toEqual(0);
+  expect(chunk(anyValue(undefined), 2).length).toEqual(0);
+  expect(chunk(anyValue(null), 2).length).toEqual(0);
 });

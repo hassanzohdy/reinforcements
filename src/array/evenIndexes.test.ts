@@ -1,5 +1,5 @@
-import { numbers } from "../../tests/data";
-import { unknownValue } from "../../tests/utils";
+import { numbers } from "tests/data";
+import { anyValue } from "tests/utils";
 import evenIndexes from "./evenIndexes";
 
 describe("reinforcements/arrays/evenIndexes", () => {
@@ -12,6 +12,6 @@ describe("reinforcements/arrays/evenIndexes", () => {
   });
 
   it("should return an empty array if the given array is not an array", () => {
-    expect(evenIndexes(unknownValue(undefined))).toEqual([]);
+    expect(evenIndexes(anyValue(undefined))).toEqual([]);
   });
 });
