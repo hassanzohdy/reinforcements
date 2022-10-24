@@ -2340,6 +2340,24 @@ const numbers = collect([1, 2, 3, 4, 5, 2]);
 numbers.replace(2, 10); // [1, 10, 3, 4, 5, 2]
 ```
 
+## Chunk
+
+The `chunk` method breaks the collection into multiple, smaller collections of a given size.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5, 6, 7]);
+
+numbers.chunk(4); // [[1, 2, 3, 4], [5, 6, 7]]
+```
+
+The generated chunks will be returned as a new collection instance, if you want to return it as a normal array, pass the second argument to false.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5, 6, 7]);
+
+numbers.chunk(4, false); // [[1, 2, 3, 4], [5, 6, 7]]
+```
+
 ## Counting
 
 ### Getting collection length

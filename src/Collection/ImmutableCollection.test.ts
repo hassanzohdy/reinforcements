@@ -2035,11 +2035,20 @@ describe("reinforcements/ImmutableCollection/listings", () => {
   });
 
   it("should chunk the collection into the given number of groups", () => {
-    const collection = collect([1, 2, 3, 4, 5, 6, 7, 8]).chunk(4);
+    const collection = collect([1, 2, 3, 4, 5, 6, 7, 8]).chunk(4, false);
 
     expect(collection.all()).toEqual([
       [1, 2, 3, 4],
       [5, 6, 7, 8],
+    ]);
+  });
+
+  it("should chunk the collection into given number of groups and return each chunk in a collection", () => {
+    const collection = collect([1, 2, 3, 4, 5, 6, 7, 8]).chunk(4);
+
+    expect(collection.all()).toEqual([
+      collect([1, 2, 3, 4]),
+      collect([5, 6, 7, 8]),
     ]);
   });
 

@@ -1000,8 +1000,14 @@ export default class ImmutableCollection {
   /**
    * Chunk the collection into the given number of groups
    */
-  public chunk(size: number) {
-    return new ImmutableCollection(chunk(this.items, size));
+  public chunk(size: number, returnAsCollection = true) {
+    let chunks = chunk(this.items, size);
+
+    if (returnAsCollection) {
+      chunks = chunks.map(chunk => new ImmutableCollection(chunk));
+    }
+
+    return new ImmutableCollection(chunks);
   }
 
   /**
