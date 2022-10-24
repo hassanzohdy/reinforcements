@@ -8,6 +8,7 @@ describe("reinforcements/ImmutableCollection/create", () => {
     expect(ImmutableCollection.fromIterator(array.values())).toEqual(
       collect(array),
     );
+    expect(ImmutableCollection.fromIterator(array)).toEqual(collect(array));
   });
 
   it("should create a new collection with the given length", () => {
@@ -16,8 +17,19 @@ describe("reinforcements/ImmutableCollection/create", () => {
     );
 
     expect(ImmutableCollection.create(3).length).toEqual(3);
+  });
 
+  it("should create a new collection with the given length and initial value", () => {
     expect(ImmutableCollection.create(3, 1)).toEqual(collect([1, 1, 1]));
+    expect(ImmutableCollection.create(3, 1).length).toEqual(3);
+  });
+  it("should create a new collection with the given length and initial value based on the index", () => {
+    expect(ImmutableCollection.create(3, index => index)).toEqual(
+      collect([0, 1, 2]),
+    );
+    expect(ImmutableCollection.create(3, index => index).all()).toEqual([
+      0, 1, 2,
+    ]);
   });
 });
 
@@ -1002,16 +1014,17 @@ describe("reinforcements/ImmutableCollection/operations", () => {
     expect(spy).toHaveBeenCalledTimes(5);
   });
 
-  it("should perform the given callback over each element in the collection using tap method", () => {
+  it("Tap over the collection and do something with it", () => {
     const collection = collect([1, 2, 3, 4, 5]);
 
     const spy = jest.fn();
 
     collection.tap(spy);
 
-    expect(spy).toHaveBeenCalledTimes(5);
+    expect(spy).toHaveBeenCalledTimes(1);
   });
 });
+
 describe("reinforcements/ImmutableCollection/filtering", () => {
   it("should reject first matched item with the given callback using rejectFirst", () => {
     const collection = collect([1, 2, 3, 4, 5, 3, 5]);
@@ -1020,11 +1033,28 @@ describe("reinforcements/ImmutableCollection/filtering", () => {
       1, 2, 4, 5, 3, 5,
     ]);
   });
+
   it("should reject first matched item with the given callback using exceptFirst", () => {
     const collection = collect([1, 2, 3, 4, 5, 3, 5]);
 
     expect(collection.exceptFirst(item => item === 3).all()).toEqual([
       1, 2, 4, 5, 3, 5,
+    ]);
+  });
+
+  it('should reject last matched item with the given callback using "exceptLast"', () => {
+    const collection = collect([1, 2, 3, 4, 5, 3, 5]);
+
+    expect(collection.exceptLast(item => item === 3).all()).toEqual([
+      1, 2, 3, 4, 5, 5,
+    ]);
+  });
+
+  it('should reject last matched item with the given callback using "rejectLast"', () => {
+    const collection = collect([1, 2, 3, 4, 5, 3, 5]);
+
+    expect(collection.rejectLast(item => item === 3).all()).toEqual([
+      1, 2, 3, 4, 5, 5,
     ]);
   });
 
@@ -1096,12 +1126,6 @@ describe("reinforcements/ImmutableCollection/slicing", () => {
     expect(collection.skipTo(3).all()).toEqual([4, 5]);
   });
 
-  it("should skip the given number of items using skipFirst", () => {
-    const collection = collect([1, 2, 3, 4, 5]);
-
-    expect(collection.skipFirst(3).equals([4, 5])).toBeTruthy();
-  });
-
   it("should skip last the given number of items", () => {
     const collection = collect([1, 2, 3, 4, 5]);
 
@@ -1160,6 +1184,12 @@ describe("reinforcements/ImmutableCollection/random", () => {
 
     expect(collection.random()).toBeGreaterThanOrEqual(1);
     expect(collection.random()).toBeLessThanOrEqual(5);
+  });
+
+  it("should return multiple random values based on the given number", () => {
+    const collection = collect([1, 2, 3, 4, 5]);
+
+    expect(collection.random(2).length).toEqual(2);
   });
 
   it("should shuffle the collection", () => {
@@ -1568,7 +1598,7 @@ describe("reinforcements/ImmutableCollection/getSingleValue", () => {
 
     expect(collection.last()).toBe(5);
   });
-  
+
   it("should return undefined when calling last on empty array", () => {
     const collection = collect([]);
 
@@ -1585,6 +1615,16 @@ describe("reinforcements/ImmutableCollection/getSingleValue", () => {
     const collection = collect([1, 2, 3, 4, 5]);
 
     expect(collection.index(0)).toBe(1);
+  });
+
+  it("should return the value of the given index and key", () => {
+    const collection = collect([
+      { name: "Ahmed", age: 20 },
+      { name: "Mohamed", age: 25 },
+      { name: "Ali", age: 30 },
+    ]);
+
+    expect(collection.get("2.name")).toBe("Ali");
   });
 
   it("should return the value of the given key", () => {
@@ -1662,7 +1702,7 @@ describe("reinforcements/ImmutableCollection/listings", () => {
   });
 
   it("should return return values that are in the given indexes", () => {
-    const collection = collect([1, 2, 3, 4, 5, 6, 7]).only(0, 2, 4);
+    const collection = collect([1, 2, 3, 4, 5, 6, 7]).onlyIndexes(0, 2, 4);
 
     expect(collection.all()).toEqual([1, 3, 5]);
   });
@@ -1823,17 +1863,6 @@ describe("reinforcements/ImmutableCollection/listings", () => {
     ]);
   });
 
-  it("should create a new collection from the given key from the first element", () => {
-    const collection = collect([
-      {
-        id: 1,
-        data: ["Hasan", "Ali", "Mohamed"],
-      },
-    ]).collectFromFirst("data");
-
-    expect(collection.all()).toEqual(["Hasan", "Ali", "Mohamed"]);
-  });
-
   it("should create a new collection from the given key from the given element index", () => {
     const collection = collect([
       {
@@ -1848,9 +1877,38 @@ describe("reinforcements/ImmutableCollection/listings", () => {
         id: 3,
         data: ["Hassan", "Zohdy", "Hassan"],
       },
-    ]).collectFrom(2, "data");
+    ]).collectFromKey(2, "data");
 
     expect(collection.all()).toEqual(["Hassan", "Zohdy", "Hassan"]);
+  });
+
+  it("should collect all values from the given key from each element", () => {
+    const collection = collect([
+      {
+        id: 1,
+        data: ["Hasan", "Ali", "Mohamed"],
+      },
+      {
+        id: 2,
+        data: ["Ahmed", "Sayed", "Khaled"],
+      },
+      {
+        id: 3,
+        data: ["Hassan", "Zohdy", "Hassan"],
+      },
+    ]).collectFrom("data");
+
+    expect(collection.all()).toEqual([
+      "Hasan",
+      "Ali",
+      "Mohamed",
+      "Ahmed",
+      "Sayed",
+      "Khaled",
+      "Hassan",
+      "Zohdy",
+      "Hassan",
+    ]);
   });
 
   it("should create a new collection from the given key which can combine the index and the key as well in one argument", () => {
@@ -1867,7 +1925,7 @@ describe("reinforcements/ImmutableCollection/listings", () => {
         id: 3,
         data: ["Hassan", "Zohdy", "Hassan"],
       },
-    ]).collectFrom("2.data");
+    ]).collectFromKey("2.data");
 
     expect(collection.all()).toEqual(["Hassan", "Zohdy", "Hassan"]);
   });
@@ -2415,9 +2473,16 @@ describe("reinforcements/ImmutableCollection/math", () => {
       { name: "Ahmed", age: 20 },
       { name: "Mohamed", age: 25 },
       { name: "Ali", age: 30 },
+      { name: "Naser" },
     ]);
 
     expect(collection.count("age")).toEqual(3);
+  });
+
+  it("should count the values in the array", () => {
+    const collection = collect([1, 2, 3, 4, 5, 2]);
+
+    expect(collection.countValue(2)).toEqual(2);
   });
 
   it("should count the occurrences of values for the given key", () => {

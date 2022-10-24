@@ -14,11 +14,42 @@ or using `npm`
 
 ## Usage
 
+## Collections
+
+Reinforcements is shipped with a powerful collection class that can be used to manipulate arrays of objects, here are some example of usage.
+
+```ts
+import { collect } from '@mongez/reinforcements';
+
+const collection = collect([
+    { name: 'John', age: 20 },
+    { name: 'Jane', age: 25 },
+    { name: 'Jack', age: 30 },
+]);
+
+// get the first item
+const firstItem = collection.first();
+
+// get the last item
+const lastItem = collection.last();
+
+// get the item at index 1
+const itemAtIndex1 = collection.at(1);
+
+// get users with age greater than 25
+const users = collection.where('age', '>', 25);
+
+// get users with age greater than 25 and less than 30
+const users = collection.where('age', '>', 25).where('age', '<', 30);
+```
+
+You can see the entire documentation in [Collection](./docs/Collection.md) Page.
+
 ## Working with objects
 
 Reinforcements is shipped with `Obj` object which provides good utilities for working with objects.
 
-```js
+```ts
 import { Obj } from "@mongez/reinforcements";
 
 let user = {
@@ -50,15 +81,23 @@ As we can see in the previous example, we can get values from objects using **do
 
 If the key is missing in the object, we may return default value instead.
 
-```js
+```ts
 Obj.get(user, "email", "no-email"); // no-email
+```
+
+You can also import `get` function directly from the package.
+
+```ts
+import { get } from "@mongez/reinforcements";
+
+get(user, "id"); // 1
 ```
 
 ### Setting value in object
 
 This works exactly but `Obj.set(object, key, value)` will set the value to the given object, which means it won't return **a new object** but the same object.
 
-```js
+```ts
 import { Obj } from "@mongez/reinforcements";
 
 let user = {
@@ -115,13 +154,21 @@ The final user object will be:
 }
 ```
 
+You can also import `set` function directly from the package.
+
+```ts
+import { set } from "@mongez/reinforcements";
+
+set(user, "email", "hassanzohdy@gmail.com");
+```
+
 ### Merging objects deeply
 
 Another good feature from `Obj` object is to merge objects deeply.
 
-You may use `Obj.merge` or import `objMerge` directly from the package.
+You may use `Obj.merge` or import `merge` directly from the package.
 
-```js
+```ts
 import { Obj } from "@mongez/reinforcements";
 
 const user = {
@@ -154,7 +201,7 @@ Final output:
 
 But why not simply using the following syntax?
 
-```js
+```ts
 const user = {
   id: 1,
   name: "Hasan Zohdy",
@@ -174,7 +221,7 @@ const userWithJob = Object.assign({}, user, userJob);
 
 In the previous example, that would be the proper approach as the merging depth here is simple, but let's take another example.
 
-```js
+```ts
 import { Obj } from "@mongez/reinforcements";
 
 const user = {
@@ -209,7 +256,7 @@ The output will be:
 
 But when using spread syntax or `Object.assign` will give us a different value.
 
-```js
+```ts
 const user = {
   id: 1,
   name: "Hasan Zohdy",
@@ -239,11 +286,19 @@ const userWithJob = Object.assign({}, user, userJob);
 }
 ```
 
+You can also import `merge` function directly from the package.
+
+```ts
+import { merge } from "@mongez/reinforcements";
+
+const userWithJob = merge(user, userJob);
+```
+
 ### Clone objects
 
-You can also make a **deep copy** for the given object using `Obj.clone` or `objClone`
+You can also make a **deep copy** for the given object using `Obj.clone` or `clone`
 
-```js
+```ts
 const user = {
   id: 1,
   name: {
@@ -262,7 +317,7 @@ console.log(user.name.first); // Ali
 
 Now using `Obj.clone`
 
-```js
+```ts
 import { Obj } from "@mongez/reinforcements";
 
 const user = {
@@ -285,7 +340,7 @@ console.log(user.name.first); // Hasan
 
 To get a new object from the base object with only list of keys, use `Obj.only(object: object, keys: string[]): object`
 
-```js
+```ts
 import { Obj } from "@mongez/reinforcements";
 
 const user = {
@@ -309,11 +364,19 @@ const user = {
 const simpleUserData = Obj.only(user, ["id", "name", "email"]); // {id: 1, name: 'Hasan Zohdy', email: 'hassanzohdy@gmail.com'}
 ```
 
+You can also import `only` function directly from the package.
+
+```ts
+import { only } from "@mongez/reinforcements";
+
+const simpleUserData = only(user, ["id", "name", "email"]);
+```
+
 ### Getting all object except for certain keys
 
 This is the reverse of `obj.only`, which returns the entire object except for the given keys.
 
-```js
+```ts
 import { Obj } from "@mongez/reinforcements";
 
 const user = {
@@ -337,11 +400,19 @@ const user = {
 const simpleUserData = Obj.except(user, ["id", "address", "email"]); // { name: 'Hasan Zohdy', email: 'hassanzohdy@gmail.com', job: {title: 'Software Engineer'}}
 ```
 
+You can also import `except` function directly from the package.
+
+```ts
+import { except } from "@mongez/reinforcements";
+
+const simpleUserData = except(user, ["id", "address", "email"]);
+```
+
 ### Flatten objects
 
 We can flatten any big fat objects into one object, with only one dimension.
 
-```js
+```ts
 import { Obj } from "@mongez/reinforcements";
 
 const user = {
@@ -381,7 +452,7 @@ Output:
 
 You may set the separator by passing second argument to the function.
 
-```js
+```ts
 import { Obj } from "@mongez/reinforcements";
 
 const user = {
@@ -419,11 +490,19 @@ Output:
 }
 ```
 
+You can also import `flatten` function directly from the package.
+
+```ts
+import { flatten } from "@mongez/reinforcements";
+
+console.log(flatten(user));
+```
+
 ### Sort object by its keys
 
 To sort objects based on their keys alphabets recursively use `Obj.sort(object: object, recursive: boolean = true): object` function.
 
-```js
+```ts
 import { Obj } from "@mongez/reinforcements";
 
 const user = {
@@ -471,7 +550,7 @@ Output:
 
 To sort the object only the first level, pass the second argument as false.
 
-```js
+```ts
 import { Obj } from "@mongez/reinforcements";
 
 const user = {
@@ -517,6 +596,48 @@ Output:
 }
 ```
 
+You can also import `sort` function directly from the package.
+
+```ts
+import { sort } from "@mongez/reinforcements";
+
+console.log(sort(user));
+```
+
+## Equal Values
+
+Using `areEqual` function will check if the given two values equal to each other, it will validate against any type such as objects, arrays, strings, numbers, booleans, null, undefined, symbols.
+
+```ts
+import { areEqual } from "@mongez/reinforcements";
+
+console.log(areEqual(1, 1)); // true
+
+console.log(areEqual("1", 1)); // false
+
+console.log(areEqual("1", "1")); // true
+
+console.log(areEqual(true, true)); // true
+
+console.log(areEqual(true, false)); // false
+
+console.log(areEqual(null, null)); // true
+
+console.log(areEqual(undefined, undefined)); // true
+
+console.log(areEqual(Symbol("1"), Symbol("1"))); // false
+
+console.log(areEqual(Symbol("1"), Symbol("2"))); // false
+
+console.log(areEqual([1, 2, 3], [1, 2, 3])); // true
+
+console.log(areEqual([1, 2, 3], [1, 2, 3, 4])); // false
+
+console.log(areEqual({ id: 1 }, { id: 1 })); // true
+
+console.log(areEqual({ id: 1 }, { id: 2 })); // false
+```
+
 ## Generating Random Values
 
 Another good feature is `Random` object, which allows us to generate variant random values of different types.
@@ -525,7 +646,7 @@ Another good feature is `Random` object, which allows us to generate variant ran
 
 To generate a random string use `Random.string(length: number = 32): string` method.
 
-```js
+```ts
 import { Random } from "@mongez/reinforcements";
 
 Random.string(); // 4G8JyA4uM5YVMbkqVaoYnW6GzPcC64Fy
@@ -533,7 +654,7 @@ Random.string(); // 4G8JyA4uM5YVMbkqVaoYnW6GzPcC64Fy
 
 To generate a random string with certain length, just pass the length value to the function.
 
-```js
+```ts
 import { Random } from "@mongez/reinforcements";
 
 Random.string(12); // P057C06VPwxl
@@ -543,7 +664,7 @@ Random.string(12); // P057C06VPwxl
 
 To generate a random integer use `Random.int(min: number = 1, max: number = 9999999): number` method.
 
-```js
+```ts
 import { Random } from "@mongez/reinforcements";
 
 Random.int(); // 7387115
@@ -553,7 +674,7 @@ Random.int(); // 691593
 
 To set min value, pass first argument with minimum value
 
-```js
+```ts
 import { Random } from "@mongez/reinforcements";
 
 Random.int(10); // 7387115
@@ -561,17 +682,19 @@ Random.int(10); // 7387115
 
 To set min and max value, pass second argument as well with maximum value
 
-```js
+```ts
 import { Random } from "@mongez/reinforcements";
 
 Random.int(10, 100); // 36
 ```
 
+> `Random.integer` is an alias to `Random.int`.
+
 ### Generate random html id
 
 This function will generate a valid random html id string `Random.id(length: number = 6, startsWith: string = "el-"): string`.
 
-```js
+```ts
 import { Random } from "@mongez/reinforcements";
 
 Random.id(); // el-SDFefdvgtr2e3qw
@@ -584,7 +707,7 @@ You may set the length as first argument and/or set the id prefix as second argu
 
 To generate random boolean value use `Random.bool(): boolean` or `Random.boolean(): boolean`
 
-```js
+```ts
 import { Random } from "@mongez/reinforcements";
 
 Random.bool(); // true
@@ -595,11 +718,40 @@ Random.boolean(); // true
 Random.boolean(); // false
 ```
 
+### Generate random color
+
+To generate random color use `Random.color(): string` method.
+
+```ts
+import { Random } from "@mongez/reinforcements";
+
+Random.color(); // #f2f2f2
+```
+
+### Generate random date
+
+To generate random date use `Random.date(min: Date = new Date(1970, 1, 1), max: Date = new Date()): Date` method.
+
+```ts
+import { Random } from "@mongez/reinforcements";
+
+Random.date(); // 2020-12-12T12:12:12.000Z
+
+// Get random date between two dates
+Random.date(new Date(2010, 1, 1), new Date(2020, 1, 1)); // 2015-12-12T12:12:12.000Z
+
+// Get random date that is higher than the given date
+Random.date(new Date(2010, 1, 1)); // 2015-12-12T12:12:12.000Z
+
+// Get random date that is lower than the given date
+Random.date(null, new Date(2010, 1, 1)); // 2005-12-12T12:12:12.000Z
+```
+
 ## Round float numbers
 
 To round float numbers, use `round(value: number, precision: number = 2): number`.
 
-```js
+```ts
 import { round } from "@mongez/reinforcements";
 
 console.log(round(10.0001)); // 10
@@ -608,7 +760,7 @@ console.log(round(10.6987894849)); // 10.69
 console.log(round(10.6987894849, 3)); // 10.698
 ```
 
-## Working With Strings (Str)
+## Working With Strings
 
 The following list defines all available string utilities
 
@@ -636,7 +788,7 @@ The following list defines all available string utilities
 
 Capitalize each word in string Separated by whitespace `capitalize(string: string): string`.
 
-```js
+```ts
 import { capitalize } from "@mongez/reinforcements";
 
 const words = "hello world";
@@ -648,7 +800,7 @@ console.log(capitalize(words)); // Hello World
 
 Convert string to camel case, each word in string Separated by **whitespace** **underscores** or **dashes** `toCamelCase(string: string, separator: string = "\\s+|-|/|_|\\."): string`.
 
-```js
+```ts
 import { toCamelCase } from "@mongez/reinforcements";
 
 const words = "hello world";
@@ -664,7 +816,7 @@ Convert string to snake case, each word in string Separated by **whitespace** or
 
 The final output of the text will be all letters in lower case string separated by \_ **underscores**.
 
-```js
+```ts
 import { toSnakeCase } from "@mongez/reinforcements";
 
 const words = "hello world";
@@ -678,7 +830,7 @@ Convert string to studly case, each word in string Separated by **whitespace**, 
 
 The final output will be capitalizing each word and glue it together without any separators such as **whitespace**, **under scores** or **dashes**.
 
-```js
+```ts
 import { toStudlyCase } from "@mongez/reinforcements";
 
 const words = "hello world";
@@ -690,7 +842,7 @@ console.log(toStudlyCase(words)); // HelloWorld
 
 Capitalize only first word of string `ucfirst(string: string): string`.
 
-```js
+```ts
 import { ucfirst } from "@mongez/reinforcements";
 
 const words = "hello world";
@@ -702,7 +854,7 @@ console.log(ucfirst(words)); // Hello world
 
 Convert dot notation syntax to valid html input name `toInputName(string: string): string`.
 
-```js
+```ts
 import { toInputName } from "@mongez/reinforcements";
 
 const name = "user.name";
@@ -717,7 +869,7 @@ Get the last extension in the string, the string that is suffix to last dot `.`.
 
 `extension(string: string): string`
 
-```js
+```ts
 import { extension } from "@mongez/reinforcements";
 
 const file = "my-image.png";
@@ -731,7 +883,7 @@ This function will cut off the string when characters reach limit, and append th
 
 `readMoreChars(string: string, length: number, readMoreDots: string = '...'): string`
 
-```js
+```ts
 import { readMoreChars } from "@mongez/reinforcements";
 
 const string = "This is a fine words list";
@@ -756,7 +908,7 @@ This works based on total number of whitespace in the string.
 
 `readMoreWords(string: string, length: number, readMoreDots: string = '...'): string`
 
-```js
+```ts
 import { readMoreWords } from "@mongez/reinforcements";
 
 const string = "This is a fine words list";
@@ -779,7 +931,7 @@ Remove the first matched needle to the given string.
 
 `removeFirst(string: string, needle: string): string`
 
-```js
+```ts
 import { removeFirst } from "@mongez/reinforcements";
 
 const words = "welcome home buddy, your are not safe at your home!";
@@ -793,7 +945,7 @@ Replace the first matched needle to the given string.
 
 `replaceFirst(string:string, needle: string, replacement: string): string`
 
-```js
+```ts
 import { replaceFirst } from "@mongez/reinforcements";
 
 const words = "welcome home buddy, your are not safe at your home!";
@@ -807,7 +959,7 @@ Replace the last matched needle to the given string.
 
 `replaceLast(string:string, needle: string, replacement: string): string`
 
-```js
+```ts
 import { replaceLast } from "@mongez/reinforcements";
 
 const words = "welcome home buddy, your are not safe at your home!";
@@ -821,7 +973,7 @@ Replace all matched words to the given string.
 
 `replaceAll(string: string, searchText:string, replacement: string): string`
 
-```js
+```ts
 import { replaceAll } from "@mongez/reinforcements";
 
 const words = "welcome home buddy, your are not safe at your home!";
@@ -835,7 +987,7 @@ Remove the last matched needle to the given string.
 
 `removeLast(string: string, needle: string): string`
 
-```js
+```ts
 import { removeLast } from "@mongez/reinforcements";
 
 const words = "welcome home buddy, your are not safe at your home!";
@@ -849,7 +1001,7 @@ Count repeats of a needle in the given string.
 
 `repeatsOf(string: string, needle: string, caseSensitive: boolean = true): number`
 
-```js
+```ts
 import { repeatsOf } from "@mongez/reinforcements";
 
 const words = "welcome home buddy, your are not safe at your home!";
@@ -859,7 +1011,7 @@ console.log(repeatsOf(words, "home")); // 2
 
 You may also detect number of repetitions ignoring case sensitive.
 
-```js
+```ts
 import { repeatsOf } from "@mongez/reinforcements";
 
 // note the first Home is capitalized
@@ -877,7 +1029,7 @@ Trim value from the start and the end of a string.
 
 `trim(string: string, needle: string = ' '): string`
 
-```js
+```ts
 import { trim } from "@mongez/reinforcements";
 
 const string = " space at the start and at the end ";
@@ -889,7 +1041,7 @@ But why not use [String.trim()](https://developer.mozilla.org/en-US/docs/Web/Jav
 
 Remove certain value:
 
-```js
+```ts
 import { trim } from "@mongez/reinforcements";
 
 const string = "/home/";
@@ -903,7 +1055,7 @@ Trim value from the start of a string.
 
 `ltrim(string: string, needle: string = ' '): string`
 
-```js
+```ts
 import { ltrim } from "@mongez/reinforcements";
 
 const string = " A space at the start and keep space at the end ";
@@ -913,7 +1065,7 @@ console.log(ltrim(string)); // "A space at the start and keep space at the end "
 
 Remove certain value:
 
-```js
+```ts
 import { ltrim } from "@mongez/reinforcements";
 
 const string = "home/";
@@ -927,7 +1079,7 @@ Trim value from the end of a string.
 
 `rtrim(string: string, needle: string = ' '): string`
 
-```js
+```ts
 import { rtrim } from "@mongez/reinforcements";
 
 const string = " Keep A space at the start and remove space at the end ";
@@ -937,7 +1089,7 @@ console.log(rtrim(string)); // " Keep A space at the start and remove space at t
 
 Remove certain value:
 
-```js
+```ts
 import { ltrim } from "@mongez/reinforcements";
 
 const string = "home/";
@@ -951,7 +1103,7 @@ Determine if the string starts with Arabic letter.
 
 `startsWithArabic(text: string, trimmed: boolean = true): boolean {`
 
-```js
+```ts
 import { startsWithArabic } from "@mongez/reinforcements";
 
 const string = "English Text";
@@ -1007,7 +1159,7 @@ function sendEmail(e: any) {
   // wait 3 seconds before calling the function
   debounce(() => {
     sendEmailApi(e.target);
-  }, 3000);
+  }, 150);
 }
 
 // If user clicked 5 times, it will make only one ajax call
@@ -1019,8 +1171,15 @@ function sendEmail(e: any) {
 
 To run tests run `npm run test` or `yarn test`
 
+## TODO
+
+If you want to contribute to this package, you can check the [todo list page](./docs/todo.md).
+
 ## Change Log
 
+- 2.0.0 (24 Oct 2022)
+  - Fully refactored the code.
+  - Added Immutable Collections class.
 - 1.0.28 (11 Aug 2022)
   - Fixed object merge call.
 - 1.0.27 (11 Aug 2022)

@@ -13,7 +13,10 @@ export { default as pluck } from "./array/pluck";
 export { default as pushUnique } from "./array/pushUnique";
 export { default as sum } from "./array/sum";
 export { default as unique } from "./array/unique";
-export { collect, default as ImmutableCollection } from "./Collection/ImmutableCollection";
+export {
+  collect,
+  default as ImmutableCollection,
+} from "./Collection/ImmutableCollection";
 export { default as areEqual } from "./mixed/areEqual/areEqual";
 export { default as clone } from "./mixed/clone/clone";
 export { default as shuffle } from "./mixed/shuffle/shuffle";
@@ -42,7 +45,7 @@ export { default as replaceLast } from "./string/replaceLast";
 export { default as rtrim } from "./string/rtrim";
 export {
   ARABIC_PATTERN,
-  default as startsWithArabic
+  default as startsWithArabic,
 } from "./string/startsWithArabic";
 export { default as toCamelCase } from "./string/toCamelCase";
 export { default as toInputName } from "./string/toInputName";
@@ -52,4 +55,3 @@ export { default as trim } from "./string/trim";
 export { default as ucfirst } from "./string/ucfirst";
 export { default as debounce } from "./utils/debounce";
 export { default as escapeRegex } from "./utils/escapeRegex";
-

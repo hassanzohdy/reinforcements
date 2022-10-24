@@ -39,3 +39,18 @@ users.dateFormat('birthday', 'DD-MM-YYYY'); // [{ name: 'John', birthday: '01-01
 ```
 
 > Kindly note that the value of the date must be a valid date that the date formatter accepts.
+
+## Where
+
+Adding feature to filter collection by passing an object of key and value.
+
+```ts
+const users = collect([
+    { name: 'John', age: 20 },
+    { name: 'Jane', age: 21 },
+    { name: 'Joker', age: 20 },
+    { name: 'Jack', age: 22 },
+]);
+
+users.where({ age: 20 }); // [{ name: 'John', age: 20 }, { name: 'Joker', age: 20 }]
+```

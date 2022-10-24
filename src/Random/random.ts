@@ -53,7 +53,15 @@ const Random = {
   /**
    * Get random date
    */
-  date(): Date {
+  date(minDate?: Date, maxDate?: Date): Date {
+    if (minDate && !maxDate) {
+      return new Date(Random.int(minDate.getTime(), Date.now()));
+    }
+
+    if (!minDate && maxDate) {
+      return new Date(Random.int(0, maxDate.getTime()));
+    }
+
     const now = Date.now();
     return new Date(Random.int(now - 100000000000, now));
   },

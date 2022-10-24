@@ -97,8 +97,6 @@ describe("reinforcements/object/flat", () => {
       { name: "Ali", age: 30, numbers: [1, 2] },
     ];
 
-    console.log(flatten(data, ".", true));
-
     expect(flatten(data, ".", true)).toEqual({
       "0": {
         name: "Ahmed",

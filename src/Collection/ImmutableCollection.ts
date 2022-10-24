@@ -57,7 +57,15 @@ export default class ImmutableCollection {
    * Create an empty collection with the given length
    */
   public static create(length: number, initialValue?: any) {
-    return new ImmutableCollection(Array.from({ length }, () => initialValue));
+    return new ImmutableCollection(
+      Array.from({ length }, (_, index) => {
+        if (typeof initialValue === "function") {
+          return initialValue(index);
+        }
+
+        return initialValue;
+      }),
+    );
   }
 
   /**
@@ -77,7 +85,7 @@ export default class ImmutableCollection {
   /**
    * Get items in the given indexes
    */
-  public only(...indexes: number[]) {
+  public onlyIndexes(...indexes: number[]) {
     return new ImmutableCollection(indexes.map(index => this.items[index]));
   }
 
@@ -587,6 +595,20 @@ export default class ImmutableCollection {
   }
 
   /**
+   * Count total occurrence of the given value
+   */
+  public countValue(value: any) {
+    // lets count it using a reducer
+    return this.items.reduce((total, item) => {
+      if (item === value) {
+        return total + 1;
+      } else {
+        return total;
+      }
+    }, 0);
+  }
+
+  /**
    * Count by the given key total occurrences of each value
    */
   public countBy(key: string) {
@@ -605,6 +627,13 @@ export default class ImmutableCollection {
    */
   public first() {
     return this.items[0] ?? undefined;
+  }
+
+  /**
+   * Get value using dot notation by the given key that starts with the index
+   */
+  public get(key: string) {
+    return get(this.items, key);
   }
 
   /**
@@ -893,7 +922,6 @@ export default class ImmutableCollection {
 
   /**
    * Skip last items while matching the given callback
-   *
    */
   public skipLastWhile(callback: Parameters<typeof Array.prototype.filter>[0]) {
     // [1, 2, 3, 4, 5] skip last while (item) => item > 3 should return [1, 2, 3]
@@ -938,6 +966,35 @@ export default class ImmutableCollection {
    */
   public exceptFirst(callback: Parameters<typeof Array.prototype.filter>[0]) {
     return this.rejectFirst(callback);
+  }
+
+  /**
+   * Get all items except the last matched callback
+   */
+  public rejectLast(callback: Parameters<typeof Array.prototype.filter>[0]) {
+    // return all items except last matched callback
+    const newItems: any[] = [];
+
+    let found = false;
+
+    for (let i = this.items.length - 1; i >= 0; i--) {
+      const item = this.items[i];
+      if (!found && callback(item, i, this.items) === true) {
+        found = true;
+        continue;
+      } else {
+        newItems.push(item);
+      }
+    }
+
+    return new ImmutableCollection(newItems.reverse());
+  }
+
+  /**
+   * @alias rejectLast
+   */
+  public exceptLast(callback: Parameters<typeof Array.prototype.filter>[0]) {
+    return this.rejectLast(callback);
   }
 
   /**
@@ -1001,13 +1058,6 @@ export default class ImmutableCollection {
    */
   public skip(number: number) {
     return new ImmutableCollection(this.items.slice(number));
-  }
-
-  /**
-   * @alias skip
-   */
-  public skipFirst(number: number) {
-    return this.skip(number);
   }
 
   /**
@@ -1194,10 +1244,12 @@ export default class ImmutableCollection {
   }
 
   /**
-   * @alias forEach
+   * Tap into the collection and run a callback.
    */
-  public tap(callback: Parameters<typeof Array.prototype.forEach>[0]): this {
-    return this.forEach(callback);
+  public tap(callback: (collection: ImmutableCollection) => any): this {
+    callback(this);
+
+    return this;
   }
 
   /**
@@ -1667,19 +1719,31 @@ export default class ImmutableCollection {
   }
 
   /**
-   * Return a new collection given key from the given index
+   * Collect all values from the given key and return it in a new collection
    */
-  public collectFrom(key: string);
-  public collectFrom(index: number | string, key?: string);
-  public collectFrom(...args) {
-    return new ImmutableCollection(get(this.items, args.join(".")));
+  public collectFrom(key: string) {
+    const items: any[] = [];
+
+    this.items.forEach(item => {
+      const value = get(item, key);
+
+      if (Array.isArray(value)) {
+        items.push(...value);
+      } else {
+        items.push(value);
+      }
+    });
+
+    return new ImmutableCollection(items);
   }
 
   /**
-   * Return a new collection given key from the first element
+   * Return a new collection given key from the given index
    */
-  public collectFromFirst(key: string) {
-    return this.collectFrom(0, key);
+  public collectFromKey(key: string);
+  public collectFromKey(index: number | string, key?: string);
+  public collectFromKey(...args) {
+    return new ImmutableCollection(get(this.items, args.join(".")));
   }
 
   /**

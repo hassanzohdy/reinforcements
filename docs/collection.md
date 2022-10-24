@@ -2,6 +2,8 @@
 
 Collections are immutable arrays of values. They are similar to JavaScript arrays, besides that, it provides you with numerous helpers methods.
 
+The collection has over 100 methods that are divided into categories. it can be used to work with Numbers, Objects, Strings, Filtering, Sorting, Grouping, Merging and other tons of features.
+
 > This is a new feature in v2, it is part of the Reinforcements package.
 
 ## Usage
@@ -10,6 +12,14 @@ Collections are immutable arrays of values. They are similar to JavaScript array
 import { collect } from "@mongez/reinforcements";
 
 const numbers = collect([1, 2, 3, 4, 5]);
+```
+
+We can also import `ImmutableCollection` class to create a collection instance.
+
+```ts
+import { ImmutableCollection } from "@mongez/reinforcements";
+
+const numbers = new ImmutableCollection([1, 2, 3, 4, 5]);
 ```
 
 ## Immutable Collection
@@ -609,7 +619,6 @@ users.where("name", "is a", Member); // [new Member()]
 ### `not is a` and `!is a` and `!instance of`
 
 ```ts
-
 class Member {
     id = 1;
     name: 'John'
@@ -650,9 +659,9 @@ const users = collect([
 users.where("name", "not exists"); // [{id: 4, age: 31}]
 ```
 
-### First where
+### whereIn
 
-The `firstWhere` receives the same exact arguments as `where` but it returns the first item that matches the condition.
+Alias to `where('column', 'in', values)`.
 
 ```ts
 const users = collect([
@@ -661,23 +670,472 @@ const users = collect([
     { id: 3, name: "Jill" },
 ]);
 
-users.firstWhere("name", "John"); // { id: 1, name: "John" }
+users.whereIn("name", ["John", "Jill"]); // [{ id: 1, name: "John" }, { id: 3, name: "Jill" }]
 ```
 
-### Last where
+### whereNotIn
 
-The `lastWhere` receives the same exact arguments as `where` but it returns the last item that matches the condition.
+Alias to `where('column', 'not in', values)`.
 
 ```ts
 const users = collect([
     { id: 1, name: "John" },
     { id: 2, name: "Jone" },
-    { id: 3, name: "John" },
-    { id: 4, name: "Jill" },
+    { id: 3, name: "Jill" },
 ]);
 
-users.lastWhere("name", "John"); // { id: 3, name: "John" }
+users.whereNotIn("name", ["John", "Jill"]); // [{ id: 2, name: "Jone" }]
 ```
+
+### whereNull
+
+Alias to `where('column', 'null')`.
+
+```ts
+const users = collect([
+    { id: 1, name: "John" },
+    { id: 2, name: null },
+    { id: 3, name: "Jill" },
+]);
+
+users.whereNull("name"); // [{ id: 2, name: null }]
+```
+
+### whereNotNull
+
+Alias to `where('column', 'not null')`.
+
+```ts
+const users = collect([
+    { id: 1, name: "John" },
+    { id: 2, name: null },
+    { id: 3, name: "Jill" },
+]);
+
+users.whereNotNull("name"); // [{ id: 1, name: "John" }, { id: 3, name: "Jill" }]
+```
+
+### whereEmpty
+
+Alias to `where('column', 'empty')`.
+
+```ts
+const users = collect([
+    { id: 1, name: "John" },
+    { id: 2, name: "" },
+    { id: 3, name: "Jill" },
+]);
+
+users.whereEmpty("name"); // [{ id: 2, name: "" }]
+```
+
+### whereNotEmpty
+
+Alias to `where('column', 'not empty')`.
+
+```ts
+const users = collect([
+    { id: 1, name: "John" },
+    { id: 2, name: "" },
+    { id: 3, name: "Jill" },
+]);
+
+users.whereNotEmpty("name"); // [{ id: 1, name: "John" }, { id: 3, name: "Jill" }]
+```
+
+`heavy` is an alias to `whereNotEmpty`.
+
+```ts
+const users = collect([
+    { id: 1, name: "John" },
+    { id: 2, name: "" },
+    { id: 3, name: "Jill" },
+]);
+
+users.heavy("name"); // [{ id: 1, name: "John" }, { id: 3, name: "Jill" }]
+```
+
+### whereUndefined
+
+Alias to `where('column', 'undefined')`.
+
+```ts
+const users = collect([
+    { id: 1, name: "John" },
+    { id: 2, name: undefined },
+    { id: 3, name: "Jill" },
+]);
+
+users.whereUndefined("name"); // [{ id: 2, name: undefined }]
+```
+
+### whereNotUndefined
+
+Alias to `where('column', 'not undefined')`.
+
+```ts
+const users = collect([
+    { id: 1, name: "John" },
+    { id: 2, name: undefined },
+    { id: 3, name: "Jill" },
+]);
+
+users.whereNotUndefined("name"); // [{ id: 1, name: "John" }, { id: 3, name: "Jill" }]
+```
+
+### whereBetween
+
+Alias to `where('column', 'between', [min, max])`.
+
+```ts
+const users = collect([
+    { id: 1, age: 18 },
+    { id: 2, age: 20 },
+    { id: 3, age: 25 },
+]);
+
+users.whereBetween("age", [18, 25]); // [{ id: 1, age: 18 }, { id: 2, age: 20 }, { id: 3, age: 25 }]
+```
+
+### whereNotBetween
+
+Alias to `where('column', 'not between', [min, max])`.
+
+```ts
+const users = collect([
+    { id: 1, age: 18 },
+    { id: 2, age: 20 },
+    { id: 3, age: 25 },
+]);
+
+users.whereNotBetween("age", [18, 25]); // []
+```
+
+### whereNot
+
+Alias to `where('column', 'not', value)`.
+
+```ts
+const users = collect([
+    { id: 1, age: 18 },
+    { id: 2, age: 20 },
+    { id: 3, age: 25 },
+]);
+
+users.whereNot("age", 20); // [{ id: 1, age: 18 }, { id: 3, age: 25 }]
+```
+
+### whereExists
+
+Alias to `where('column', 'exists')`.
+
+```ts
+const users = collect([
+    { id: 1, age: 18 },
+    { id: 2, age: 20 },
+    { id: 3},
+]);
+
+users.whereExists("age"); // [{ id: 1, age: 18 }, { id: 2, age: 20 }]
+```
+
+### whereNotExists
+
+Alias to `where('column', 'not exists')`.
+
+```ts
+const users = collect([
+    { id: 1, age: 18 },
+    { id: 2, age: 20 },
+    { id: 3},
+]);
+
+users.whereNotExists("age"); // [{ id: 3}]
+```
+
+## Group By
+
+The `groupBy` method groups the collection's items by a given key.
+
+```ts
+const users = collect([
+    { name: "Ahmed", age: 20 },
+    { name: "Mohamed", age: 25 },
+    { name: "Ali", age: 30 },
+    { name: "Hasan", age: 30 },
+]);
+
+users.groupBy("age"); 
+// [
+//     {
+//     age: 20,
+//     data: [{ name: "Ahmed", age: 20 }],
+//     },
+//     {
+//     age: 25,
+//     data: [{ name: "Mohamed", age: 25 }],
+//     },
+//     {
+//     age: 30,
+//     data: [
+//         { name: "Ali", age: 30 },
+//         { name: "Hasan", age: 30 },
+//     ],
+//     },
+// ]
+```
+
+It basically creates a new array of objects, each object contains the key and the items that have the same value for that key will be added in `data` key for that grouped data.
+
+### Group By Multiple Keys
+
+You can also group the collection by multiple keys.
+
+```ts
+
+const studentsClasses = collect[
+  {
+    id: 1,
+    class: "A",
+    grade: 1,
+  },
+  {
+    id: 2,
+    class: "B",
+    grade: 2,
+  },
+  {
+    id: 3,
+    class: "A",
+    grade: 3,
+  },
+  {
+    id: 4,
+    class: "B",
+    grade: 2,
+  },
+  {
+    id: 5,
+    class: "B",
+    grade: 2,
+  },
+  {
+    id: 6,
+    class: "C",
+    grade: 5,
+  },
+]);
+
+studentsClasses.groupBy(["class", "grade"]);
+// [
+//     {
+//     class: "A",
+//     grade: 1,
+//     items: [
+//         {
+//         id: 1,
+//         class: "A",
+//         grade: 1,
+//         },
+//     ],
+//     },
+//     {
+//     class: "B",
+//     grade: 2,
+//     items: [
+//         {
+//         id: 2,
+//         class: "B",
+//         grade: 2,
+//         },
+//         {
+//         id: 4,
+//         class: "B",
+//         grade: 2,
+//         },
+//         {
+//         id: 5,
+//         class: "B",
+//         grade: 2,
+//         },
+//     ],
+//     },
+//     {
+//     class: "A",
+//     grade: 3,
+//     items: [
+//         {
+//         id: 3,
+//         class: "A",
+//         grade: 3,
+//         },
+//     ],
+//     },
+//     {
+//     class: "C",
+//     grade: 5,
+//     items: [
+//         {
+//         id: 6,
+//         class: "C",
+//         grade: 5,
+//         },
+//     ],
+//     },
+// ]
+```
+
+### Defining other key for grouped data
+
+By default, the grouped data will be added in `data` key, but you can change that by passing the second argument to the `groupBy` method.
+
+```ts
+const users = collect([
+    { name: "Ahmed", age: 20 },
+    { name: "Mohamed", age: 25 },
+    { name: "Ali", age: 30 },
+    { name: "Hasan", age: 30 },
+]);
+
+users.groupBy("age", "students");
+
+// [
+//     {
+//     age: 20,
+//     students: [{ name: "Ahmed", age: 20 }],
+//     },
+//     {
+//     age: 25,
+//     students: [{ name: "Mohamed", age: 25 }],
+//     },
+//     {
+//     age: 30,
+//     students: [
+//         { name: "Ali", age: 30 },
+//         { name: "Hasan", age: 30 },
+//     ],
+//     },
+// ]
+```
+
+## Sorting
+
+Another powerful feature we have in this package is the ability to sort the collection's items.
+
+### sortBy
+
+The `sortBy` method sorts the collection's items by a given key.
+
+```ts
+const users = collect([
+    { name: "Ahmed", age: 20 },
+    { name: "Mohamed", age: 25 },
+    { name: "Ali", age: 30 },
+    { name: "Hasan", age: 30 },
+]);
+
+users.sortBy("age"); // [{ name: "Ahmed", age: 20 }, { name: "Mohamed", age: 25 }, { name: "Ali", age: 30 }, { name: "Hasan", age: 30 }]
+```
+
+### sortByDesc
+
+The `sortByDesc` method sorts the collection's items by a given key in descending order.
+
+```ts
+const users = collect([
+    { name: "Ahmed", age: 20 },
+    { name: "Mohamed", age: 25 },
+    { name: "Ali", age: 30 },
+    { name: "Hasan", age: 30 },
+]);
+
+users.sortByDesc("age"); // [{ name: "Ali", age: 30 }, { name: "Hasan", age: 30 }, { name: "Mohamed", age: 25 }, { name: "Ahmed", age: 20 }]
+```
+
+### Sort By Multiple Keys
+
+You can also sort the collection by multiple keys using `sortBy`.
+
+```ts
+const users = collect([
+    { name: "Jane", age: 25 },
+    { name: "Jack", age: 30 },
+    { name: "Ali", age: 20 },
+    { name: "Hasan", age: 20 },
+    { name: "Hasan", age: 19 },
+]);
+
+users.sortBy({
+    age: "asc",
+    name: "asc",
+}); // [{ name: "Hasan", age: 19 }, { name: "Ali", age: 20 }, { name: "Hasan", age: 20 }, { name: "Jane", age: 25 }, { name: "Jack", age: 30 }]
+```
+
+The method receives an object, the key will be the sorting key and its value is either `asc` or `desc` for ascending or descending order.
+
+## Element Positions
+
+### Swap
+
+Using `swap` method will allow you swap between two indexes in the collection
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5]);
+
+numbers.swap(0, 4); // [5, 2, 3, 4, 1]
+```
+
+### Moving Elements
+
+Using `move` method will allow you move an element from one index to another.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5]);
+
+numbers.move(0, 4); // [2, 3, 4, 5, 1]
+```
+
+### Shuffling
+
+The `shuffle` method will randomly shuffle the items in the collection.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5]);
+
+numbers.shuffle(); // something like [2, 5, 1, 4, 3]
+```
+
+### Reverse
+
+The `reverse` method will reverse the order of the collection's items.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5]);
+
+numbers.reverse(); // [5, 4, 3, 2, 1]
+```
+
+> `flip` method is an alias to `reverse` method.
+
+### Reordering
+
+The `reorder` method will reorder the items in the collection using the given keys.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5, 6, 7]);
+
+numbers.reorder({
+    0: 3,
+    1: 4,
+    2: 5,
+    3: 6,
+    4: 0,
+    5: 1,
+    6: 2,
+}); // [5, 6, 7, 1, 2, 3, 4]
+```
+
+It receives an object, the key is the old index, and its value is the new index.
 
 ## Push
 
@@ -737,7 +1195,7 @@ const numbers = collect([1, 2, 3, 4, 5]);
 numbers.indexes(); // [0, 1, 2, 3, 4]
 ```
 
-## Getting Even Indexes
+### Getting Even Indexes
 
 Using `evenIndexes` method will return a new collection of all even indexes.
 
@@ -747,7 +1205,7 @@ const numbers = collect([1, 2, 3, 4, 5]);
 numbers.evenIndexes(); // [0, 2, 4]
 ```
 
-## Getting Odd Indexes
+### Getting Odd Indexes
 
 Using `oddIndexes` method will return a new collection of all odd indexes.
 
@@ -757,7 +1215,27 @@ const numbers = collect([1, 2, 3, 4, 5]);
 numbers.oddIndexes(); // [1, 3]
 ```
 
-## Get Index
+### Getting certain indexes
+
+Using `onlyIndexes` method will return a new collection of the given indexes.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5]);
+
+numbers.onlyIndexes(0, 2, 4); // [1, 3, 5]
+```
+
+### Getting all indexes except the given
+
+Using `exceptIndexes` method will return a new collection of all indexes except the given indexes.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5]);
+
+numbers.exceptIndexes(0, 2, 4); // [2, 4]
+```
+
+### Get Index
 
 Using `index` method will return the index of the given value.
 
@@ -769,7 +1247,19 @@ numbers.index(3); // 2
 
 > `at` method is an alias for `index`.
 
-## Update By Index
+### Get last index
+
+Using `lastIndex` method will return the last index of the collection.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5]);
+
+numbers.lastIndex(); // 4
+```
+
+> If the collection is empty, it will return `-1`.
+
+### Update By Index
 
 Using `set` method will update the value of the given index.
 
@@ -781,7 +1271,7 @@ numbers.set(2, 6); // [1, 2, 6, 4, 5]
 
 > `update` method is an alias for `set`.
 
-## Remove By Index
+### Remove By Index
 
 Using `delete` method will remove the value of the given index.
 
@@ -799,7 +1289,15 @@ const numbers = collect([1, 2, 3, 4, 5]);
 numbers.delete(2, 3); // [1, 2, 5]
 ```
 
-> `unset` method is an alias for `delete`.
+### Remove multiple indexes
+
+The `unset` method will remove the given indexes from the collection.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5]);
+
+numbers.unset(2, 3); // [1, 2, 5]
+```
 
 ## Working With Objects
 
@@ -870,6 +1368,37 @@ const numbers = collect([1, 2, 3, 4, 5]);
 numbers.last();// 5
 ```
 
+> `end` method is an alias for `last`.
+
+### First where
+
+The `firstWhere` receives the same exact arguments as `where` but it returns the first item that matches the condition.
+
+```ts
+const users = collect([
+    { id: 1, name: "John" },
+    { id: 2, name: "Jone" },
+    { id: 3, name: "Jill" },
+]);
+
+users.firstWhere("name", "John"); // { id: 1, name: "John" }
+```
+
+### Last where
+
+The `lastWhere` receives the same exact arguments as `where` but it returns the last item that matches the condition.
+
+```ts
+const users = collect([
+    { id: 1, name: "John" },
+    { id: 2, name: "Jone" },
+    { id: 3, name: "John" },
+    { id: 4, name: "Jill" },
+]);
+
+users.lastWhere("name", "John"); // { id: 3, name: "John" }
+```
+
 > If the collection is empty, undefined will be returned.
 
 ### Pop
@@ -899,6 +1428,18 @@ const users = collect([
 users.value("name"); // John
 ```
 
+If the given key does not exist, you can set default value to be returned instead
+
+```ts
+const users = collect([
+    { id: 1, name: "John" },
+    { id: 2, name: "John" },
+    { id: 3, name: "Jane" },
+]);
+
+users.value("age", 20); // 20
+```
+
 ### Last Value
 
 The `lastValue` method will return the last value of the given key from array of objects.
@@ -911,6 +1452,76 @@ const users = collect([
 ]);
 
 users.lastValue("name"); // Jane
+```
+
+If the given key does not exist, you can set default value to be returned instead
+
+```ts
+const users = collect([
+    { id: 1, name: "John" },
+    { id: 2, name: "John" },
+    { id: 3, name: "Jane" },
+]);
+
+users.lastValue("age", 20); // 20
+```
+
+### Getting value by index
+
+The `valueAt` method will return the value of the given index for the given key.
+
+```ts
+const users = collect([
+    { id: 1, name: "John" },
+    { id: 2, name: "John" },
+    { id: 3, name: "Jane" },
+]);
+
+users.valueAt(1, "name"); // John
+```
+
+### Getting value by index and key using dot notation
+
+You can alternatively use dot notation to get the value of the given index and key using `get` method.
+
+```ts
+const users = collect([
+    { id: 1, name: "John" },
+    { id: 2, name: "John" },
+    { id: 3, name: "Jane" },
+]);
+
+users.get("1.name"); // John
+```
+
+If the given key does not exist, you can set default value to be returned instead
+
+```ts
+const users = collect([
+    { id: 1, name: "John" },
+    { id: 2, name: "John" },
+    { id: 3, name: "Jane" },
+]);
+
+users.valueAt(1, "age", 20); // 20
+```
+
+### Getting random value
+
+The `random` method will return a random value from the collection.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5]);
+
+numbers.random(); // 3
+```
+
+You can also specify how many random values you want to be returned.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5]);
+
+numbers.random(2); // [3, 5]
 ```
 
 ## Working With Numbers
@@ -1414,3 +2025,544 @@ users.removeAllString('J', 'name'); // [{ name: 'ohn', age: 20 }, { name: 'ane',
 ```
 
 > Kindly note that `removeAllString` method does not accept regular expression, use `removeString` instead.
+
+## Equals
+
+The `equals` method determines if the given array is equal to the current array.
+
+```ts
+const users = collect([
+    { name: 'John', age: 20 },
+    { name: 'Jane', age: 25 },
+    { name: 'Jack', age: 30 },
+]);
+
+users.equals([
+    { name: 'John', age: 20 },
+    { name: 'Jane', age: 25 },
+    { name: 'Jack', age: 30 },
+]); // true
+```
+
+It also can check against another collection not just arrays.
+
+```ts
+const users = collect([
+    { name: 'John', age: 20 },
+    { name: 'Jane', age: 25 },
+    { name: 'Jack', age: 30 },
+]);
+
+users.equals(collect([
+    { name: 'John', age: 20 },
+    { name: 'Jane', age: 25 },
+    { name: 'Jack', age: 30 },
+])); // true
+```
+
+> Kindly note that the order of the elements in the array is neglected, it will check if it contains the exact content but not exact order either on the array elements order of the object keys order.
+
+## Tapping And Callbacks
+
+### Tap
+
+We can perform some actions on the array without modifying the original array using the `tap` method.
+
+```ts
+const users = collect([
+    { name: 'John', age: 20 },
+    { name: 'Jane', age: 25 },
+    { name: 'Jack', age: 30 },
+]);
+
+users.tap((collection) => {
+    collection.push({ name: 'Jill', age: 35 });
+});
+```
+
+### Callbacks Over Elements
+
+The `forEach` method iterates over the array and passes each value to the given callback.
+
+```ts
+const users = collect([
+    { name: 'John', age: 20 },
+    { name: 'Jane', age: 25 },
+    { name: 'Jack', age: 30 },
+]);
+
+users.forEach((user) => {
+    console.log(user);
+});
+```
+
+The `each` method is an alias of `forEach` method.
+
+## Filtering
+
+The following methods will filter the array based on the given conditions.
+
+### Except
+
+The `except` method will return all elements that does not match the given criteria.
+
+```ts
+const users = collect([
+    { name: 'John', age: 20 },
+    { name: 'Jane', age: 25 },
+    { name: 'Jack', age: 30 },
+]);
+
+users.except((user) => user.age > 25); // [{ name: 'John', age: 20 }, { name: 'Jane', age: 25 }]
+```
+
+> `reject` is an alias of `except` method.
+
+### Except first
+
+The `exceptFirst` method will return all elements except the first element that matches the given criteria.
+
+```ts
+const users = collect([
+    { name: 'John', age: 20 },
+    { name: 'Jane', age: 25 },
+    { name: 'Jack', age: 25 },
+]);
+
+users.exceptFirst((user) => user.age === 25); // [{ name: 'John', age: 20 }, { name: 'Jack', age: 25 }]
+```
+
+> `rejectFirst` is an alias of `exceptFirst` method.
+
+### Except last
+
+The `exceptLast` method will return all elements except the last element that matches the given criteria.
+
+```ts
+const users = collect([
+    { name: 'John', age: 25 },
+    { name: 'Jane', age: 25 },
+    { name: 'Jack', age: 30 },
+]);
+
+users.exceptLast((user) => user.age === 25); // [{ name: 'John', age: 25 }, { name: 'Jack', age: 30 }]
+```
+
+> `rejectLast` is an alias of `exceptLast` method.
+
+### Not
+
+The `not` method will return all elements that does not match the given value.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5]);
+
+numbers.not(2); // [1, 3, 4, 5]
+```
+
+## Limitations and Skipped Methods
+
+The following methods will allow you skip and limit your collection easily
+
+### Skip
+
+The `skip` method skips the given number of items in the array.
+
+```ts
+const users = collect([
+    { name: 'John', age: 20 },
+    { name: 'Jane', age: 25 },
+    { name: 'Jack', age: 30 },
+    { name: 'Jill', age: 35 },
+]);
+
+users.skip(2); // [{ name: 'Jack', age: 30 }, { name: 'Jill', age: 35 }]
+```
+
+### Skip Until
+
+The `skipUntil` method skips items in the array until the given value is found.
+
+```ts
+const users = collect([
+    { name: 'John', age: 20 },
+    { name: 'Jane', age: 25 },
+    { name: 'Jack', age: 30 },
+    { name: 'Jill', age: 35 },
+]);
+
+users.skipUntil(user => user.age >= 30); // [{ name: 'Jack', age: 30 }, { name: 'Jill', age: 35 }]
+```
+
+### Skip Last
+
+The `skipLast` method skips the given number of items from the end of the array.
+
+```ts
+const users = collect([
+    { name: 'John', age: 20 },
+    { name: 'Jane', age: 25 },
+    { name: 'Jack', age: 30 },
+    { name: 'Jill', age: 35 },
+]);
+
+users.skipLast(2); // [{ name: 'John', age: 20 }, { name: 'Jane', age: 25 }]
+```
+
+### Skip Last Until
+
+The `skipLastUntil` method skips items from the end of the array until the given value is found.
+
+```ts
+const users = collect([
+    { name: 'John', age: 20 },
+    { name: 'Jane', age: 25 },
+    { name: 'Jack', age: 30 },
+    { name: 'Jill', age: 35 },
+]);
+
+users.skipLastUntil(user => user.age <= 30); // [{ name: 'John', age: 20 }, { name: 'Jane', age: 25 }]
+```
+
+### Skip While
+
+The `skipWhile` method skips items in the array while the given value is true.
+
+```ts
+const users = collect([
+    { name: 'John', age: 20 },
+    { name: 'Jane', age: 25 },
+    { name: 'Jack', age: 30 },
+    { name: 'Jill', age: 35 },
+]);
+
+users.skipWhile(user => user.age < 30); // [{ name: 'Jack', age: 30 }, { name: 'Jill', age: 35 }]
+```
+
+### Skip To
+
+The `skipTo` method skips items in the array and returns all elements starting from the given index.
+
+```ts
+const users = collect([
+    { name: 'John', age: 20 },
+    { name: 'Jane', age: 25 },
+    { name: 'Jack', age: 30 },
+    { name: 'Jill', age: 35 },
+]);
+
+users.skipTo(2); // [{ name: 'Jack', age: 30 }, { name: 'Jill', age: 35 }]
+```
+
+### Take
+
+The `take` method limits the number of items in the array.
+
+```ts
+const users = collect([
+    { name: 'John', age: 20 },
+    { name: 'Jane', age: 25 },
+    { name: 'Jack', age: 30 },
+    { name: 'Jill', age: 35 },
+]);
+
+users.take(2); // [{ name: 'John', age: 20 }, { name: 'Jane', age: 25 }]
+```
+
+> `limit` is an alias of `take` method.
+
+### Take Until
+
+The `takeUntil` method limits items in the array until the given value is found.
+
+```ts
+const users = collect([
+    { name: 'John', age: 20 },
+    { name: 'Jane', age: 25 },
+    { name: 'Jack', age: 30 },
+    { name: 'Jill', age: 35 },
+]);
+
+users.takeUntil(user => user.age >= 30); // [{ name: 'John', age: 20 }, { name: 'Jane', age: 25 }]
+```
+
+### Take Last
+
+The `takeLast` method limits the given number of items from the end of the array.
+
+```ts
+const users = collect([
+    { name: 'John', age: 20 },
+    { name: 'Jane', age: 25 },
+    { name: 'Jack', age: 30 },
+    { name: 'Jill', age: 35 },
+]);
+
+users.takeLast(2); // [{ name: 'Jack', age: 30 }, { name: 'Jill', age: 35 }]
+```
+
+### Take While
+
+The `takeWhile` method limits items in the array while the given value is true.
+
+```ts
+const users = collect([
+    { name: 'John', age: 20 },
+    { name: 'Jane', age: 25 },
+    { name: 'Jack', age: 30 },
+    { name: 'Jill', age: 35 },
+]);
+
+users.takeWhile(user => user.age < 30); // [{ name: 'John', age: 20 }, { name: 'Jane', age: 25 }]
+```
+
+## Replacing Values
+
+The following methods will allow you to replace values in the collection.
+
+### Replace All
+
+The `replaceAll` method replaces all occurrences of the given value in the array with the given replacement.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5, 2]);
+
+numbers.replaceAll(2, 10); // [1, 10, 3, 4, 5, 10]
+```
+
+### Replace
+
+The `replace` method replaces the first occurrence of the given value in the array with the given replacement.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5, 2]);
+
+numbers.replace(2, 10); // [1, 10, 3, 4, 5, 2]
+```
+
+## Counting
+
+### Getting collection length
+
+The `length` property will return the number of items in the collection.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5]);
+
+numbers.length; // 5
+```
+
+### Counting values
+
+The `countValue` method will return the number of occurrences for the given value.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5, 2]);
+
+numbers.countValue(2); // 2
+```
+
+### Counting Value for key
+
+The `count` method will return the number of occurrences for the given key and value.
+
+```ts
+const users = collect([
+    { name: 'John', age: 20 },
+    { name: 'Jane', age: 25 },
+    { name: 'Jack', age: 30 },
+    { name: 'Jill' },
+]);
+
+users.count('age'); // 3
+```
+
+### Counting each value for the given key
+
+The `countBy` method will return the number of occurrences for each value of the given key.
+
+```ts
+const users = collect([
+    { name: 'John', age: 20 },
+    { name: 'Jane', age: 25 },
+    { name: 'Jack', age: 30 },
+    { name: 'Jill' },
+]);
+
+users.countBy('age'); // { 20: 1, 25: 1, 30: 1 }
+```
+
+## Iterating
+
+Collections are `iterable`, so you can loop over it using `for...of` loop.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5]);
+
+for (const number of numbers) {
+    console.log(number);
+}
+```
+
+## Getting array values
+
+To convert the collection into an array, you can use the `all` method.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5]);
+
+numbers.all(); // [1, 2, 3, 4, 5]
+```
+
+> `toArray` is an alias of `all` method.
+
+## Clone
+
+The `clone` method will return a new collection instance with the same items.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5]);
+
+const cloned = numbers.clone();
+
+cloned.all(); // [1, 2, 3, 4, 5]
+```
+
+> `copy` is an alias of `clone` method.
+
+## Includes
+
+The `includes` method will return true if the given value is in the collection.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5]);
+
+numbers.includes(3); // true
+```
+
+> `contains` is an alias of `includes` method.
+
+## Has
+
+The `has` method will return true if the given callback is true.
+
+```ts
+const users = collect([
+    { name: 'John', age: 20 },
+    { name: 'Jane', age: 25 },
+]);
+
+users.has(user => user.age > 20); // true
+```
+
+## Merge
+
+The `merge` method will merge the given array or collection with the original collection.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5]);
+
+const merged = numbers.merge([6, 7, 8, 9, 10]); // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+```
+
+It can also merge another collection
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5]);
+
+const merged = numbers.merge(collect([6, 7, 8, 9, 10])); // [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+```
+
+> `concat` is an alias of `merge` method.
+
+## Join
+
+The `join` method will join all items from the collection using a string. The glue string is optional and defaults to an empty string.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5]);
+
+numbers.join(); // '12345'
+
+numbers.join(', '); // '1, 2, 3, 4, 5'
+```
+
+> `implode` is an alias of `join` method.
+
+## Convert to json string
+
+The `toJson` method will convert the collection into a JSON string.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5]);
+
+numbers.toJson(); // '[1,2,3,4,5]'
+```
+
+## toString
+
+The `toString` method will convert the collection into a string.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5]);
+
+numbers.toString(); // '1,2,3,4,5'
+```
+
+## Collecting all data from certain key
+
+The `collectFrom` method will allow you to collect items from a given key of each element.
+
+```ts
+const users = collect([
+    { name: 'John', age: 20, pets: ['dog', 'cat'] },
+    { name: 'Jane', age: 25, pets: ['dog', 'cat'] },
+    { name: 'Jack', age: 30, pets: ['dog', 'cat'] },
+    { name: 'Jill', age: 35, pets: ['dog', 'cat'] },
+]);
+
+users.collectFrom('pets'); // ['dog', 'cat', 'dog', 'cat', 'dog', 'cat', 'dog', 'cat']
+```
+
+## Collecting from certain key only
+
+The `collectFromKey` method allow you to create a new collection from the given key directly, the key supports dot notation, starting with the index.
+
+```ts
+const users = collect([
+    { name: 'John', age: 20, pets: ['dog', 'cat'] },
+    { name: 'Jane', age: 25, pets: ['dog', 'cat'] },
+    { name: 'Jack', age: 30, pets: ['dog', 'cat'] },
+    { name: 'Jill', age: 35, pets: ['dog', 'cat'] },
+]);
+
+users.collectFromKey('0.pets'); // ['dog', 'cat']
+```
+
+## Collecting from iterators
+
+The `collect` function can be used to convert an iterable into a collection using `collect.fromIterator` method.
+
+```ts
+const numbers = collect.fromIterator([1, 2, 3, 4, 5].values());
+```
+
+## Create empty collection
+
+The `collect` function can also be used to create an empty collection using `collect.create(length: number, initialValue: any)` method.
+
+```ts
+const numbers = collect.create(10); // [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined]
+```
+
+You can also specify the initial value.
+
+```ts
+const numbers = collect.create(10, 0); // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+```
+
+Also specify initial value based on index.
+
+```ts
+const numbers = collect.create(10, (index) => index); // [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+```
