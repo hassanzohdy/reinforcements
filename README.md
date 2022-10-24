@@ -43,7 +43,7 @@ const users = collection.where('age', '>', 25);
 const users = collection.where('age', '>', 25).where('age', '<', 30);
 ```
 
-You can see the entire documentation in [Collection](./docs/Collection.md) Page.
+You can see the entire documentation in [Collection](./docs/collection.md) Page.
 
 ## Working with objects
 
