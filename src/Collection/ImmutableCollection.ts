@@ -263,6 +263,13 @@ export default class ImmutableCollection {
   }
 
   /**
+   * Divide the given key in each element or the element by 2
+   */
+  public half(key?: string) {
+    return key ? this.divide(key, 2) : this.divide(2);
+  }
+
+  /**
    * Get the modulus of the given amount to each element or given key in each element
    */
   public modulus(amount: number);

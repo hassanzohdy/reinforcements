@@ -2497,6 +2497,12 @@ describe("reinforcements/ImmutableCollection/math", () => {
     );
   });
 
+  it("should divide the given value to the collection items by 2", () => {
+    const collection = collect([1, 2, 3, 4, 5]).half();
+
+    expect(collection.all()).toEqual([0.5, 1, 1.5, 2, 2.5]);
+  });
+
   it("should count the occurrences of values for the given key", () => {
     const collection = collect([
       { name: "Ahmed", age: 20 },
