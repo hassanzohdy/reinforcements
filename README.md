@@ -812,7 +812,7 @@ Any of following will be used as a separator for the text, `.` | `-` | `whitespa
 
 ### Convert string to snake case
 
-Convert string to snake case, each word in string Separated by **whitespace** or **dashes** `toSnakeCase(string: string): string`.
+Convert string to snake case, each word in string Separated by **whitespace** or **dashes** `toSnakeCase(string: string, separator: string = '_', lowerAll: boolean = true): string`.
 
 The final output of the text will be all letters in lower case string separated by \_ **underscores**.
 
@@ -822,6 +822,26 @@ import { toSnakeCase } from "@mongez/reinforcements";
 const words = "hello world";
 
 console.log(toSnakeCase(words)); // hello_world
+```
+
+You can also set custom separator as second argument.
+
+```ts
+import { toSnakeCase } from "@mongez/reinforcements";
+
+const words = "hello world";
+
+console.log(toSnakeCase(words, '-')); // hello-world
+```
+
+Also setting the third argument to false will not convert letters to lower case, will keep each letter as its own.
+
+```ts
+import { toSnakeCase } from "@mongez/reinforcements";
+
+const words = "Hello World";
+
+console.log(toSnakeCase(words, '-', false)); // Hello_World
 ```
 
 ### Convert string to studly case

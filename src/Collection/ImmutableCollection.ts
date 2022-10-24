@@ -90,6 +90,15 @@ export default class ImmutableCollection {
   }
 
   /**
+   * Get items that are not in the given indexes
+   */
+  public exceptIndexes(...indexes: number[]) {
+    return new ImmutableCollection(
+      this.items.filter((_, index) => !indexes.includes(index)),
+    );
+  }
+
+  /**
    * Get items keys (indexes) as collection of string
    */
   public keys() {
@@ -558,15 +567,6 @@ export default class ImmutableCollection {
    */
   public append(...items: any[]) {
     return this.push(...items);
-  }
-
-  /**
-   * Get items that are not in the given indexes
-   */
-  public exceptIndexes(...indexes: number[]) {
-    return new ImmutableCollection(
-      this.items.filter((_, index) => !indexes.includes(index)),
-    );
   }
 
   /**

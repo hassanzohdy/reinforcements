@@ -4,15 +4,19 @@
  *
  * @return string
  */
-export default function toSnakeCase(string: string, lowerAll = true) {
-  return string.replace(
-    /(-|\/|\s|([A-Z]))+/g,
-    function (_match, _v2, matchedUpperLetter) {
-      if (!matchedUpperLetter) return "_";
+export default function toSnakeCase(
+  string: string,
+  separator = "_",
+  lowerAll = true,
+): string {
+  return string
+    .replace(/(-|\/|\s|([A-Z]))+/g, function (_match, _v2, matchedUpperLetter) {
+      if (!matchedUpperLetter) return separator;
 
       return (
-        "_" + (lowerAll ? matchedUpperLetter.toLowerCase() : matchedUpperLetter)
+        separator +
+        (lowerAll ? matchedUpperLetter.toLowerCase() : matchedUpperLetter)
       );
-    },
-  );
+    })
+    .replace(new RegExp(`^${separator}`), "");
 }

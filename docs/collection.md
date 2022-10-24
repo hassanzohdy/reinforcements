@@ -1524,7 +1524,7 @@ const numbers = collect([1, 2, 3, 4, 5]);
 numbers.random(2); // [3, 5]
 ```
 
-## Working With Numbers
+## Working With Math
 
 Collection provides you with a set of methods to work with numbers which will make it easier to manipulate.
 
@@ -1728,7 +1728,7 @@ const users = collect([
 users.decrement('age'); // [{ name: 'John', age: 19 }, { name: 'Jane', age: 24 }, { name: 'Jack', age: 29 }]
 ```
 
-## Multiply
+### Multiply
 
 The `multiply` method multiply the given value to each element of the array.
 
@@ -1770,7 +1770,7 @@ const users = collect([
 users.double('age'); // [{ name: 'John', age: 40 }, { name: 'Jane', age: 50 }, { name: 'Jack', age: 60 }]
 ```
 
-## Divide
+### Divide
 
 The `divide` method divide the given value to each element of the array.
 
@@ -1802,7 +1802,7 @@ try {
 }
 ```
 
-## Modulus
+### Modulus
 
 The `modulus` method returns the remainder of the division of each element of the array by the given value.
 
@@ -1878,7 +1878,7 @@ const users = collect([
 users.odd('age'); // [{ name: 'Jane', age: 25 }]
 ```
 
-## Working With Strings
+### Working With Strings
 
 The Collection provides some utilities to work with strings.
 
