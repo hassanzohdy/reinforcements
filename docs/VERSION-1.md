@@ -2,7 +2,12 @@
 
 `Reinforcements` is a node js package written in `Typescript` to give a massive support for variant data like `Strings`, `Arrays`, `Objects` ... and so on.
 
-For version 1 documentation, please visit [here](./docs/VERSION-1.md)
+## Table Of Contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+- [Working with objects](#working0with-objects)
+- [Generating Random Values](#generating-random-values)
 
 ## Installation
 
@@ -14,9 +19,29 @@ or using `npm`
 
 ## Usage
 
+The following list illustrates what's included in this package.
+
+- `Obj` object/functions.
+- `Random` object.
+- `Str` object/functions.
+- Other utilities.
+
 ## Working with objects
 
-Reinforcements is shipped with `Obj` object which provides good utilities for working with objects.
+The following list illustrates all available object utilities, which are wrapped in `Obj` object.
+
+- `objGet` or `Obj.get`
+- `objSet` or `Obj.set`
+- `objMerge` or `Obj.merge`
+- `objClone` or `Obj.clone`
+- `objSort` or `Obj.sort`
+- `objOnly` or `Obj.only`
+- `objExcept` or `Obj.except`
+- `objFlatten` or `Obj.flatten`
+
+### Getting value from object
+
+Using `Obj.get(object, key, defaultValue)` will allow us to get a value based on the given key.
 
 ```js
 import { Obj } from "@mongez/reinforcements";
@@ -56,7 +81,7 @@ Obj.get(user, "email", "no-email"); // no-email
 
 ### Setting value in object
 
-This works exactly but `Obj.set(object, key, value)` will set the value to the given object, which means it won't return **a new object** but the same object.
+This works exactly but `Obj.set(object, key, value)` will set the value instead of getting it.
 
 ```js
 import { Obj } from "@mongez/reinforcements";

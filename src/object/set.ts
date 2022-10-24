@@ -7,6 +7,8 @@ export default function set(
   key: string,
   value: any,
 ): object {
+  if (!object || typeof object !== "object") return object;
+
   if (!key.includes(".")) {
     object[key] = value;
 

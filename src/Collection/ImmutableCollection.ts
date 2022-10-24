@@ -19,6 +19,7 @@ import unique from "../array/unique";
 import areEqual from "../mixed/areEqual/areEqual";
 import shuffle from "../mixed/shuffle/shuffle";
 import get from "../object/get";
+import only from "../object/only";
 import set from "../object/set";
 import { ComparisonOperator, Operators } from "../types";
 
@@ -71,6 +72,13 @@ export default class ImmutableCollection {
    */
   public indexes() {
     return new ImmutableCollection(Object.keys(this.items).map(Number));
+  }
+
+  /**
+   * Get items in the given indexes
+   */
+  public only(...indexes: number[]) {
+    return new ImmutableCollection(indexes.map(index => this.items[index]));
   }
 
   /**
@@ -240,6 +248,52 @@ export default class ImmutableCollection {
   }
 
   /**
+   * Get the modulus of the given amount to each element or given key in each element
+   */
+  public modulus(amount: number);
+  public modulus(key: string, amount: number);
+  public modulus(...args: any[]) {
+    let [key, amount] = args;
+
+    if (args.length === 1) {
+      amount = key;
+      key = null;
+    }
+
+    if (amount === 0) {
+      throw new Error("Cannot have a modulus of zero");
+    }
+
+    return this.map(item => {
+      if (key) {
+        return set(item, key, get(item, key) % amount);
+      }
+
+      return item % amount;
+    });
+  }
+
+  /**
+   * Get every items in the array
+   */
+  public even(key?: string) {
+    return new ImmutableCollection(even(this.items, key));
+  }
+
+  /**
+   * Get odd items in the array
+   */
+  public odd(key?: string) {
+    return new ImmutableCollection(odd(this.items, key));
+  }
+  /////////////////////////////
+  // End Of Number methods
+  /////////////////////////////
+
+  /////////////////////////////
+  // String methods
+  /////////////////////////////
+  /**
    * Append string to each element or given key in each element
    */
   public appendString(string: string, key?: string) {
@@ -265,6 +319,86 @@ export default class ImmutableCollection {
     });
   }
 
+  /**
+   * Concat string to each element or given key in each element
+   */
+  public concatString(string: string, key?: string) {
+    return this.map(item => {
+      if (key) {
+        return set(item, key, get(item, key).concat(string));
+      }
+
+      return item.concat(string);
+    });
+  }
+
+  /**
+   * Find matched string/regular expression and replace it with the given replacement
+   */
+  public replaceString(
+    string: string | RegExp,
+    replacement: string,
+    key?: string,
+  ) {
+    return this.map(item => {
+      if (key) {
+        return set(item, key, get(item, key).replace(string, replacement));
+      }
+
+      return item.replace(string, replacement);
+    });
+  }
+
+  /**
+   * Find all matched given strings/regular expressions and replace it with the given replacement
+   */
+  public replaceAllString(string: string, replacement: string, key?: string) {
+    return this.map(item => {
+      if (key) {
+        return set(
+          item,
+          key,
+          get(item, key).replace(new RegExp(string, "g"), replacement),
+        );
+      }
+
+      return item.replace(new RegExp(string, "g"), replacement);
+    });
+  }
+
+  /**
+   * Remove first matched string from each element or given key in each element
+   */
+  public removeString(string: string | RegExp, key?: string) {
+    return this.map(item => {
+      if (key) {
+        return set(item, key, get(item, key).replace(string, ""));
+      }
+
+      return item.replace(string, "");
+    });
+  }
+
+  /**
+   * Remove all matched given strings expressions
+   */
+  public removeAllString(string: string, key?: string) {
+    return this.map(item => {
+      if (key) {
+        return set(
+          item,
+          key,
+          get(item, key).replace(new RegExp(string, "g"), ""),
+        );
+      }
+
+      return item.replace(new RegExp(string, "g"), "");
+    });
+  }
+
+  /////////////////////////////
+  // End OF String methods
+  /////////////////////////////
   /**
    * Merge the given arrays with current array and return new ImmutableCollection
    */
@@ -305,20 +439,6 @@ export default class ImmutableCollection {
    */
   public flatMap(callback: Parameters<typeof Array.prototype.flatMap>[0]) {
     return new ImmutableCollection(this.items.flatMap(callback));
-  }
-
-  /**
-   * Get every items in the array
-   */
-  public even(key?: string) {
-    return new ImmutableCollection(even(this.items, key));
-  }
-
-  /**
-   * Get odd items in the array
-   */
-  public odd(key?: string) {
-    return new ImmutableCollection(odd(this.items, key));
   }
 
   /**
@@ -447,7 +567,7 @@ export default class ImmutableCollection {
    * Get last item in the array
    */
   public last() {
-    return this.items[this.items.length - 1];
+    return this.items[this.items.length - 1] ?? undefined;
   }
 
   /**
@@ -484,7 +604,7 @@ export default class ImmutableCollection {
    * Get first item in the array
    */
   public first() {
-    return this.items[0] ?? null;
+    return this.items[0] ?? undefined;
   }
 
   /**
@@ -539,10 +659,10 @@ export default class ImmutableCollection {
   }
 
   /**
-   * Get items in the given indexes
+   * Select only the given keys from each element of the array and return it
    */
-  public only(...indexes: number[]) {
-    return new ImmutableCollection(indexes.map(index => this.items[index]));
+  public select(...keys: string[]) {
+    return this.map(item => only(item, keys));
   }
 
   /**
@@ -1575,3 +1695,6 @@ export function collect(
 ): ImmutableCollection {
   return new ImmutableCollection(items);
 }
+
+collect.fromIterator = ImmutableCollection.fromIterator;
+collect.create = ImmutableCollection.create;

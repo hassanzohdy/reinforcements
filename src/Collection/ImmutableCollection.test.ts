@@ -1226,9 +1226,9 @@ describe("reinforcements/ImmutableCollection/insert", () => {
   it("should add the only the unique values to the beginning of the collection using pushUnique", () => {
     const collection = collect([1, 2, 3, 4, 5]);
 
-    expect(
-      collection.prependUnique(6, 4, 5, 1).equals([1, 2, 3, 4, 5, 6]),
-    ).toBeTruthy();
+    expect(collection.prependUnique(6, 4, 5, 1).all()).toEqual([
+      6, 1, 2, 3, 4, 5,
+    ]);
   });
 
   it("should add the only the unique values to the end of the collection using pushUnique", () => {
@@ -1417,6 +1417,132 @@ describe("reinforcements/ImmutableCollection/string", () => {
     ]);
   });
 
+  it("should concat the given string to each element", () => {
+    const collection = collect(["Ahmed", "Mohamed", "Ali"]);
+
+    expect(collection.concatString(" Mohamed").all()).toEqual([
+      "Ahmed Mohamed",
+      "Mohamed Mohamed",
+      "Ali Mohamed",
+    ]);
+  });
+
+  it("should concat the given string to the given key of each collection item", () => {
+    const collection = collect([
+      { name: "Ahmed", age: 20 },
+      { name: "Mohamed", age: 25 },
+      { name: "Ali", age: 30 },
+    ]);
+
+    expect(collection.concatString(" Mohamed", "name").all()).toEqual([
+      { name: "Ahmed Mohamed", age: 20 },
+      { name: "Mohamed Mohamed", age: 25 },
+      { name: "Ali Mohamed", age: 30 },
+    ]);
+  });
+
+  it("should find and replace the given string in each element", () => {
+    const collection = collect(["Ahmed", "Mohamed", "Ali"]);
+
+    expect(collection.replaceString("Ahmed", "Mohamed").all()).toEqual([
+      "Mohamed",
+      "Mohamed",
+      "Ali",
+    ]);
+  });
+
+  it("should find and replace the given string in each element using regular expression", () => {
+    const collection = collect(["Ahmed", "Mohamed", "Ali"]);
+
+    expect(collection.replaceString(/Ahmed/, "Mohamed").all()).toEqual([
+      "Mohamed",
+      "Mohamed",
+      "Ali",
+    ]);
+  });
+
+  it("should find and replace the given string in the given key of each collection item", () => {
+    const collection = collect([
+      { name: "Ahmed", age: 20 },
+      { name: "Mohamed", age: 25 },
+      { name: "Ali", age: 30 },
+    ]);
+
+    expect(collection.replaceString("Ahmed", "Mohamed", "name").all()).toEqual([
+      { name: "Mohamed", age: 20 },
+      { name: "Mohamed", age: 25 },
+      { name: "Ali", age: 30 },
+    ]);
+  });
+
+  it("should find and replace the given string in the given key of each collection item using regular expression", () => {
+    const collection = collect([
+      { name: "Ahmed", age: 20 },
+      { name: "Mohamed", age: 25 },
+      { name: "Ali", age: 30 },
+    ]);
+
+    expect(collection.replaceString(/Ahmed/, "Mohamed", "name").all()).toEqual([
+      { name: "Mohamed", age: 20 },
+      { name: "Mohamed", age: 25 },
+      { name: "Ali", age: 30 },
+    ]);
+  });
+
+  it("should find all matched strings in each element and replace it all", () => {
+    const collection = collect(["Ahmed", "Mohamed", "Ali"]);
+
+    expect(collection.replaceAllString("a", "l").all()).toEqual([
+      "Ahmed",
+      "Mohlmed",
+      "Ali",
+    ]);
+  });
+
+  it("should find all matched strings in the given key of each collection item and replace it all", () => {
+    const collection = collect([
+      { name: "Ahmed", age: 20 },
+      { name: "Mohamed", age: 25 },
+      { name: "Ali", age: 30 },
+    ]);
+
+    expect(collection.replaceAllString("a", "l", "name").all()).toEqual([
+      { name: "Ahmed", age: 20 },
+      { name: "Mohlmed", age: 25 },
+      { name: "Ali", age: 30 },
+    ]);
+  });
+
+  it("should remove the given string from each matched element", () => {
+    const collection = collect(["Ahmed", "Mohamed", "Ali"]);
+
+    expect(collection.removeString("e").all()).toEqual([
+      "Ahmd",
+      "Mohamd",
+      "Ali",
+    ]);
+  });
+
+  it("should remove the matched regular expression from each element", () => {
+    const collection = collect(["Ahmed", "Mohamed", "Ali"]);
+
+    expect(collection.removeString(/e/).all()).toEqual([
+      "Ahmd",
+      "Mohamd",
+      "Ali",
+    ]);
+  });
+
+  it("should remove all matched strings from each element", () => {
+    const collection = collect(["Ahmed", "Mohamed Naser", "Ali"]);
+
+    expect(collection.removeAllString("a").all()).toEqual([
+      "Ahmed",
+      "Mohmed Nser",
+      "Ali",
+    ]);
+  });
+
   it("should convert array into string", () => {
     const collection = collect([1, 2, 3, 4, 5]);
 
@@ -1431,16 +1557,22 @@ describe("reinforcements/ImmutableCollection/getSingleValue", () => {
     expect(collection.first()).toBe(1);
   });
 
-  it("should return null for the first value from empty collection", () => {
+  it("should return undefined for the first value from empty collection", () => {
     const collection = collect([]);
 
-    expect(collection.first()).toBe(null);
+    expect(collection.first()).toBe(undefined);
   });
 
   it("should return the last value of the collection using last", () => {
     const collection = collect([1, 2, 3, 4, 5]);
 
     expect(collection.last()).toBe(5);
+  });
+  
+  it("should return undefined when calling last on empty array", () => {
+    const collection = collect([]);
+
+    expect(collection.last()).toBe(undefined);
   });
 
   it("should return the last value of the collection using end", () => {
@@ -1738,6 +1870,22 @@ describe("reinforcements/ImmutableCollection/listings", () => {
     ]).collectFrom("2.data");
 
     expect(collection.all()).toEqual(["Hassan", "Zohdy", "Hassan"]);
+  });
+
+  it("should select only the given keys from each element in the array", () => {
+    const collection = collect([
+      { name: "Ahmed", age: 20, job: "Developer" },
+      { name: "Mohamed", age: 25, job: "Designer" },
+      { name: "Ali", age: 30, job: "Manager" },
+      { name: "Hasan", age: 30, job: "Manager" },
+    ]).select("name", "age");
+
+    expect(collection.all()).toEqual([
+      { name: "Ahmed", age: 20 },
+      { name: "Mohamed", age: 25 },
+      { name: "Ali", age: 30 },
+      { name: "Hasan", age: 30 },
+    ]);
   });
 
   it("should group by the data by the given key and set the list as key", () => {
@@ -2194,6 +2342,34 @@ describe("reinforcements/ImmutableCollection/math", () => {
       { name: "Mohamed", age: 50 },
       { name: "Ali", age: 60 },
     ]);
+  });
+
+  it("should get the reminder value of each element in the array", () => {
+    const collection = collect([1, 2, 3, 4, 5]).modulus(2);
+
+    expect(collection.all()).toEqual([1, 0, 1, 0, 1]);
+  });
+
+  it("should get the reminder value of the given key of each element in the array", () => {
+    const collection = collect([
+      { name: "Ahmed", age: 20 },
+      { name: "Mohamed", age: 25 },
+      { name: "Ali", age: 33 },
+    ]).modulus("age", 2);
+
+    expect(collection.all()).toEqual([
+      { name: "Ahmed", age: 0 },
+      { name: "Mohamed", age: 1 },
+      { name: "Ali", age: 1 },
+    ]);
+  });
+
+  it("should not reminder by zero and throw an error", () => {
+    const collection = collect([1, 2, 3, 4, 5]);
+
+    expect(() => collection.modulus(0)).toThrowError(
+      "Cannot have a modulus of zero",
+    );
   });
 
   it("should divide the given value to the collection items", () => {
