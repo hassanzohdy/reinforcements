@@ -1750,6 +1750,26 @@ const users = collect([
 users.multiply('age', 2); // [{ name: 'John', age: 40 }, { name: 'Jane', age: 50 }, { name: 'Jack', age: 60 }]
 ```
 
+You can also double numbers directly by using `double` method.
+
+```ts
+const numbers = collect([1, 2, 3, 4, 5]);
+
+numbers.double(); // [2, 4, 6, 8, 10]
+```
+
+Double key values
+
+```ts
+const users = collect([
+    { name: 'John', age: 20 },
+    { name: 'Jane', age: 25 },
+    { name: 'Jack', age: 30 },
+]);
+
+users.double('age'); // [{ name: 'John', age: 40 }, { name: 'Jane', age: 50 }, { name: 'Jack', age: 60 }]
+```
+
 ## Divide
 
 The `divide` method divide the given value to each element of the array.

@@ -2397,6 +2397,26 @@ describe("reinforcements/ImmutableCollection/math", () => {
     expect(collection.all()).toEqual([2, 4, 6, 8, 10]);
   });
 
+  it("should double the collection items", () => {
+    const collection = collect([1, 2, 3, 4, 5]).double();
+
+    expect(collection.all()).toEqual([2, 4, 6, 8, 10]);
+  });
+
+  it("should double the given key value", () => {
+    const collection = collect([
+      { name: "Ahmed", age: 20 },
+      { name: "Mohamed", age: 25 },
+      { name: "Ali", age: 30 },
+    ]).double("age");
+
+    expect(collection.all()).toEqual([
+      { name: "Ahmed", age: 40 },
+      { name: "Mohamed", age: 50 },
+      { name: "Ali", age: 60 },
+    ]);
+  });
+
   it("should multiply the given value to the given key of the collection items", () => {
     const collection = collect([
       { name: "Ahmed", age: 20 },

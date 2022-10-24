@@ -230,6 +230,13 @@ export default class ImmutableCollection {
   }
 
   /**
+   * Double the given key in each element or the element by 2
+   */
+  public double(key?: string) {
+    return key ? this.multiply(key, 2) : this.multiply(2);
+  }
+
+  /**
    * Divide the given amount to each element or given key in each element
    */
   public divide(amount: number);
