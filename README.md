@@ -767,6 +767,7 @@ The following list defines all available string utilities
 - `capitalize`
 - `toCamelCase`
 - `toSnakeCase`
+- `toKebabCase`
 - `toStudlyCase`
 - `ucfirst`
 - `toInputName`
@@ -842,6 +843,30 @@ import { toSnakeCase } from "@mongez/reinforcements";
 const words = "Hello World";
 
 console.log(toSnakeCase(words, '-', false)); // Hello_World
+```
+
+### Convert string to kebab case
+
+Convert string to kebab case, each word in string Separated by **whitespace** or **dashes** or **Upper Letters** `toKebabCase(string: string, lowerAll: boolean = true): string`.
+
+The final output of the text will be all letters in lower case string separated by \- **dashes**.
+
+```ts
+import { toKebabCase } from "@mongez/reinforcements";
+
+const words = "hello world";
+
+console.log(toKebabCase(words)); // hello-world
+```
+
+If you want to ignore the lower case conversion, set the second argument to false.
+
+```ts
+import { toKebabCase } from "@mongez/reinforcements";
+
+const words = "Hello World";
+
+console.log(toKebabCase(words, false)); // Hello-World
 ```
 
 ### Convert string to studly case
@@ -1197,6 +1222,8 @@ If you want to contribute to this package, you can check the [todo list page](./
 
 ## Change Log
 
+- 2.0.5 (25 Oct 2022)
+  - Added `toKebabCase` function
 - 2.0.0 (24 Oct 2022)
   - Fully refactored the code.
   - Added Immutable Collections class.
