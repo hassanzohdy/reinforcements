@@ -49,6 +49,7 @@ export {
 } from "./string/startsWithArabic";
 export { default as toCamelCase } from "./string/toCamelCase";
 export { default as toInputName } from "./string/toInputName";
+export { default as toKebabCase } from "./string/toKebabCase";
 export { default as toSnakeCase } from "./string/toSnakeCase";
 export { default as toStudlyCase } from "./string/toStudlyCase";
 export { default as trim } from "./string/trim";
