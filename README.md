@@ -498,6 +498,48 @@ import { flatten } from "@mongez/reinforcements";
 console.log(flatten(user));
 ```
 
+If the object has an instance of class, all class members (except for the functions) will be included in the flattened object.
+
+```ts
+import { Obj } from "@mongez/reinforcements";
+
+class User {
+  id = 1;
+  name = "Hasan Zohdy";
+  email = "",
+  job = {
+    title: "Software Engineer",
+  };
+  address = {
+    country: "Egypt",
+    building: {
+      number: 12,
+      floor: {
+        number: 3,
+      },
+    },
+  };
+}
+
+const user = new User();
+
+console.log(Obj.flatten(user));
+```
+
+Output:
+
+```json
+{
+  "id": 1,
+  "name": "Hasan Zohdy",
+  "email": "",
+  "job.title": "Software Engineer",
+  "address.country": "Egypt",
+  "address.building.number": 12,
+  "address.building.floor.number": 3
+}
+```
+
 ### Sort object by its keys
 
 To sort objects based on their keys alphabets recursively use `Obj.sort(object: object, recursive: boolean = true): object` function.

@@ -384,6 +384,7 @@ describe("reinforcements/ImmutableCollection/filtration", () => {
     expect(
       collection.where("numbers", "is a", ImmutableCollection).all(),
     ).toEqual([{ name: "Ahmed", age: 20, numbers: collect([1, 2, 3]) }]);
+
     expect(
       collection.where("numbers", "instanceof", ImmutableCollection).all(),
     ).toEqual([{ name: "Ahmed", age: 20, numbers: collect([1, 2, 3]) }]);
