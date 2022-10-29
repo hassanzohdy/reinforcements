@@ -3,11 +3,11 @@ function getValue(object: any, keyChain: string, defaultValue: any) {
   // then loop through the array and get the value of each key until the last key
   // then return the value of the last key
   return keyChain.split(".").reduce((acc, key) => {
-    if (acc === undefined) {
+    if (acc === undefined || typeof acc !== "object") {
       return defaultValue;
     }
 
-    return acc.hasOwnProperty(key) ? acc[key] : defaultValue;
+    return key in acc ? acc[key] : defaultValue;
   }, object);
 }
 
