@@ -32,7 +32,7 @@ describe("reinforcements/object/get", () => {
         },
       },
     };
-    expect(get(object, "a.b.d", 2)).toBe(2);
+    expect(get(object, "a.b.d", 4)).toBe(4);
   });
 
   it("should return default value if the given object is not an object", () => {
