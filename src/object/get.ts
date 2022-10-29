@@ -9,7 +9,9 @@ function getValue(object: any, keyChain: string, defaultValue: any) {
 
     if (acc === null) return acc;
 
-    return acc.hasOwnProperty(key) ? acc[key] : defaultValue;
+    return acc.hasOwnProperty && acc.hasOwnProperty(key)
+      ? acc[key]
+      : defaultValue;
   }, object);
 }
 
