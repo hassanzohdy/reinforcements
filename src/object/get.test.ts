@@ -64,4 +64,16 @@ describe("reinforcements/object/get", () => {
 
     expect(get(data, "0.numbers.1")).toBe(2);
   });
+
+  it("should return value from object even if value is a function", () => {
+    const object = {
+      a: {
+        b: {
+          c: () => 1,
+        },
+      },
+    };
+
+    expect(get(object, "a.b.c")).toBeInstanceOf(Function);
+  });
 });

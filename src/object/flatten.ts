@@ -38,14 +38,17 @@ export default function flatten(
     return object;
   }
 
-  object = toPlainObject(object);
+  // object = toPlainObject(object);
 
   for (const key of Object.keys(object)) {
     const value: any = object[key];
 
     const keyChain = parent ? parent + separator + key : key;
 
-    if (Array.isArray(value) && value.length === 0) {
+    if (
+      (Array.isArray(value) && value.length === 0) ||
+      typeof value === "function"
+    ) {
       root[keyChain] = value;
     } else if (canBeFlatten(value)) {
       if (keepNestedOriginalObject) {

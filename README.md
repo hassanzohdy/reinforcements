@@ -498,7 +498,7 @@ import { flatten } from "@mongez/reinforcements";
 console.log(flatten(user));
 ```
 
-If the object has an instance of class, all class members (except for the functions) will be included in the flattened object.
+If the object has an instance of class, all class members will be included in the flattened object.
 
 ```ts
 import { Obj } from "@mongez/reinforcements";
