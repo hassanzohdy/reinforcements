@@ -45,12 +45,18 @@ const users = collection.where('age', '>', 25).where('age', '<', 30);
 
 You can see the entire documentation in [Collection](./docs/collection.md) Page.
 
-## Working with objects
+## Getting value from an object
 
-Reinforcements is shipped with `Obj` object which provides good utilities for working with objects.
+To get a value from an object using `dot.notation` syntax, you can use `get` function.
 
 ```ts
-import { Obj } from "@mongez/reinforcements";
+get(object: object, key: string, defaultValue?: any): any
+```
+
+Let's see an example:
+
+```ts
+import { get } from "@mongez/reinforcements";
 
 let user = {
   id: 1,
@@ -69,12 +75,12 @@ let user = {
   },
 };
 
-Obj.get(user, "id"); // 1
-Obj.get(user, "name"); // {first: 'Hasan', last: 'Zohdy'}
-Obj.get(user, "name.first"); // Hasan
-Obj.get(user, "address.country"); // Egypt
-Obj.get(user, "address.building.number"); // 12
-Obj.get(user, "address.building.floor.number"); // 3
+get(user, "id"); // 1
+get(user, "name"); // {first: 'Hasan', last: 'Zohdy'}
+get(user, "name.first"); // Hasan
+get(user, "address.country"); // Egypt
+get(user, "address.building.number"); // 12
+get(user, "address.building.floor.number"); // 3
 ```
 
 As we can see in the previous example, we can get values from objects using **dot.notation.syntax**.
@@ -82,23 +88,15 @@ As we can see in the previous example, we can get values from objects using **do
 If the key is missing in the object, we may return default value instead.
 
 ```ts
-Obj.get(user, "email", "no-email"); // no-email
-```
-
-You can also import `get` function directly from the package.
-
-```ts
-import { get } from "@mongez/reinforcements";
-
-get(user, "id"); // 1
+get(user, "email", "no-email"); // no-email
 ```
 
 ### Setting value in object
 
-This works exactly but `Obj.set(object, key, value)` will set the value to the given object, which means it won't return **a new object** but the same object.
+This works exactly but `set(object, key, value)` will set the value to the given object, which means it won't return **a new object** but the same object.
 
 ```ts
-import { Obj } from "@mongez/reinforcements";
+import { set } from "@mongez/reinforcements";
 
 let user = {
   id: 1,
@@ -117,14 +115,14 @@ let user = {
   },
 };
 
-Obj.set(user, "email", "hassanzohdy@gmail.com");
-Obj.set(user, "address.building.floor.apartment", 36);
-Obj.set(user, "job.title", "Software Engineer");
+set(user, "email", "hassanzohdy@gmail.com");
+set(user, "address.building.floor.apartment", 36);
+set(user, "job.title", "Software Engineer");
 ```
 
-In the previous example, we've three different cases, first case which would not be used with `Obj.set` which is setting one level key to the given object `user`, in this case we added `email` key.
+In the previous example, we've three different cases, first case which would not be used with `set` which is setting one level key to the given object `user`, in this case we added `email` key.
 
-In the second scenario, we added a new nested key in `address.building.floor` object, which is `apartment`, this would be a nice case to use `Obj.set`.
+In the second scenario, we added a new nested key in `address.building.floor` object, which is `apartment`, this would be a nice case to use `set`.
 
 The last scenario, we don't have `job` key, the function will create `job` key then set `job.title` inside it.
 
@@ -154,22 +152,12 @@ The final user object will be:
 }
 ```
 
-You can also import `set` function directly from the package.
-
-```ts
-import { set } from "@mongez/reinforcements";
-
-set(user, "email", "hassanzohdy@gmail.com");
-```
-
 ### Merging objects deeply
 
-Another good feature from `Obj` object is to merge objects deeply.
-
-You may use `Obj.merge` or import `merge` directly from the package.
+To merge two objects deeply, you can use `merge` function.
 
 ```ts
-import { Obj } from "@mongez/reinforcements";
+import { merge } from "@mongez/reinforcements";
 
 const user = {
   id: 1,
@@ -183,7 +171,7 @@ const userJob = {
   },
 };
 
-const userWithJob = Obj.merge(user, userJob);
+const userWithJob = merge(user, userJob);
 ```
 
 Final output:
@@ -222,7 +210,7 @@ const userWithJob = Object.assign({}, user, userJob);
 In the previous example, that would be the proper approach as the merging depth here is simple, but let's take another example.
 
 ```ts
-import { Obj } from "@mongez/reinforcements";
+import { merge } from "@mongez/reinforcements";
 
 const user = {
   id: 1,
@@ -238,7 +226,7 @@ const userJob = {
   },
 };
 
-const userWithJob = Obj.merge(user, userJob);
+const userWithJob = merge(user, userJob);
 ```
 
 The output will be:
@@ -286,17 +274,9 @@ const userWithJob = Object.assign({}, user, userJob);
 }
 ```
 
-You can also import `merge` function directly from the package.
-
-```ts
-import { merge } from "@mongez/reinforcements";
-
-const userWithJob = merge(user, userJob);
-```
-
 ### Clone objects
 
-You can also make a **deep copy** for the given object using `Obj.clone` or `clone`
+You can also make a **deep copy** for the given object using `clone`
 
 ```ts
 const user = {
@@ -315,10 +295,10 @@ console.log(normalClonedUser.name.first); // Ali
 console.log(user.name.first); // Ali
 ```
 
-Now using `Obj.clone`
+Now using `clone` method
 
 ```ts
-import { Obj } from "@mongez/reinforcements";
+import { clone } from "@mongez/reinforcements";
 
 const user = {
   id: 1,
@@ -327,7 +307,7 @@ const user = {
   },
 };
 
-const normalClonedUser = Obj.clone(user);
+const normalClonedUser = clone(user);
 
 cloned.name.first = "Ali";
 
@@ -338,46 +318,38 @@ console.log(user.name.first); // Hasan
 
 ### Getting certain values from object
 
-To get a new object from the base object with only list of keys, use `Obj.only(object: object, keys: string[]): object`
-
-```ts
-import { Obj } from "@mongez/reinforcements";
-
-const user = {
-  id: 1,
-  name: "Hasan Zohdy",
-  email: "hassanzohdy@gmail.com",
-  job: {
-    title: "Software Engineer",
-  },
-  address: {
-    country: "Egypt",
-    building: {
-      number: 12,
-      floor: {
-        number: 3,
-      },
-    },
-  },
-};
-
-const simpleUserData = Obj.only(user, ["id", "name", "email"]); // {id: 1, name: 'Hasan Zohdy', email: 'hassanzohdy@gmail.com'}
-```
-
-You can also import `only` function directly from the package.
+To get a new object from the base object with only list of keys, use `only(object: object, keys: string[]): object`
 
 ```ts
 import { only } from "@mongez/reinforcements";
 
-const simpleUserData = only(user, ["id", "name", "email"]);
+const user = {
+  id: 1,
+  name: "Hasan Zohdy",
+  email: "hassanzohdy@gmail.com",
+  job: {
+    title: "Software Engineer",
+  },
+  address: {
+    country: "Egypt",
+    building: {
+      number: 12,
+      floor: {
+        number: 3,
+      },
+    },
+  },
+};
+
+const simpleUserData = only(user, ["id", "name", "email"]); // {id: 1, name: 'Hasan Zohdy', email: 'hassanzohdy@gmail.com'}
 ```
 
 ### Getting all object except for certain keys
 
-This is the reverse of `obj.only`, which returns the entire object except for the given keys.
+This is the reverse of `only`, which returns the entire object except for the given keys.
 
 ```ts
-import { Obj } from "@mongez/reinforcements";
+import { except } from "@mongez/reinforcements";
 
 const user = {
   id: 1,
@@ -397,15 +369,7 @@ const user = {
   },
 };
 
-const simpleUserData = Obj.except(user, ["id", "address", "email"]); // { name: 'Hasan Zohdy', email: 'hassanzohdy@gmail.com', job: {title: 'Software Engineer'}}
-```
-
-You can also import `except` function directly from the package.
-
-```ts
-import { except } from "@mongez/reinforcements";
-
-const simpleUserData = except(user, ["id", "address", "email"]);
+const simpleUserData = except(user, ["id", "address", "email"]); // { name: 'Hasan Zohdy', email: 'hassanzohdy@gmail.com', job: {title: 'Software Engineer'}}
 ```
 
 ### Flatten objects
@@ -413,7 +377,7 @@ const simpleUserData = except(user, ["id", "address", "email"]);
 We can flatten any big fat objects into one object, with only one dimension.
 
 ```ts
-import { Obj } from "@mongez/reinforcements";
+import { flatten } from "@mongez/reinforcements";
 
 const user = {
   id: 1,
@@ -433,7 +397,7 @@ const user = {
   },
 };
 
-console.log(Obj.flatten(user));
+console.log(flatten(user));
 ```
 
 Output:
@@ -453,7 +417,7 @@ Output:
 You may set the separator by passing second argument to the function.
 
 ```ts
-import { Obj } from "@mongez/reinforcements";
+import { flatten } from "@mongez/reinforcements";
 
 const user = {
   id: 1,
@@ -473,7 +437,7 @@ const user = {
   },
 };
 
-console.log(Obj.flatten(user, "->"));
+console.log(flatten(user, "->"));
 ```
 
 Output:
@@ -490,18 +454,10 @@ Output:
 }
 ```
 
-You can also import `flatten` function directly from the package.
-
-```ts
-import { flatten } from "@mongez/reinforcements";
-
-console.log(flatten(user));
-```
-
 If the object has an instance of class, all class members will be included in the flattened object.
 
 ```ts
-import { Obj } from "@mongez/reinforcements";
+import { flatten } from "@mongez/reinforcements";
 
 class User {
   id = 1;
@@ -523,7 +479,7 @@ class User {
 
 const user = new User();
 
-console.log(Obj.flatten(user));
+console.log(flatten(user));
 ```
 
 Output:
@@ -542,10 +498,10 @@ Output:
 
 ### Sort object by its keys
 
-To sort objects based on their keys alphabets recursively use `Obj.sort(object: object, recursive: boolean = true): object` function.
+To sort objects based on their keys alphabets recursively use `sort(object: object, recursive: boolean = true): object` function.
 
 ```ts
-import { Obj } from "@mongez/reinforcements";
+import { sort } from "@mongez/reinforcements";
 
 const user = {
   id: 1,
@@ -565,7 +521,7 @@ const user = {
   },
 };
 
-console.log(Obj.sort(user));
+console.log(sort(user));
 ```
 
 Output:
@@ -593,7 +549,7 @@ Output:
 To sort the object only the first level, pass the second argument as false.
 
 ```ts
-import { Obj } from "@mongez/reinforcements";
+import { sort } from "@mongez/reinforcements";
 
 const user = {
   id: 1,
@@ -613,7 +569,7 @@ const user = {
   },
 };
 
-console.log(Obj.sort(user, false));
+console.log(sort(user, false));
 ```
 
 Output:
@@ -636,14 +592,6 @@ Output:
   },
   "name": "Hasan Zohdy"
 }
-```
-
-You can also import `sort` function directly from the package.
-
-```ts
-import { sort } from "@mongez/reinforcements";
-
-console.log(sort(user));
 ```
 
 ## Equal Values
@@ -1258,7 +1206,7 @@ function sendEmail(e: any) {
 
 To run tests run `npm run test` or `yarn test`
 
-## TODO
+## CONTRIBUTING
 
 If you want to contribute to this package, you can check the [todo list page](./docs/todo.md).
 
