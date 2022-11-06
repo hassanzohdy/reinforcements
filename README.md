@@ -372,6 +372,36 @@ const user = {
 const simpleUserData = except(user, ["id", "address", "email"]); // { name: 'Hasan Zohdy', email: 'hassanzohdy@gmail.com', job: {title: 'Software Engineer'}}
 ```
 
+### Unset keys from object
+
+> Added in 2.1.0
+
+To remove certain keys from the object, use `unset(object: object, keys: string[]): object`
+
+```ts
+import { unset } from "@mongez/reinforcements";
+
+const user = {
+  id: 1,
+  name: "Hasan Zohdy",
+  email: "hassanzohdy@gmail.com",
+  job: {
+    title: "Software Engineer",
+  },
+  address: {
+    country: "Egypt",
+    building: {
+      number: 12,
+      floor: {
+        number: 3,
+      },
+    },
+  },
+};
+
+const simpleUserData = unset(user, ["id", "address", "email"]); // { name: 'Hasan Zohdy', job: {title: 'Software Engineer'}}
+```
+
 ### Flatten objects
 
 We can flatten any big fat objects into one object, with only one dimension.
@@ -1212,6 +1242,9 @@ If you want to contribute to this package, you can check the [todo list page](./
 
 ## Change Log
 
+- 2.1.0 (06 Nov 2022)
+  - Added [unset](#unset-keys-from-object) function.
+  - Fixed `except` and `only` functions to accept dot notation syntax.
 - 2.0.5 (25 Oct 2022)
   - Added `toKebabCase` function
 - 2.0.0 (24 Oct 2022)
