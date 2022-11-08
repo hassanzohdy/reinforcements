@@ -7,6 +7,9 @@ test("Chunk array by the given size", () => {
 
   expect(chunkedOrders.length).toEqual(2);
   expect(chunk(orders, 1).length).toEqual(3);
+
+  const array = [1, 2, 3, 4, 5];
+  expect(chunk(array, 2)).toEqual([[1, 2], [3, 4], [5]]);
 });
 
 test("Chunk string by the given size", () => {

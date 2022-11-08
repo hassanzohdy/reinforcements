@@ -1,6 +1,7 @@
 export { default as average, default as avg } from "./array/average";
 export { default as chunk } from "./array/chunk";
 export { default as count } from "./array/count";
+export { default as countBy } from "./array/countBy";
 export { default as even } from "./array/even";
 export { default as evenIndexes } from "./array/evenIndexes";
 export { default as groupBy } from "./array/groupBy";
@@ -13,20 +14,26 @@ export { default as pluck } from "./array/pluck";
 export { default as pushUnique } from "./array/pushUnique";
 export { default as sum } from "./array/sum";
 export { default as unique } from "./array/unique";
+export { default as unshiftUnique } from "./array/unshiftUnique";
+// mixed
 export { default as areEqual } from "./mixed/areEqual/areEqual";
 export { default as clone } from "./mixed/clone/clone";
 export { default as shuffle } from "./mixed/shuffle/shuffle";
+// numbers
 export { default as round } from "./number/round";
+// objects
 export { default as except } from "./object/except";
 export { default as flatten } from "./object/flatten";
 export { default as get } from "./object/get";
 export { default as map } from "./object/map";
 export { default as merge } from "./object/merge";
-export { default as Obj } from "./object/obj";
 export { default as only } from "./object/only";
 export { default as set } from "./object/set";
 export { default as sort } from "./object/sort";
+export { default as unset } from "./object/unset";
+// Random
 export { default as Random } from "./Random/random";
+// string
 export { default as capitalize } from "./string/capitalize";
 export { default as extension } from "./string/extension";
 export { default as ltrim } from "./string/ltrim";
@@ -50,5 +57,6 @@ export { default as toSnakeCase } from "./string/toSnakeCase";
 export { default as toStudlyCase } from "./string/toStudlyCase";
 export { default as trim } from "./string/trim";
 export { default as ucfirst } from "./string/ucfirst";
+// utils
 export { default as debounce } from "./utils/debounce";
 export { default as escapeRegex } from "./utils/escapeRegex";

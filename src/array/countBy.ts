@@ -3,7 +3,10 @@ import get from "../object/get";
 /**
  * Count the occurrences of values in an array for the given key
  */
-export default function countBy(array: any[], key: string) {
+export default function countBy(
+  array: any[],
+  key: string,
+): { [key: string]: number } {
   if (!Array.isArray(array)) {
     return {};
   }

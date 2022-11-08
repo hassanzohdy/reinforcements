@@ -14,7 +14,23 @@ or using `npm`
 
 ## Usage
 
-## Getting value from an object
+We'll cover all reinforcements utilities by type, each type and mixed types and other utilities will be covered in a separate section.
+
+## Objects
+
+Here is the available utilities for objects:
+
+- [get](#getting-value-from-an-object): Get value from an object using dot notation syntax.
+- [set](#setting-value-in-object): Set value to an object using dot notation syntax.
+- [merge](#merging-objects-deeply): Merge objects deeply (Not shallow).
+- [clone](#clone-objects): Clone an object/array using deep clone (Not shallow).
+- [only](#getting-only-certain-keys-from-object): Get only the given keys from an object and return it as a new object.
+- [except](#getting-all-object-except-for-certain-keys): Get all object except for certain keys and return it as a new object.
+- [unset](#unset-keys-from-object): Unset keys from an object.
+- [flatten](#flatten-objects): Flatten a nested object into a single level object.
+- [sort](#sort-object-by-its-keys): Sort object by its keys.
+
+### Getting value from an object
 
 To get a value from an object using `dot.notation` syntax, you can use `get` function.
 
@@ -285,7 +301,7 @@ console.log(cloned.name.first); // Ali
 console.log(user.name.first); // Hasan
 ```
 
-### Getting certain values from object
+### Getting only certain keys from object
 
 To get a new object from the base object with only list of keys, use `only(object: object, keys: string[]): object`
 
@@ -593,7 +609,1160 @@ Output:
 }
 ```
 
-## Equal Values
+## Arrays
+
+Now let's move to arrays utilities.
+
+- [Group By](#group-by): Group array of objects by a certain key/keys.
+- [Pluck](#pluck): Get an array of values from an array of objects.
+- [Chunk](#chunk): Split array into chunks.
+- [Count](#count): Count the number of item that contains the given key or callback.
+- [Count By](#count-by): Count total occurrence of values for the given key.
+- [Even](#even): Get even numbers from an array or by given key.
+- [Odd](#odd): Get odd numbers from an array or by given key.
+- [Even Indexes](#even-indexes): Get elements in even indexes of an array.
+- [Odd Indexes](#odd-indexes): Get elements in odd indexes of an array.
+- [Min](#min): Get the minimum value from an array or by given key.
+- [Max](#max): Get the maximum value from an array or by given key.
+- [Sum](#sum): Get the sum of all values in an array or by given key.
+- [Average](#average): Get the average of all values in an array or by given key.
+- [Median](#median): Get the median of all values in an array or by given key.
+- [Unique](#unique): Get unique values from an array.
+- [Push Unique](#push-unique): Push a value or more to an array if it doesn't exist.
+- [Unshift Unique](#unshift-unique): Add a value or more to the beginning of an array if it doesn't exist.
+
+### Pluck
+
+Pluck a certain key/keys from an array of objects.
+
+`pluck(array: any[], key?: string | string[]): any[]`
+
+```ts
+import { pluck } from "@mongez/reinforcements";
+
+const array = [
+  { name: "John", age: 20 },
+  { name: "Jane", age: 25 },
+  { name: "Jack", age: 30 },
+];
+
+console.log(pluck(array, "name")); // ["John", "Jane", "Jack"]
+```
+
+You may also pluck multiple keys by passing an array of keys.
+
+```ts
+import { pluck } from "@mongez/reinforcements";
+
+const array = [
+  { name: "John", age: 20, job: "developer" },
+  { name: "Jane", age: 25, job: "designer" },
+  { name: "Jack", age: 30, job: "manager" },
+];
+
+console.log(pluck(array, ["name", "job"])); // [{name: "John", job: "developer"}, {name: "Jane", job: "designer"}, {name: "Jack", job: "manager"}]
+```
+
+### Group By
+
+Group an array of objects by a certain key or more.
+
+`groupBy(array: Record<string, any>[], groupByKey: string | string[], listAs = "data"): Record<string, any>[]`
+
+Group by a single key:
+
+```ts
+import { groupBy } from "@mongez/reinforcements";
+
+ const studentsClasses = [
+  {
+    id: 1,
+    class: "A",
+    grade: 1,
+  },
+  {
+    id: 2,
+    class: "B",
+    grade: 2,
+  },
+  {
+    id: 3,
+    class: "A",
+    grade: 3,
+  },
+  {
+    id: 4,
+    class: "B",
+    grade: 2,
+  },
+  {
+    id: 5,
+    class: "B",
+    grade: 2,
+  },
+  {
+    id: 6,
+    class: "C",
+    grade: 5,
+  },
+];
+
+console.log(groupBy(studentsClasses, "class"));
+```
+
+Output:
+
+```json
+[
+  {
+    "class": "A",
+    "data": [
+      {
+        "id": 1,
+        "class": "A",
+        "grade": 1
+      },
+      {
+        "id": 3,
+        "class": "A",
+        "grade": 3
+      }
+    ]
+  },
+  {
+    "class": "B",
+    "data": [
+      {
+        "id": 2,
+        "class": "B",
+        "grade": 2
+      },
+      {
+        "id": 4,
+        "class": "B",
+        "grade": 2
+      },
+      {
+        "id": 5,
+        "class": "B",
+        "grade": 2
+      }
+    ]
+  },
+  {
+    "class": "C",
+    "data": [
+      {
+        "id": 6,
+        "class": "C",
+        "grade": 5
+      }
+    ]
+  }
+]
+```
+
+Group By Multiple Keys:
+
+```ts
+import { groupBy } from "@mongez/reinforcements";
+
+const studentsClasses = [
+  {
+    id: 1,
+    class: "A",
+    grade: 1,
+  },
+  {
+    id: 2,
+    class: "B",
+    grade: 2,
+  },
+  {
+    id: 3,
+    class: "A",
+    grade: 3,
+  },
+  {
+    id: 4,
+    class: "B",
+    grade: 2,
+  },
+  {
+    id: 5,
+    class: "B",
+    grade: 2,
+  },
+  {
+    id: 6,
+    class: "C",
+    grade: 5,
+  },
+];
+
+console.log(groupBy(studentsClasses, ["class", "grade"]));
+```
+
+Output:
+
+```json
+[
+  {
+    "class": "A",
+    "grade": 1,
+    "data": [
+      {
+        "id": 1,
+        "class": "A",
+        "grade": 1
+      }
+    ]
+  },
+  {
+    "class": "A",
+    "grade": 3,
+    "data": [
+      {
+        "id": 3,
+        "class": "A",
+        "grade": 3
+      }
+    ]
+  },
+  {
+    "class": "B",
+    "grade": 2,
+    "data": [
+      {
+        "id": 2,
+        "class": "B",
+        "grade": 2
+      },
+      {
+        "id": 4,
+        "class": "B",
+        "grade": 2
+      },
+      {
+        "id": 5,
+        "class": "B",
+        "grade": 2
+      }
+    ]
+  },
+  {
+    "class": "C",
+    "grade": 5,
+    "data": [
+      {
+        "id": 6,
+        "class": "C",
+        "grade": 5
+      }
+    ]
+  }
+]
+```
+
+You can also change the `data` key to any other key by passing the third argument.
+
+```ts
+import { groupBy } from "@mongez/reinforcements";
+
+const studentsClasses = [
+  {
+    id: 1,
+    class: "A",
+    grade: 1,
+  },
+  {
+    id: 2,
+    class: "B",
+    grade: 2,
+  },
+  {
+    id: 3,
+    class: "A",
+    grade: 3,
+  },
+  {
+    id: 4,
+    class: "B",
+    grade: 2,
+  },
+  {
+    id: 5,
+    class: "B",
+    grade: 2,
+  },
+  {
+    id: 6,
+    class: "C",
+    grade: 5,
+  },
+];
+
+console.log(groupBy(studentsClasses, ["class", "grade"], 'students'));
+```
+
+Output:
+
+```json
+[
+  {
+    "class": "A",
+    "grade": 1,
+    "students": [
+      {
+        "id": 1,
+        "class": "A",
+        "grade": 1
+      }
+    ]
+  },
+  {
+    "class": "A",
+    "grade": 3,
+    "students": [
+      {
+        "id": 3,
+        "class": "A",
+        "grade": 3
+      }
+    ]
+  },
+  {
+    "class": "B",
+    "grade": 2,
+    "students": [
+      {
+        "id": 2,
+        "class": "B",
+        "grade": 2
+      },
+      {
+        "id": 4,
+        "class": "B",
+        "grade": 2
+      },
+      {
+        "id": 5,
+        "class": "B",
+        "grade": 2
+      }
+    ]
+  },
+  {
+    "class": "C",
+    "grade": 5,
+    "students": [
+      {
+        "id": 6,
+        "class": "C",
+        "grade": 5
+      }
+    ]
+  }
+]
+```
+
+### Chunk
+
+Split array into chunks.
+
+`chunk(array: any[] | string, size: number): any[]`
+
+```ts
+import { chunk } from "@mongez/reinforcements";
+
+const array = [1, 2, 3, 4, 5];
+
+console.log(chunk(array, 2)); // [[1, 2], [3, 4], [5]]
+```
+
+### Count
+
+Count the number of item that contains the given key or callback.
+
+`count(data: any[], key: string | Parameters<typeof Array.prototype.filter>[0]): number`
+
+```ts
+import { count } from "@mongez/reinforcements";
+
+const array = [
+  { id: 1, value: 1 },
+  { id: 2, value: 2 },
+  { id: 3, value: 3 },
+  { id: 4, value: 4 },
+  { id: 5, value: 5 },
+];
+
+console.log(count(array, "value")); // 5
+```
+
+We can also make a count using a callback.
+
+```ts
+import { count } from "@mongez/reinforcements";
+
+const array = [
+  { id: 1, value: 1 },
+  { id: 2, value: 2 },
+  { id: 3, value: 3 },
+  { id: 4, value: 4 },
+  { id: 5, value: 5 },
+];
+
+console.log(count(array, (item) => item.value > 2)); // 3
+```
+
+### Count By
+
+Count total occurrence of values for the given key.
+
+`countBy(array: any[], key: string): { [key: string]: number`
+
+```ts
+import { countBy } from "@mongez/reinforcements";
+
+const array = [
+  { id: 1, animal: 'dog' },
+  { id: 2, animal: 'cat' },
+  { id: 3, animal: 'dog' },
+  { id: 4, animal: 'cat' },
+  { id: 5, animal: 'dog' },
+];
+
+console.log(countBy(array, 'animal')); // { dog: 3, cat: 2 }
+```
+
+### Even
+
+Get even numbers from the array or by the given key.
+
+`even(array: any[], key?: string): any[]`
+
+```ts
+import { even } from "@mongez/reinforcements";
+
+const array = [1, 2, 3, 4, 5];
+
+console.log(even(array)); // [2, 4]
+```
+
+We can also get even numbers by the given key.
+
+```ts
+import { even } from "@mongez/reinforcements";
+
+const array = [
+  { id: 1, value: 1 },
+  { id: 2, value: 2 },
+  { id: 3, value: 3 },
+  { id: 4, value: 4 },
+  { id: 5, value: 5 },
+];
+
+console.log(even(array, "value")); // [2, 4]
+```
+
+### Odd
+
+Get odd numbers from the array or by the given key.
+
+`odd(array: any[], key?: string): any[]`
+
+```ts
+import { odd } from "@mongez/reinforcements";
+
+const array = [1, 2, 3, 4, 5];
+
+console.log(odd(array)); // [1, 3, 5]
+```
+
+We can also get odd numbers by the given key.
+
+```ts
+import { odd } from "@mongez/reinforcements";
+
+const array = [
+  { id: 1, value: 1 },
+  { id: 2, value: 2 },
+  { id: 3, value: 3 },
+  { id: 4, value: 4 },
+  { id: 5, value: 5 },
+];
+
+console.log(odd(array, "value")); // [1, 3, 5]
+```
+
+### Even Indexes
+
+Get only array values in even indexes.
+
+`evenIndexes(array: any[]): any[]`
+
+```ts
+import { evenIndexes } from "@mongez/reinforcements";
+
+const array = [1, 2, 3, 4, 5];
+
+console.log(evenIndexes(array)); // [1, 3, 5]
+```
+
+### Odd Indexes
+
+Get only array values in odd indexes.
+
+`oddIndexes(array: any[]): any[]`
+
+```ts
+import { oddIndexes } from "@mongez/reinforcements";
+
+const array = [1, 2, 3, 4, 5];
+
+console.log(oddIndexes(array)); // [2, 4]
+```
+
+### min
+
+Get the minimum value from the array or by the given key.
+
+`min(array: any[], key?: string): number`
+
+```ts
+import { min } from "@mongez/reinforcements";
+
+const array = [1, 2, 3, 4, 5];
+
+console.log(min(array)); // 1
+```
+
+We can also get the minimum value by the given key.
+
+```ts
+import { min } from "@mongez/reinforcements";
+
+const array = [
+  { id: 1, value: 1 },
+  { id: 2, value: 2 },
+  { id: 3, value: 3 },
+  { id: 4, value: 4 },
+  { id: 5, value: 5 },
+];
+
+console.log(min(array, "value")); // 1
+```
+
+### max
+
+Get the maximum value from the array or by the given key.
+
+`max(array: any[], key?: string): number`
+
+```ts
+import { max } from "@mongez/reinforcements";
+
+const array = [1, 2, 3, 4, 5];
+
+console.log(max(array)); // 5
+```
+
+We can also get the maximum value by the given key.
+
+```ts
+import { max } from "@mongez/reinforcements";
+
+const array = [
+  { id: 1, value: 1 },
+  { id: 2, value: 2 },
+  { id: 3, value: 3 },
+  { id: 4, value: 4 },
+  { id: 5, value: 5 },
+];
+
+console.log(max(array, "value")); // 5
+```
+
+### sum
+
+Get the sum of all values in the array or by the given key.
+
+`sum(array: any[], key?: string): number`
+
+```ts
+import { sum } from "@mongez/reinforcements";
+
+const array = [1, 2, 3, 4, 5];
+
+console.log(sum(array)); // 15
+```
+
+We can also get the sum of all values by the given key.
+
+```ts
+import { sum } from "@mongez/reinforcements";
+
+const array = [
+  { id: 1, value: 1 },
+  { id: 2, value: 2 },
+  { id: 3, value: 3 },
+  { id: 4, value: 4 },
+  { id: 5, value: 5 },
+];
+
+console.log(sum(array, "value")); // 15
+```
+
+### Average
+
+Calculate the average of an array.
+
+`average(array: any[], key?: string): number`
+
+```ts
+import { average } from "@mongez/reinforcements";
+
+const array = [1, 2, 3, 4, 5];
+
+console.log(average(array)); // 3
+```
+
+You can also get an average of an array of objects by passing the key of the property you want to get the average of.
+
+```ts
+import { average } from "@mongez/reinforcements";
+
+const array = [
+  { id: 1, value: 1 },
+  { id: 2, value: 2 },
+  { id: 3, value: 3 },
+  { id: 4, value: 4 },
+  { id: 5, value: 5 },
+];
+
+console.log(average(array, "value")); // 3
+```
+
+### Median
+
+Calculate the median of an array or by the given key.
+
+`median(array: any[], key?: string): number`
+
+```ts
+import { median } from "@mongez/reinforcements";
+
+const array = [1, 2, 3, 4, 5];
+
+console.log(median(array)); // 3
+```
+
+We can also get the median by the given key.
+
+```ts
+import { median } from "@mongez/reinforcements";
+
+const array = [
+  { id: 1, value: 1 },
+  { id: 2, value: 2 },
+  { id: 3, value: 3 },
+  { id: 4, value: 4 },
+  { id: 5, value: 5 },
+];
+
+console.log(median(array, "value")); // 3
+```
+
+### Unique
+
+Get unique values from the array or by the given key.
+
+`unique(array: any[], key?: string): any[]`
+
+```ts
+import { unique } from "@mongez/reinforcements";
+
+const array = [1, 2, 3, 4, 5, 1, 2, 3, 4, 5];
+
+console.log(unique(array)); // [1, 2, 3, 4, 5]
+```
+
+We can also get unique values by the given key.
+
+```ts
+import { unique } from "@mongez/reinforcements";
+
+const array = [
+  { id: 1, value: 1 },
+  { id: 2, value: 2 },
+  { id: 3, value: 3 },
+  { id: 4, value: 4 },
+  { id: 5, value: 5 },
+  { id: 6, value: 1 },
+  { id: 7, value: 2 },
+  { id: 8, value: 3 },
+  { id: 9, value: 4 },
+  { id: 10, value: 5 },
+];
+
+console.log(unique(array, "value")); // [1, 2, 3, 4, 5]
+```
+
+### Push Unique
+
+Push a value or more to the array if it doesn't exist.
+
+`pushUnique<T = any>(array: T[], ...items: T[]): T[]`
+
+```ts
+import { pushUnique } from "@mongez/reinforcements";
+
+const array = [1, 2, 3, 4, 5];
+
+console.log(pushUnique(array, 6, 5, 6, 1, 2, 4, 3)); // [1, 2, 3, 4, 5, 6]
+```
+
+### Unshift Unique
+
+Add a value or more to the beginning array if it doesn't exist.
+
+`unshiftUnique<T = any>(array: T[], ...items: T[]): T[]`
+
+```ts
+import { unshiftUnique } from "@mongez/reinforcements";
+
+const array = [1, 2, 3, 4, 5];
+
+console.log(unshiftUnique(array, 6, 7, 5, 6, 1, 2, 4, 3)); // [7, 6, 1, 2, 3, 4, 5]
+```
+
+## Working With Strings
+
+The following list defines all available string utilities
+
+- [Capitalize](#capitalize): Capitalize the first letter of the given string.
+- [Camel Case](#camel-case): Convert the given string to camel case.
+- [Snake Case](#snake-case): Convert the given string to snake case.
+- [Kebab Case](#kebab-case): Convert the given string to kebab case.
+- [Studly/Pascal Case](#studly-case): Convert the given string to pascal/studly case.
+- [ucfirst](#ucfirst): Capitalize the first letter of each word in the given string.
+- [To Input Name](#toinputname): Convert a dot notation string to proper input name (Brackets).
+- [Extension](#extension): Get the extension of the given string.
+- [Read More Characters](#read-more-characters): Cut off the given string after the given number of characters.
+- [Read More Words](#read-more-words): Cut off the given string after the given number of words.
+- [Remove First](#remove-first-matched-string): Remove the first matched string from the given string.
+- [Remove Last](#remove-last-matched-string): Remove the last matched string from the given string.
+- [Replace First](#replace-first-matched-string): Replace the first matched string from the given string.
+- [Replace Last](#replace-last-matched-string): Replace the last matched string from the given string.
+- [Replace All](#replace-all-matched-string): Replace all matched strings from the given string.
+- [Repeats Of](#count-repeats-of-needle-in-a-string): Count Repeats of needle in a string.
+- [Trim](#trimming-values-from-string): Remove a string from the beginning and end of the given string.
+- [Trim Left](#trimming-values-from-string): Remove a string from the beginning of the given string.
+- [Trim Right](#trimming-values-from-string): Remove a string from the end of the given string.
+- [Starts With Arabic Letter](#detect-if-string-starts-with-arabic): Detect if string starts with Arabic letter.
+
+### Capitalize
+
+Capitalize each word in string Separated by whitespace `capitalize(string: string): string`.
+
+```ts
+import { capitalize } from "@mongez/reinforcements";
+
+const words = "hello world";
+
+console.log(capitalize(words)); // Hello World
+```
+
+### Camel Case
+
+Convert string to camel case, each word in string Separated by **whitespace** **underscores** or **dashes** `toCamelCase(string: string, separator: string = "\\s+|-|/|_|\\."): string`.
+
+```ts
+import { toCamelCase } from "@mongez/reinforcements";
+
+const words = "hello world";
+
+console.log(toCamelCase(words)); // helloWorld
+```
+
+Any of following will be used as a separator for the text, `.` | `-` | `whitespace` | `/`, you can set the separator as second argument though.
+
+### Snake Case
+
+Convert string to snake case, each word in string Separated by **whitespace** or **dashes** `toSnakeCase(string: string, separator: string = '_', lowerAll: boolean = true): string`.
+
+The final output of the text will be all letters in lower case string separated by \_ **underscores**.
+
+```ts
+import { toSnakeCase } from "@mongez/reinforcements";
+
+const words = "hello world";
+
+console.log(toSnakeCase(words)); // hello_world
+```
+
+You can also set custom separator as second argument.
+
+```ts
+import { toSnakeCase } from "@mongez/reinforcements";
+
+const words = "hello world";
+
+console.log(toSnakeCase(words, '-')); // hello-world
+```
+
+Also setting the third argument to false will not convert letters to lower case, will keep each letter as its own.
+
+```ts
+import { toSnakeCase } from "@mongez/reinforcements";
+
+const words = "Hello World";
+
+console.log(toSnakeCase(words, '-', false)); // Hello_World
+```
+
+### Kebab Case
+
+Convert string to kebab case, each word in string Separated by **whitespace** or **dashes** or **Upper Letters** `toKebabCase(string: string, lowerAll: boolean = true): string`.
+
+The final output of the text will be all letters in lower case string separated by \- **dashes**.
+
+```ts
+import { toKebabCase } from "@mongez/reinforcements";
+
+const words = "hello world";
+
+console.log(toKebabCase(words)); // hello-world
+```
+
+If you want to ignore the lower case conversion, set the second argument to false.
+
+```ts
+import { toKebabCase } from "@mongez/reinforcements";
+
+const words = "Hello World";
+
+console.log(toKebabCase(words, false)); // Hello-World
+```
+
+### Studly Case
+
+Convert string to studly case, each word in string Separated by **whitespace**, **underscores** or **dashes** `toStudlyCase(string: string, separator: string = "-|\\.|_|\\s"): string`.
+
+The final output will be capitalizing each word and glue it together without any separators such as **whitespace**, **under scores** or **dashes**.
+
+```ts
+import { toStudlyCase } from "@mongez/reinforcements";
+
+const words = "hello world";
+
+console.log(toStudlyCase(words)); // HelloWorld
+```
+
+### Ucfirst
+
+Capitalize only first word of string `ucfirst(string: string): string`.
+
+```ts
+import { ucfirst } from "@mongez/reinforcements";
+
+const words = "hello world";
+
+console.log(ucfirst(words)); // Hello world
+```
+
+### toInputName
+
+Convert dot notation syntax to valid html input name `toInputName(string: string): string`.
+
+```ts
+import { toInputName } from "@mongez/reinforcements";
+
+const name = "user.name";
+
+console.log(toInputName(name)); // user[name]
+console.log(toInputName("keywords.en.list[]")); // keywords[en][list][]
+```
+
+### Extension
+
+Get the last extension in the string, the string that is suffix to last dot `.`.
+
+`extension(string: string): string`
+
+```ts
+import { extension } from "@mongez/reinforcements";
+
+const file = "my-image.png";
+
+console.log(extension(file)); //png
+```
+
+### Read more characters
+
+This function will cut off the string when characters reach limit, and append three dots `...` at the end of the string.
+
+`readMoreChars(string: string, length: number, readMoreDots: string = '...'): string`
+
+```ts
+import { readMoreChars } from "@mongez/reinforcements";
+
+const string = "This is a fine words list";
+
+console.log(readMoreChars(string, 20)); // This is a fine words...
+
+// if the given limit is equal to or more than string length, then the entire string will be returned without any dots
+console.log(readMoreChars(string, 30)); // This is a fine words list
+
+// change the three dots to something else
+
+const string = "This is a fine words list";
+
+console.log(readMoreChars(string, 20, " >>")); // This is a fine words >>
+```
+
+### Read more words
+
+This function will cut off the string when words reach the given limit, and append three dots `...` at the end of the string.
+
+This works based on total number of whitespace in the string.
+
+`readMoreWords(string: string, length: number, readMoreDots: string = '...'): string`
+
+```ts
+import { readMoreWords } from "@mongez/reinforcements";
+
+const string = "This is a fine words list";
+
+console.log(readMoreWords(string, 4)); // This is a fine...
+
+// if the given limit is equal to or more than words length, then the entire string will be returned without any dots
+console.log(readMoreWords(string, 6)); // This is a fine words list
+
+// change the three dots to something else
+
+const string = "This is a fine words list";
+
+console.log(readMoreWords(string, 4, " >>")); // This is a fine >>
+```
+
+### Remove first matched string
+
+Remove the first matched needle to the given string.
+
+`removeFirst(string: string, needle: string): string`
+
+```ts
+import { removeFirst } from "@mongez/reinforcements";
+
+const words = "welcome home buddy, your are not safe at your home!";
+
+console.log(removeFirst(words, "home")); // welcome  buddy, your are not safe at your home!
+```
+
+### Remove last matched string
+
+Remove the last matched needle to the given string.
+
+`removeLast(string: string, needle: string): string`
+
+```ts
+import { removeLast } from "@mongez/reinforcements";
+
+const words = "welcome home buddy, your are not safe at your home!";
+
+console.log(removeLast(words, "home")); // welcome home buddy, your are not safe at your !
+```
+
+### Replace first matched string
+
+Replace the first matched needle to the given string.
+
+`replaceFirst(string:string, needle: string, replacement: string): string`
+
+```ts
+import { replaceFirst } from "@mongez/reinforcements";
+
+const words = "welcome home buddy, your are not safe at your home!";
+
+console.log(replaceFirst(words, "home", "country")); // welcome country buddy, your are not safe at your home!
+```
+
+### Replace last matched string
+
+Replace the last matched needle to the given string.
+
+`replaceLast(string:string, needle: string, replacement: string): string`
+
+```ts
+import { replaceLast } from "@mongez/reinforcements";
+
+const words = "welcome home buddy, your are not safe at your home!";
+
+console.log(replaceLast(words, "home", "country")); // welcome home buddy, your are not safe at your country!
+```
+
+### Replace all matched string
+
+Replace all matched words to the given string.
+
+`replaceAll(string: string, searchText:string, replacement: string): string`
+
+```ts
+import { replaceAll } from "@mongez/reinforcements";
+
+const words = "welcome home buddy, your are not safe at your home!";
+
+console.log(replaceAll(words, "home", "country")); // welcome country buddy, your are not safe at your country!
+```
+
+### Count repeats of needle in a string
+
+Count repeats of a needle in the given string.
+
+`repeatsOf(string: string, needle: string, caseSensitive: boolean = true): number`
+
+```ts
+import { repeatsOf } from "@mongez/reinforcements";
+
+const words = "welcome home buddy, your are not safe at your home!";
+
+console.log(repeatsOf(words, "home")); // 2
+```
+
+You may also detect number of repetitions ignoring case sensitive.
+
+```ts
+import { repeatsOf } from "@mongez/reinforcements";
+
+// note the first Home is capitalized
+const words = "welcome Home buddy, your are not safe at your home!";
+
+// case sensitive
+console.log(repeatsOf(words, "home")); // 1
+// case insensitive
+console.log(repeatsOf(words, "home", false)); // 2
+```
+
+### Trimming values from string
+
+Trim value from the start and the end of a string.
+
+`trim(string: string, needle: string = ' '): string`
+
+```ts
+import { trim } from "@mongez/reinforcements";
+
+const string = " space at the start and at the end ";
+
+console.log(trim(string)); // "space at the start and at the end"
+```
+
+But why not use [String.trim()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/Trim) directly? well they both will give you same functionality except that `trim()` function trims any value not only white space.
+
+Remove certain value:
+
+```ts
+import { trim } from "@mongez/reinforcements";
+
+const string = "/home/";
+
+console.log(trim(string, "/")); // home
+```
+
+### Left Trimming values from string
+
+Trim value from the start of a string.
+
+`ltrim(string: string, needle: string = ' '): string`
+
+```ts
+import { ltrim } from "@mongez/reinforcements";
+
+const string = " A space at the start and keep space at the end ";
+
+console.log(ltrim(string)); // "A space at the start and keep space at the end "
+```
+
+Remove certain value:
+
+```ts
+import { ltrim } from "@mongez/reinforcements";
+
+const string = "home/";
+
+console.log(ltrim(string, "/")); // home/
+```
+
+### Right Trimming values from string
+
+Trim value from the end of a string.
+
+`rtrim(string: string, needle: string = ' '): string`
+
+```ts
+import { rtrim } from "@mongez/reinforcements";
+
+const string = " Keep A space at the start and remove space at the end ";
+
+console.log(rtrim(string)); // " Keep A space at the start and remove space at the end"
+```
+
+Remove certain value:
+
+```ts
+import { ltrim } from "@mongez/reinforcements";
+
+const string = "home/";
+
+console.log(rtrim(string, "/")); // /home
+```
+
+### Detect if string starts with Arabic
+
+Determine if the string starts with Arabic letter.
+
+`startsWithArabic(text: string, trimmed: boolean = true): boolean {`
+
+```ts
+import { startsWithArabic } from "@mongez/reinforcements";
+
+const string = "English Text";
+
+const arabicString = "مرحبا";
+
+console.log(startsWithArabic(string)); // false
+console.log(startsWithArabic(arabicString)); // true
+```
+
+## Numbers
+
+Here are the aviation numbers utilities.
+
+- [Round](#round-float-numbers): Round numbers to a certain decimal places.
+
+### Round float numbers
+
+To round float numbers, use `round(value: number, precision: number = 2): number`.
+
+```ts
+import { round } from "@mongez/reinforcements";
+
+console.log(round(10.0001)); // 10
+console.log(round(10.0478878)); // 10.04
+console.log(round(10.6987894849)); // 10.69
+console.log(round(10.6987894849, 3)); // 10.698
+```
+
+## Mixed Utilities
+
+This section covers utilities that work with multiple types.
+
+- [Are Equal](#equal-values): Check if the two values are equal regardless of their type.
+- [Shuffle](#shuffle): Shuffle an array or a string.
+
+### Equal Values
 
 Using `areEqual` function will check if the given two values equal to each other, it will validate against any type such as objects, arrays, strings, numbers, booleans, null, undefined, symbols.
 
@@ -627,7 +1796,99 @@ console.log(areEqual({ id: 1 }, { id: 1 })); // true
 console.log(areEqual({ id: 1 }, { id: 2 })); // false
 ```
 
-## Generating Random Values
+### Shuffle
+
+Shuffle an array or a string.
+
+`shuffle(value: any[] | string): any[] | string`
+
+```ts
+import { shuffle } from "@mongez/reinforcements";
+
+const array = [1, 2, 3, 4, 5];
+
+console.log(shuffle(array)); // [2, 4, 1, 5, 3]
+
+const string = "Hello World";
+
+console.log(shuffle(string)); // "WlloHrodl"
+```
+
+## General Utilities
+
+The section covers general utilities that can be used in any project.
+
+- [Debounce](#debounce): Debounce a function to be called after a specific time.
+- [Escape Regex](#escape-regex): Escape regex special characters.
+
+### Debounce
+
+`debounce(callback: Function, timer: number = 0): void`
+
+You can debounce your functions using `debounce` to prevent multiple calls.
+
+> This debounce function will be called instantly and will not return a callback function.
+
+```tsx
+import { debounce } from "@mongez/reinforcements";
+
+function sendEmail(e: any) {
+  sendEmailApi(e.target);
+}
+
+// If user clicked 5 times, it will make 5 ajax calls
+
+<button click={sendEmail}>Send Email</button>;
+```
+
+Now when using `debounce`
+
+```tsx
+import { debounce } from "@mongez/reinforcements";
+
+function sendEmail(e: any) {
+  debounce(() => {
+    sendEmailApi(e.target);
+  });
+}
+
+// If user clicked 5 times, it will make only one ajax call
+
+<button click={sendEmail}>Send Email</button>;
+```
+
+You can also set a timer when to trigger the function
+
+```tsx
+import { debounce } from "@mongez/reinforcements";
+
+function sendEmail(e: any) {
+  // wait 3 seconds before calling the function
+  debounce(() => {
+    sendEmailApi(e.target);
+  }, 150);
+}
+
+// If user clicked 5 times, it will make only one ajax call
+
+<button click={sendEmail}>Send Email</button>;
+```
+
+### Escape Regex
+
+`escapeRegex(string: string): string`
+
+Escape regex special characters in the given string.
+
+```ts
+import { escapeRegex } from "@mongez/reinforcements";
+
+const string = "This is a string with special characters like: . * + ? ^ $ { } ( ) | [ ] / \\";
+
+console.log(escapeRegex(string)); // This is a string with special characters like: \\. \\* \\+ \\? \\^ \\$ \\{ \\} \\( \\) \\| \\[ \\] / \\\\
+```
+
+## Random
 
 Another good feature is `Random` object, which allows us to generate variant random values of different types.
 
@@ -734,471 +1995,6 @@ Random.date(new Date(2010, 1, 1)); // 2015-12-12T12:12:12.000Z
 
 // Get random date that is lower than the given date
 Random.date(null, new Date(2010, 1, 1)); // 2005-12-12T12:12:12.000Z
-```
-
-## Round float numbers
-
-To round float numbers, use `round(value: number, precision: number = 2): number`.
-
-```ts
-import { round } from "@mongez/reinforcements";
-
-console.log(round(10.0001)); // 10
-console.log(round(10.0478878)); // 10.04
-console.log(round(10.6987894849)); // 10.69
-console.log(round(10.6987894849, 3)); // 10.698
-```
-
-## Working With Strings
-
-The following list defines all available string utilities
-
-- `capitalize`
-- `toCamelCase`
-- `toSnakeCase`
-- `toKebabCase`
-- `toStudlyCase`
-- `ucfirst`
-- `toInputName`
-- `extension`
-- `readMoreChars`
-- `readMoreWords`
-- `replaceFirst`
-- `replaceLast`
-- `replaceAll`
-- `removeFirst`
-- `removeLast`
-- `repeatsOf`
-- `ltrim`
-- `trim`
-- `rtrim`
-- `startsWithArabic`
-
-### Capitalize words
-
-Capitalize each word in string Separated by whitespace `capitalize(string: string): string`.
-
-```ts
-import { capitalize } from "@mongez/reinforcements";
-
-const words = "hello world";
-
-console.log(capitalize(words)); // Hello World
-```
-
-### Convert string to camel case
-
-Convert string to camel case, each word in string Separated by **whitespace** **underscores** or **dashes** `toCamelCase(string: string, separator: string = "\\s+|-|/|_|\\."): string`.
-
-```ts
-import { toCamelCase } from "@mongez/reinforcements";
-
-const words = "hello world";
-
-console.log(toCamelCase(words)); // helloWorld
-```
-
-Any of following will be used as a separator for the text, `.` | `-` | `whitespace` | `/`, you can set the separator as second argument though.
-
-### Convert string to snake case
-
-Convert string to snake case, each word in string Separated by **whitespace** or **dashes** `toSnakeCase(string: string, separator: string = '_', lowerAll: boolean = true): string`.
-
-The final output of the text will be all letters in lower case string separated by \_ **underscores**.
-
-```ts
-import { toSnakeCase } from "@mongez/reinforcements";
-
-const words = "hello world";
-
-console.log(toSnakeCase(words)); // hello_world
-```
-
-You can also set custom separator as second argument.
-
-```ts
-import { toSnakeCase } from "@mongez/reinforcements";
-
-const words = "hello world";
-
-console.log(toSnakeCase(words, '-')); // hello-world
-```
-
-Also setting the third argument to false will not convert letters to lower case, will keep each letter as its own.
-
-```ts
-import { toSnakeCase } from "@mongez/reinforcements";
-
-const words = "Hello World";
-
-console.log(toSnakeCase(words, '-', false)); // Hello_World
-```
-
-### Convert string to kebab case
-
-Convert string to kebab case, each word in string Separated by **whitespace** or **dashes** or **Upper Letters** `toKebabCase(string: string, lowerAll: boolean = true): string`.
-
-The final output of the text will be all letters in lower case string separated by \- **dashes**.
-
-```ts
-import { toKebabCase } from "@mongez/reinforcements";
-
-const words = "hello world";
-
-console.log(toKebabCase(words)); // hello-world
-```
-
-If you want to ignore the lower case conversion, set the second argument to false.
-
-```ts
-import { toKebabCase } from "@mongez/reinforcements";
-
-const words = "Hello World";
-
-console.log(toKebabCase(words, false)); // Hello-World
-```
-
-### Convert string to studly case
-
-Convert string to studly case, each word in string Separated by **whitespace**, **underscores** or **dashes** `toStudlyCase(string: string, separator: string = "-|\\.|_|\\s"): string`.
-
-The final output will be capitalizing each word and glue it together without any separators such as **whitespace**, **under scores** or **dashes**.
-
-```ts
-import { toStudlyCase } from "@mongez/reinforcements";
-
-const words = "hello world";
-
-console.log(toStudlyCase(words)); // HelloWorld
-```
-
-### Capitalize first word of string
-
-Capitalize only first word of string `ucfirst(string: string): string`.
-
-```ts
-import { ucfirst } from "@mongez/reinforcements";
-
-const words = "hello world";
-
-console.log(ucfirst(words)); // Hello world
-```
-
-### To input name
-
-Convert dot notation syntax to valid html input name `toInputName(string: string): string`.
-
-```ts
-import { toInputName } from "@mongez/reinforcements";
-
-const name = "user.name";
-
-console.log(toInputName(name)); // user[name]
-console.log(toInputName("keywords.en.list[]")); // keywords[en][list][]
-```
-
-### Get extension of string
-
-Get the last extension in the string, the string that is suffix to last dot `.`.
-
-`extension(string: string): string`
-
-```ts
-import { extension } from "@mongez/reinforcements";
-
-const file = "my-image.png";
-
-console.log(extension(file)); //png
-```
-
-### Read more characters
-
-This function will cut off the string when characters reach limit, and append three dots `...` at the end of the string.
-
-`readMoreChars(string: string, length: number, readMoreDots: string = '...'): string`
-
-```ts
-import { readMoreChars } from "@mongez/reinforcements";
-
-const string = "This is a fine words list";
-
-console.log(readMoreChars(string, 20)); // This is a fine words...
-
-// if the given limit is equal to or more than string length, then the entire string will be returned without any dots
-console.log(readMoreChars(string, 30)); // This is a fine words list
-
-// change the three dots to something else
-
-const string = "This is a fine words list";
-
-console.log(readMoreChars(string, 20, " >>")); // This is a fine words >>
-```
-
-### Read more words
-
-This function will cut off the string when words reach the given limit, and append three dots `...` at the end of the string.
-
-This works based on total number of whitespace in the string.
-
-`readMoreWords(string: string, length: number, readMoreDots: string = '...'): string`
-
-```ts
-import { readMoreWords } from "@mongez/reinforcements";
-
-const string = "This is a fine words list";
-
-console.log(readMoreWords(string, 4)); // This is a fine...
-
-// if the given limit is equal to or more than words length, then the entire string will be returned without any dots
-console.log(readMoreWords(string, 6)); // This is a fine words list
-
-// change the three dots to something else
-
-const string = "This is a fine words list";
-
-console.log(readMoreWords(string, 4, " >>")); // This is a fine >>
-```
-
-### Remove first matched string
-
-Remove the first matched needle to the given string.
-
-`removeFirst(string: string, needle: string): string`
-
-```ts
-import { removeFirst } from "@mongez/reinforcements";
-
-const words = "welcome home buddy, your are not safe at your home!";
-
-console.log(removeFirst(words, "home")); // welcome  buddy, your are not safe at your home!
-```
-
-### Replace first matched string
-
-Replace the first matched needle to the given string.
-
-`replaceFirst(string:string, needle: string, replacement: string): string`
-
-```ts
-import { replaceFirst } from "@mongez/reinforcements";
-
-const words = "welcome home buddy, your are not safe at your home!";
-
-console.log(replaceFirst(words, "home", "country")); // welcome country buddy, your are not safe at your home!
-```
-
-### Replace last matched string
-
-Replace the last matched needle to the given string.
-
-`replaceLast(string:string, needle: string, replacement: string): string`
-
-```ts
-import { replaceLast } from "@mongez/reinforcements";
-
-const words = "welcome home buddy, your are not safe at your home!";
-
-console.log(replaceLast(words, "home", "country")); // welcome home buddy, your are not safe at your country!
-```
-
-### Replace all matched string
-
-Replace all matched words to the given string.
-
-`replaceAll(string: string, searchText:string, replacement: string): string`
-
-```ts
-import { replaceAll } from "@mongez/reinforcements";
-
-const words = "welcome home buddy, your are not safe at your home!";
-
-console.log(replaceAll(words, "home", "country")); // welcome country buddy, your are not safe at your country!
-```
-
-### Remove last matched string
-
-Remove the last matched needle to the given string.
-
-`removeLast(string: string, needle: string): string`
-
-```ts
-import { removeLast } from "@mongez/reinforcements";
-
-const words = "welcome home buddy, your are not safe at your home!";
-
-console.log(removeLast(words, "home")); // welcome home buddy, your are not safe at your !
-```
-
-### Count repeats of needle in a string
-
-Count repeats of a needle in the given string.
-
-`repeatsOf(string: string, needle: string, caseSensitive: boolean = true): number`
-
-```ts
-import { repeatsOf } from "@mongez/reinforcements";
-
-const words = "welcome home buddy, your are not safe at your home!";
-
-console.log(repeatsOf(words, "home")); // 2
-```
-
-You may also detect number of repetitions ignoring case sensitive.
-
-```ts
-import { repeatsOf } from "@mongez/reinforcements";
-
-// note the first Home is capitalized
-const words = "welcome Home buddy, your are not safe at your home!";
-
-// case sensitive
-console.log(repeatsOf(words, "home")); // 1
-// case insensitive
-console.log(repeatsOf(words, "home", false)); // 2
-```
-
-### Trimming values from string
-
-Trim value from the start and the end of a string.
-
-`trim(string: string, needle: string = ' '): string`
-
-```ts
-import { trim } from "@mongez/reinforcements";
-
-const string = " space at the start and at the end ";
-
-console.log(trim(string)); // "space at the start and at the end"
-```
-
-But why not use [String.trim()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/Trim) directly? well they both will give you same functionality except that `trim()` function trims any value not only white space.
-
-Remove certain value:
-
-```ts
-import { trim } from "@mongez/reinforcements";
-
-const string = "/home/";
-
-console.log(trim(string, "/")); // home
-```
-
-### Left Trimming values from string
-
-Trim value from the start of a string.
-
-`ltrim(string: string, needle: string = ' '): string`
-
-```ts
-import { ltrim } from "@mongez/reinforcements";
-
-const string = " A space at the start and keep space at the end ";
-
-console.log(ltrim(string)); // "A space at the start and keep space at the end "
-```
-
-Remove certain value:
-
-```ts
-import { ltrim } from "@mongez/reinforcements";
-
-const string = "home/";
-
-console.log(ltrim(string, "/")); // home/
-```
-
-### Right Trimming values from string
-
-Trim value from the end of a string.
-
-`rtrim(string: string, needle: string = ' '): string`
-
-```ts
-import { rtrim } from "@mongez/reinforcements";
-
-const string = " Keep A space at the start and remove space at the end ";
-
-console.log(rtrim(string)); // " Keep A space at the start and remove space at the end"
-```
-
-Remove certain value:
-
-```ts
-import { ltrim } from "@mongez/reinforcements";
-
-const string = "home/";
-
-console.log(rtrim(string, "/")); // /home
-```
-
-## Detect if string starts with Arabic
-
-Determine if the string starts with Arabic letter.
-
-`startsWithArabic(text: string, trimmed: boolean = true): boolean {`
-
-```ts
-import { startsWithArabic } from "@mongez/reinforcements";
-
-const string = "English Text";
-
-const arabicString = "مرحبا";
-
-console.log(startsWithArabic(string)); // false
-console.log(startsWithArabic(arabicString)); // true
-```
-
-## Debounce
-
-`debounce(callback: Function, timer: number = 0): void`
-
-You can debounce your functions using `debounce` to prevent multiple calls.
-
-> This debounce function will be called instantly and will not return a callback function.
-
-```tsx
-import { debounce } from "@mongez/reinforcements";
-
-function sendEmail(e: any) {
-  sendEmailApi(e.target);
-}
-
-// If user clicked 5 times, it will make 5 ajax calls
-
-<button click={sendEmail}>Send Email</button>;
-```
-
-Now when using `debounce`
-
-```tsx
-import { debounce } from "@mongez/reinforcements";
-
-function sendEmail(e: any) {
-  debounce(() => {
-    sendEmailApi(e.target);
-  });
-}
-
-// If user clicked 5 times, it will make only one ajax call
-
-<button click={sendEmail}>Send Email</button>;
-```
-
-You can also set a timer when to trigger the function
-
-```tsx
-import { debounce } from "@mongez/reinforcements";
-
-function sendEmail(e: any) {
-  // wait 3 seconds before calling the function
-  debounce(() => {
-    sendEmailApi(e.target);
-  }, 150);
-}
-
-// If user clicked 5 times, it will make only one ajax call
-
-<button click={sendEmail}>Send Email</button>;
 ```
 
 ## Tests
