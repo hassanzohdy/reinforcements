@@ -7,5 +7,6 @@ import replaceLast from "./replaceLast";
  * @return string
  */
 export default function removeLast(string: string, needle: string): string {
+  if (!string) return "";
   return replaceLast(string, needle, "");
 }

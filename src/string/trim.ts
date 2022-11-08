@@ -7,6 +7,8 @@ import escapeRegex from "../utils/escapeRegex";
  * @return string
  */
 export default function trim(string: string, needle = " "): string {
+  if (!string) return "";
+
   if (needle === " ") {
     return string.replace(/^\s+|\s+$/g, "");
   }

@@ -12,5 +12,6 @@ export default function replaceFirst(
   needle: string,
   replacement: string,
 ): string {
+  if (!string) return "";
   return string.replace(escapeRegex(needle), replacement);
 }

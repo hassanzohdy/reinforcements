@@ -7,5 +7,6 @@ import replaceFirst from "./replaceFirst";
  * @return string
  */
 export default function removeFirst(string: string, needle: string): string {
+  if (!string) return "";
   return replaceFirst(string, needle, "");
 }

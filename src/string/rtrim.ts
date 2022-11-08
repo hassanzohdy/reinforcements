@@ -7,6 +7,7 @@ import escapeRegex from "../utils/escapeRegex";
  * @return string
  */
 export default function rtrim(string: string, needle = " "): string {
+  if (!string) return "";
   const pattern = escapeRegex(needle) + "+$",
     regex = new RegExp(pattern, "g");
 

@@ -7,6 +7,7 @@ export default function readMoreWords(
   length: number,
   readMoreDots = "...",
 ): string {
+  if (!string) return "";
   const wordsList = string.split(" ");
   const words = wordsList.slice(0, length);
 

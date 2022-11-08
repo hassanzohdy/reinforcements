@@ -12,5 +12,6 @@ export default function replaceAll(
   searchText: string,
   replacement: string,
 ): string {
+  if (!string) return "";
   return string.replace(new RegExp(escapeRegex(searchText), "g"), replacement);
 }

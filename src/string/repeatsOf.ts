@@ -9,6 +9,7 @@ export default function repeatsOf(
   needle: string,
   caseSensitive = true,
 ): number {
+  if (!string) return 0;
   let flags = "g";
   if (caseSensitive === false) {
     flags += "i";

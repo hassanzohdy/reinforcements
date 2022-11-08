@@ -10,6 +10,7 @@ export default function replaceLast(
   needle: string,
   replacement: string,
 ): string {
+  if (!string) return "";
   const lastIndex = string.lastIndexOf(needle);
 
   if (lastIndex < 0) {

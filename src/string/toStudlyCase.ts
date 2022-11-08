@@ -12,6 +12,8 @@ export default function toStudlyCase(
   string: string,
   separator = "-|\\.|_|/|\\s",
 ): string {
+  if (!string) return "";
+
   const regex = new RegExp(separator, "g");
   return string
     .split(regex)

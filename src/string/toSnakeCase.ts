@@ -9,6 +9,8 @@ export default function toSnakeCase(
   separator = "_",
   lowerAll = true,
 ): string {
+  if (!string) return "";
+
   return string
     .replace(/(-|\/|\s|([A-Z]))+/g, function (_match, _v2, matchedUpperLetter) {
       if (!matchedUpperLetter) return separator;

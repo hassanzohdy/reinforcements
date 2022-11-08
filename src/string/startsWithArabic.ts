@@ -3,11 +3,13 @@ import trim from "./trim";
 export const ARABIC_PATTERN = /[\u0600-\u06FF]/;
 
 export default function startsWithArabic(
-  text: string,
+  string: string,
   trimmed = true,
 ): boolean {
+  if (!string) return false;
+
   if (trimmed === true) {
-    text = trim(String(text));
+    string = trim(String(string));
   }
-  return text.charAt(0).match(ARABIC_PATTERN) !== null;
+  return string.charAt(0).match(ARABIC_PATTERN) !== null;
 }

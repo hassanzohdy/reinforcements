@@ -7,6 +7,7 @@ export default function readMoreChars(
   length: number,
   readMoreDots = "...",
 ): string {
+  if (!string) return "";
   if (string.length <= length) return string;
 
   return string.substring(0, length) + readMoreDots;
