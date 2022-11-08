@@ -14,37 +14,6 @@ or using `npm`
 
 ## Usage
 
-## Collections
-
-Reinforcements is shipped with a powerful collection class that can be used to manipulate arrays of objects, here are some example of usage.
-
-```ts
-import { collect } from '@mongez/reinforcements';
-
-const collection = collect([
-    { name: 'John', age: 20 },
-    { name: 'Jane', age: 25 },
-    { name: 'Jack', age: 30 },
-]);
-
-// get the first item
-const firstItem = collection.first();
-
-// get the last item
-const lastItem = collection.last();
-
-// get the item at index 1
-const itemAtIndex1 = collection.at(1);
-
-// get users with age greater than 25
-const users = collection.where('age', '>', 25);
-
-// get users with age greater than 25 and less than 30
-const users = collection.where('age', '>', 25).where('age', '<', 30);
-```
-
-You can see the entire documentation in [Collection](./docs/collection.md) Page.
-
 ## Getting value from an object
 
 To get a value from an object using `dot.notation` syntax, you can use `get` function.
@@ -1236,12 +1205,10 @@ function sendEmail(e: any) {
 
 To run tests run `npm run test` or `yarn test`
 
-## CONTRIBUTING
-
-If you want to contribute to this package, you can check the [todo list page](./docs/todo.md).
-
 ## Change Log
 
+- 2.2.0 (08 Nov 2022)
+  - Migrated Collections From Package to separate package.
 - 2.1.0 (06 Nov 2022)
   - Added [unset](#unset-keys-from-object) function.
   - Fixed `except` and `only` functions to accept dot notation syntax.
