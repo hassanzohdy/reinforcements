@@ -1,3 +1,4 @@
+import { get } from "..";
 import { GenericObject } from "../types";
 
 /**
@@ -27,11 +28,12 @@ export default function groupBy(
     }> = [];
 
     for (const groupByKey of groupByKeys) {
-      if (!item[groupByKey]) break;
+      const value = get(item, groupByKey);
+      if (!value) break;
 
       baseKeys.push({
         key: groupByKey,
-        value: item[groupByKey],
+        value,
       });
     }
 
