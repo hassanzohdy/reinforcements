@@ -1361,6 +1361,7 @@ The following list defines all available string utilities
 - [Trim Left](#trimming-values-from-string): Remove a string from the beginning of the given string.
 - [Trim Right](#trimming-values-from-string): Remove a string from the end of the given string.
 - [Starts With Arabic Letter](#detect-if-string-starts-with-arabic): Detect if string starts with Arabic letter.
+- [Name Initials](#name-initials): Get the initials of the given name.
 
 ### Capitalize
 
@@ -1736,6 +1737,40 @@ console.log(startsWithArabic(string)); // false
 console.log(startsWithArabic(arabicString)); // true
 ```
 
+### Name Initials
+
+Get initials from a name.
+
+`initials(name: string, separator = ''): string`
+
+```ts
+import { initials } from "@mongez/reinforcements";
+
+const name = "John Doe";
+
+console.log(initials(name)); // JD
+```
+
+You can also pass a separator to separate the initials.
+
+```ts
+import { initials } from "@mongez/reinforcements";
+
+const name = "John Doe";
+
+console.log(initials(name, '.')); // J.D
+```
+
+If the given parameter is not a string it will throw an error.
+
+```ts
+import { initials } from "@mongez/reinforcements";
+
+const name = 123;
+
+console.log(initials(name)); // Error: The given name is not a string.
+```
+
 ## Numbers
 
 Here are the aviation numbers utilities.
@@ -2003,6 +2038,8 @@ To run tests run `npm run test` or `yarn test`
 
 ## Change Log
 
+- 2.2.7 (22 Feb 2023)
+  - Added [Name Initials](#name-initials) function.
 - 2.2.0 (08 Nov 2022)
   - Migrated Collections From Package to separate package.
 - 2.1.0 (06 Nov 2022)

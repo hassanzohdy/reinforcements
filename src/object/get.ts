@@ -18,11 +18,7 @@ function getValue(object: any, keyChain: string, defaultValue: any) {
 /**
  * Get the value of the given key
  */
-export default function get(
-  object: any,
-  key: string,
-  defaultValue: any = null,
-): any {
+export default function get(object: any, key: string, defaultValue?: any): any {
   if (!object) return defaultValue;
 
   if (object[key]) return object[key];

@@ -36,6 +36,7 @@ export { default as Random } from "./Random/random";
 // string
 export { default as capitalize } from "./string/capitalize";
 export { default as extension } from "./string/extension";
+export { default as initials } from "./string/initials";
 export { default as ltrim } from "./string/ltrim";
 export { default as readMoreChars } from "./string/readMoreChars";
 export { default as readMoreWords } from "./string/readMoreWords";

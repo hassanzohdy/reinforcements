@@ -40,6 +40,7 @@ describe("reinforcements/object/get", () => {
     expect(get(anyValue(""), "a.b.c", 2)).toBe(2);
     expect(get(anyValue(false), "a.b.c", 2)).toBe(2);
     expect(get(anyValue(undefined), "a.b.c", 2)).toBe(2);
+    expect(get(anyValue(undefined), "a.b.c")).toBe(undefined);
   });
 
   it("should return value from array using dot notation", () => {
