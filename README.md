@@ -629,7 +629,8 @@ Now let's move to arrays utilities.
 - [Median](#median): Get the median of all values in an array or by given key.
 - [Unique](#unique): Get unique values from an array.
 - [Push Unique](#push-unique): Push a value or more to an array if it doesn't exist.
-- [Unshift Unique](#unshift-unique): Add a value or more to the beginning of an array if it doesn't exist.
+- [Unshift Unique](#unshift-unique): Add a value or more to the beginning of an array if it
+  doesn't exist.
 
 ### Pluck
 
@@ -674,7 +675,7 @@ Group by a single key:
 ```ts
 import { groupBy } from "@mongez/reinforcements";
 
- const studentsClasses = [
+const studentsClasses = [
   {
     id: 1,
     class: "A",
@@ -902,7 +903,7 @@ const studentsClasses = [
   },
 ];
 
-console.log(groupBy(studentsClasses, ["class", "grade"], 'students'));
+console.log(groupBy(studentsClasses, ["class", "grade"], "students"));
 ```
 
 Output:
@@ -1013,7 +1014,7 @@ const array = [
   { id: 5, value: 5 },
 ];
 
-console.log(count(array, (item) => item.value > 2)); // 3
+console.log(count(array, item => item.value > 2)); // 3
 ```
 
 ### Count By
@@ -1026,14 +1027,14 @@ Count total occurrence of values for the given key.
 import { countBy } from "@mongez/reinforcements";
 
 const array = [
-  { id: 1, animal: 'dog' },
-  { id: 2, animal: 'cat' },
-  { id: 3, animal: 'dog' },
-  { id: 4, animal: 'cat' },
-  { id: 5, animal: 'dog' },
+  { id: 1, animal: "dog" },
+  { id: 2, animal: "cat" },
+  { id: 3, animal: "dog" },
+  { id: 4, animal: "cat" },
+  { id: 5, animal: "dog" },
 ];
 
-console.log(countBy(array, 'animal')); // { dog: 3, cat: 2 }
+console.log(countBy(array, "animal")); // { dog: 3, cat: 2 }
 ```
 
 ### Even
@@ -1337,6 +1338,28 @@ const array = [1, 2, 3, 4, 5];
 console.log(unshiftUnique(array, 6, 7, 5, 6, 1, 2, 4, 3)); // [7, 6, 1, 2, 3, 4, 5]
 ```
 
+### Range
+
+> Added in v2.3.0
+
+Generates an array of numbers starting from the given min value to the given max value.
+
+`range(min: number, max: number): number[]`
+
+```ts
+import { range } from "@mongez/reinforcements";
+
+console.log(range(1, 6)); // [1, 2, 3, 4, 5, 6]
+
+console.log(range(3, 5)); // [3, 4, 5]
+```
+
+If the given `min` or `max` parameter is not a number, an error **will be thrown**.
+
+If the given `min` parameter equal or higher than `max` parameter, an error **will be thrown**.
+
+> Min value can't be higher than max value.
+
 ## Working With Strings
 
 The following list defines all available string utilities
@@ -1410,7 +1433,7 @@ import { toSnakeCase } from "@mongez/reinforcements";
 
 const words = "hello world";
 
-console.log(toSnakeCase(words, '-')); // hello-world
+console.log(toSnakeCase(words, "-")); // hello-world
 ```
 
 Also setting the third argument to false will not convert letters to lower case, will keep each letter as its own.
@@ -1420,7 +1443,7 @@ import { toSnakeCase } from "@mongez/reinforcements";
 
 const words = "Hello World";
 
-console.log(toSnakeCase(words, '-', false)); // Hello_World
+console.log(toSnakeCase(words, "-", false)); // Hello_World
 ```
 
 ### Kebab Case
@@ -1758,7 +1781,7 @@ import { initials } from "@mongez/reinforcements";
 
 const name = "John Doe";
 
-console.log(initials(name, '.')); // J.D
+console.log(initials(name, ".")); // J.D
 ```
 
 If the given parameter is not a string it will throw an error.
@@ -1918,7 +1941,8 @@ Escape regex special characters in the given string.
 ```ts
 import { escapeRegex } from "@mongez/reinforcements";
 
-const string = "This is a string with special characters like: . * + ? ^ $ { } ( ) | [ ] / \\";
+const string =
+  "This is a string with special characters like: . * + ? ^ $ { } ( ) | [ ] / \\";
 
 console.log(escapeRegex(string)); // This is a string with special characters like: \\. \\* \\+ \\? \\^ \\$ \\{ \\} \\( \\) \\| \\[ \\] / \\\\
 ```
