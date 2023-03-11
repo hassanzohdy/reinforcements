@@ -25,12 +25,22 @@ describe("array/range", () => {
     }
   });
 
-  it("should throw error if the given min value equal or higher than the given max value", () => {
+  it("should throw error if the given min value higher than the given max value", () => {
     try {
       range(4, 1);
     } catch (error: any) {
       expect(error.message).toBe(
         "max parameter should be higher than min parameter",
+      );
+    }
+  });
+
+  it("should throw error if the given min value equal the given max value", () => {
+    try {
+      range(3, 3);
+    } catch (error: any) {
+      expect(error.message).toBe(
+        "max parameter should not be equal min parameter",
       );
     }
   });

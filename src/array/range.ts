@@ -13,6 +13,7 @@ export default function range(min: number, max: number) {
   if (min >= max) {
     throw new Error("max parameter should be higher than min parameter");
   }
+
   const array: number[] = [];
 
   for (let i = min; i <= max; i++) {
