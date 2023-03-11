@@ -12,6 +12,7 @@ export { default as odd } from "./array/odd";
 export { default as oddIndexes } from "./array/oddIndexes";
 export { default as pluck } from "./array/pluck";
 export { default as pushUnique } from "./array/pushUnique";
+export { default as range } from "./array/range";
 export { default as sum } from "./array/sum";
 export { default as unique } from "./array/unique";
 export { default as unshiftUnique } from "./array/unshiftUnique";
