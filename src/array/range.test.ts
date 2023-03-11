@@ -15,6 +15,16 @@ describe("array/range", () => {
     }
   });
 
+  it("should throw error if the given max value is not a number", () => {
+    try {
+      range(2, undefined as any);
+    } catch (error: any) {
+      expect(error.message).toBe(
+        `max parameter should be number, "undefined" given.`,
+      );
+    }
+  });
+
   it("should throw error if the given min value equal or higher than the given max value", () => {
     try {
       range(4, 1);

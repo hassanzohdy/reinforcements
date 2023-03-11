@@ -1356,8 +1356,6 @@ console.log(range(3, 5)); // [3, 4, 5]
 
 If the given `min` or `max` parameter is not a number, an error **will be thrown**.
 
-If the given `min` parameter equal or higher than `max` parameter, an error **will be thrown**.
-
 > Min value can't be higher than max value.
 
 ## Working With Strings
