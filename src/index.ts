@@ -59,6 +59,7 @@ export { default as toSnakeCase } from "./string/toSnakeCase";
 export { default as toStudlyCase } from "./string/toStudlyCase";
 export { default as trim } from "./string/trim";
 export { default as ucfirst } from "./string/ucfirst";
+export * from "./types";
 // utils
 export { default as debounce } from "./utils/debounce";
 export { default as escapeRegex } from "./utils/escapeRegex";

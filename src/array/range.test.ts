@@ -40,7 +40,7 @@ describe("array/range", () => {
       range(3, 3);
     } catch (error: any) {
       expect(error.message).toBe(
-        "max parameter should not be equal min parameter",
+        "max parameter should be higher than min parameter",
       );
     }
   });

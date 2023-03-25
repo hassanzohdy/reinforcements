@@ -1,5 +1,5 @@
 /**
- * Generate array of numbers starting from the given min value to the given max value
+ * Generate array of numbers starting from the" given min value to the given max value
  */
 export default function range(min: number, max: number) {
   if (typeof min !== "number") {
@@ -7,7 +7,7 @@ export default function range(min: number, max: number) {
   }
 
   if (typeof max !== "number") {
-    throw new Error(`max parameter should be number, "${typeof max} given."`);
+    throw new Error(`max parameter should be number, "${typeof max}" given.`);
   }
 
   if (min >= max) {

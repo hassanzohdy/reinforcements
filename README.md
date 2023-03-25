@@ -2060,6 +2060,10 @@ To run tests run `npm run test` or `yarn test`
 
 ## Change Log
 
+- 2.3.0 (25 Mar 2023)
+  - Added [Range](#range) function.
+  - Exposed typings.
+  - Enhanced tests for `areEqual` function,
 - 2.2.7 (22 Feb 2023)
   - Added [Name Initials](#name-initials) function.
 - 2.2.0 (08 Nov 2022)
