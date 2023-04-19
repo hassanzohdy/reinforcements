@@ -11,7 +11,7 @@ export default function groupBy(
   groupByKey: string | string[],
   listAs = "data",
 ): GenericObject[] {
-  const newData: {
+  const groupedData: {
     [key: string]: {
       [key: string]: any;
       data?: GenericObject[];
@@ -39,7 +39,7 @@ export default function groupBy(
 
     const dataKey = JSON.stringify(baseKeys);
 
-    if (!newData[dataKey]) {
+    if (!groupedData[dataKey]) {
       const groupedDataList: {
         [key: string]: any;
       } = {
@@ -50,16 +50,16 @@ export default function groupBy(
         groupedDataList[groupByKeyData.key] = groupByKeyData.value;
       }
 
-      newData[dataKey] = groupedDataList;
+      groupedData[dataKey] = groupedDataList;
     }
 
-    newData[dataKey]?.data?.push(item);
+    groupedData[dataKey]?.data?.push(item);
   }
 
   const finalData: GenericObject[] = [];
 
-  for (const groupedKeyWithValue in newData) {
-    const { data, ...otherGroupedKeys } = newData[groupedKeyWithValue];
+  for (const groupedKeyWithValue in groupedData) {
+    const { data, ...otherGroupedKeys } = groupedData[groupedKeyWithValue];
 
     finalData.push({
       ...otherGroupedKeys,

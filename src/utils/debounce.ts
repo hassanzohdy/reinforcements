@@ -1,15 +1,26 @@
 let timeoutId: NodeJS.Timeout | undefined;
 
-export default function debounce(callback: () => void, wait = 0) {
-  // Clear previous delayed action, if existent
-  if (timeoutId !== undefined) {
-    clearTimeout(timeoutId);
-    timeoutId = undefined;
-  }
+type DebounceFn<T extends (...args: any[]) => any> = (
+  this: ThisParameterType<T>,
+  ...args: Parameters<T>
+) => void;
 
-  // Start new delayed action for latest call
-  timeoutId = setTimeout(() => {
-    callback();
-    timeoutId = undefined; // Clear timeout
-  }, wait);
+/**
+ * Debounce the callback function and return a new function.
+ * Example of usage:
+ * @example const debounced = debounce(() => console.log('Hello'), 1000);
+ */
+export default function debounce<T extends (...args: any[]) => any>(
+  callback: T,
+  time: number,
+): DebounceFn<T> {
+  let timeoutId: ReturnType<typeof setTimeout>;
+
+  return function (this: ThisParameterType<T>, ...args: Parameters<T>) {
+    clearTimeout(timeoutId);
+
+    timeoutId = setTimeout(() => {
+      callback.apply(this, args);
+    }, time);
+  };
 }

@@ -384,8 +384,10 @@ const user = {
   },
 };
 
-const simpleUserData = unset(user, ["id", "address", "email"]); // { name: 'Hasan Zohdy', job: {title: 'Software Engineer'}}
+const unset(user, ["id", "address", "email"]); // { name: 'Hasan Zohdy', job: {title: 'Software Engineer'}}
 ```
+
+> The `unset` removes the keys from the object, but it doesn't return a new object, it modifies the original object and returns it, if you want to return a new object, use `except` method.
 
 ### Flatten objects
 
@@ -1883,11 +1885,7 @@ The section covers general utilities that can be used in any project.
 
 You can debounce your functions using `debounce` to prevent multiple calls.
 
-> This debounce function will be called instantly and will not return a callback function.
-
 ```tsx
-import { debounce } from "@mongez/reinforcements";
-
 function sendEmail(e: any) {
   sendEmailApi(e.target);
 }
@@ -1903,14 +1901,14 @@ Now when using `debounce`
 import { debounce } from "@mongez/reinforcements";
 
 function sendEmail(e: any) {
-  debounce(() => {
-    sendEmailApi(e.target);
-  });
+  sendEmailApi(e.target);
 }
+
+const debouncedSendEmail = debounce(sendEmail);
 
 // If user clicked 5 times, it will make only one ajax call
 
-<button click={sendEmail}>Send Email</button>;
+<button click={debouncedSendEmail}>Send Email</button>;
 ```
 
 You can also set a timer when to trigger the function
@@ -1919,15 +1917,14 @@ You can also set a timer when to trigger the function
 import { debounce } from "@mongez/reinforcements";
 
 function sendEmail(e: any) {
-  // wait 3 seconds before calling the function
-  debounce(() => {
-    sendEmailApi(e.target);
-  }, 150);
+  sendEmailApi(e.target);
 }
+
+const debouncedSendEmail = debounce(sendEmail, 1000);
 
 // If user clicked 5 times, it will make only one ajax call
 
-<button click={sendEmail}>Send Email</button>;
+<button click={debouncedSendEmail}>Send Email</button>;
 ```
 
 ### Escape Regex
