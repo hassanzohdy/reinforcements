@@ -198,6 +198,29 @@ describe("reinforcements/mixed/clone", () => {
     ).toBe(false);
   });
 
+  it("should clone Map and Set", () => {
+    const map = new Map();
+    map.set("a", 1);
+    map.set("b", 2);
+
+    const clonedMap = clone(map);
+
+    console.log(clonedMap);
+    console.log(map);
+
+    expect(clonedMap).toEqual(map);
+    expect(clonedMap).not.toBe(map);
+
+    const set = new Set();
+    set.add(1);
+    set.add(2);
+
+    const clonedSet = clone(set);
+
+    expect(clonedSet).toEqual(set);
+    expect(clonedSet).not.toBe(set);
+  });
+
   it("should make a proper clone for date object", () => {
     const date = new Date();
     const clonedDate = clone(date);
