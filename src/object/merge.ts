@@ -6,6 +6,7 @@
 import Is from "@mongez/supportive-is";
 
 const isObject = Is.plainObject;
+const isArray = Array.isArray;
 
 function isDescriptor(object: any) {
   if (!isObject(object)) {
@@ -22,13 +23,16 @@ function isDescriptor(object: any) {
   );
 }
 
+/**
+ * Merge deep objects or arrays
+ */
 export default function merge(...objects: any[]) {
-  if (objects.length === 0 && !objects[0]) return objects[0];
+  if (objects.length === 0) return objects[0];
 
-  const refinedObjects: Record<string, any> = [];
+  const refinedObjects: any[] = [];
 
   for (let object of objects) {
-    if (isObject(object)) {
+    if (isObject(object) || isArray(object)) {
       refinedObjects.push(object);
     }
   }
@@ -42,7 +46,7 @@ export default function merge(...objects: any[]) {
 
   let mergeDepth = 0;
 
-  const result: Record<string, any> = refinedObjects.reduce(
+  const result: any = refinedObjects.reduce(
     (targetObject: any, srcObject: any) => {
       let keys = mergeKeyList || Object.keys(srcObject);
 
@@ -58,12 +62,12 @@ export default function merge(...objects: any[]) {
 
         let mergedObject = srcValue;
 
-        if (Array.isArray(mergedObject)) {
+        if (isArray(mergedObject)) {
           mergedObject = [...mergedObject];
         } else if (isObject(mergedObject) && !isDescriptor(mergedObject)) {
           mergeDepth++;
 
-          if (isObject(targetValue)) {
+          if (isObject(targetValue) || isArray(targetValue)) {
             mergedObject = merge(targetValue, mergedObject);
           } else {
             mergedObject = merge(mergedObject);
@@ -74,19 +78,6 @@ export default function merge(...objects: any[]) {
 
         // New descriptor returned via callback
         if (isDescriptor(mergedObject)) {
-          // Defining properties using Object.defineProperty() works
-          // different than using the assignment operator (obj.a = 1).
-          // Specifically, the descriptor properties 'configurable',
-          // 'enumerable', and 'writable' default to 'false' when
-          // using Object.defineProperty() but to 'true' when using
-          // the assignment operator. The code below ensures that
-          // descriptors returned from callbacks are treated as if
-          // they were assigned using the assignment operator unless
-          // those properties are explicitly defined in the
-          // descriptor. This allow merging properties that may
-          // otherwise fail due to 'configurable' or 'writable' being
-          // set to 'false'.
-
           // Accessor and data descriptor
           mergedObject.configurable = !("configurable" in mergedObject)
             ? true

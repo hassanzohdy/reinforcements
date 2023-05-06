@@ -1,16 +1,28 @@
-import merge from "src/object/merge";
+export default function clone<T>(value: T): T {
+  if (typeof value !== "object" || value === null) {
+    // if value is not an object or is null, return the value as is
+    return value;
+  }
 
-/**
- * Make a deep copy for the given object/array and its nested objects/arrays as well
- */
-export default function clone(value: any) {
   if (Array.isArray(value)) {
-    return [...value];
+    // if value is an array, create a new array and clone its elements recursively
+    const clonedArray: any[] = [];
+
+    for (const element of value) {
+      clonedArray.push(clone(element));
+    }
+
+    return clonedArray as T;
   }
 
-  if (value && typeof value === "object") {
-    return merge({}, value);
+  // if value is an object, create a new object and clone its properties recursively
+  const clonedObject = Object.create(Object.getPrototypeOf(value));
+
+  for (const property in value) {
+    if (Object.prototype.hasOwnProperty.call(value, property)) {
+      clonedObject[property] = clone(value[property]);
+    }
   }
 
-  return value;
+  return clonedObject as T;
 }
