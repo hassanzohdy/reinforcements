@@ -1,28 +1,25 @@
 export default function clone<T>(value: T): T {
-  if (typeof value !== "object" || value === null) {
-    // if value is not an object or is null, return the value as is
+  if (typeof value === "object" && value !== null) {
+    if (Array.isArray(value)) {
+      return value.map(item => clone(item)) as any;
+    } else if (value instanceof Date) {
+      return new Date(value.getTime()) as any;
+    } else if (value instanceof Set) {
+      return new Set(Array.from(value, clone)) as any;
+    } else if (value instanceof Map) {
+      return new Map(
+        Array.from(value, ([key, val]) => [key, clone(val)]),
+      ) as any;
+    } else {
+      const clonedObject = Object.create(Object.getPrototypeOf(value));
+      return Object.assign(
+        clonedObject,
+        ...Object.keys(value).map(key => ({
+          [key]: clone((value as any)[key]),
+        })),
+      ) as T;
+    }
+  } else {
     return value;
   }
-
-  if (Array.isArray(value)) {
-    // if value is an array, create a new array and clone its elements recursively
-    const clonedArray: any[] = [];
-
-    for (const element of value) {
-      clonedArray.push(clone(element));
-    }
-
-    return clonedArray as T;
-  }
-
-  // if value is an object, create a new object and clone its properties recursively
-  const clonedObject = Object.create(Object.getPrototypeOf(value));
-
-  for (const property in value) {
-    if (Object.prototype.hasOwnProperty.call(value, property)) {
-      clonedObject[property] = clone(value[property]);
-    }
-  }
-
-  return clonedObject as T;
 }

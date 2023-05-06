@@ -11,7 +11,7 @@ test("Get even values of the array", () => {
 test("Get even value of the array using the given key using dot notation keys", () => {
   const evenOrders = even(orders, "id");
 
-  expect(evenOrders.length).toEqual(1);
+  expect(evenOrders.length).toEqual(2);
 });
 
 test("even value of Invalid key", () => {

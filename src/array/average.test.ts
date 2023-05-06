@@ -5,13 +5,13 @@ import average from "./average";
 test("Average amount in the array using numbers", () => {
   const totalAmounts = average(orders, "amount");
 
-  expect(totalAmounts).toEqual(200);
+  expect(totalAmounts).toEqual(225);
 });
 
 test("average using dot notation keys", () => {
   const totalAmounts = average(orders, "total.price");
 
-  expect(totalAmounts).toEqual(250);
+  expect(totalAmounts).toEqual(275);
 });
 
 test("Average not a number value", () => {

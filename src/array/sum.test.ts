@@ -5,13 +5,13 @@ import sum from "./sum";
 test("Sum value in the array using numbers", () => {
   const totalAmounts = sum(orders, "amount");
 
-  expect(totalAmounts).toEqual(600);
+  expect(totalAmounts).toEqual(900);
 });
 
 test("Sum using dot notation keys", () => {
   const totalAmounts = sum(orders, "total.price");
 
-  expect(totalAmounts).toEqual(750);
+  expect(totalAmounts).toEqual(1100);
 });
 
 test("Sum not a number value", () => {

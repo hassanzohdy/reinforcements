@@ -59,13 +59,13 @@ describe("reinforcements/object/merge", () => {
     });
   });
 
-  it("should skip non object values and return the same value", () => {
-    expect(merge(null, undefined)).toEqual(undefined);
-    expect(merge(null, 0)).toEqual(0);
-    expect(merge(null, "")).toEqual("");
-    expect(merge(null, false)).toEqual(false);
-    expect(merge(null, true)).toEqual(true);
-    expect(merge(null, [])).toEqual([]);
-    expect(merge(null, {})).toEqual({});
+  it("should return first value if it is empty", () => {
+    expect(merge(null, undefined)).toEqual(null);
+    expect(merge(null, 0)).toEqual(null);
+    expect(merge(null, "")).toEqual(null);
+    expect(merge(null, false)).toEqual(null);
+    expect(merge(null, true)).toEqual(null);
+    expect(merge(null, [])).toEqual(null);
+    expect(merge(null, {})).toEqual(null);
   });
 });

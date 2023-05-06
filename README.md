@@ -2057,6 +2057,8 @@ To run tests run `npm run test` or `yarn test`
 
 ## Change Log
 
+- 2.3.4 (06 May 2023)
+  - Fixed clone function array cloning does not lose reference for nested objects.
 - 2.3.3 (06 May 2023)
   - Fixed clone function array cloning does not lose reference for nested objects.
 - 2.3.2 (06 May 2023)

@@ -198,6 +198,13 @@ describe("reinforcements/mixed/clone", () => {
     ).toBe(false);
   });
 
+  it("should make a proper clone for date object", () => {
+    const date = new Date();
+    const clonedDate = clone(date);
+
+    expect(date).toEqual(clonedDate);
+  });
+
   it("should clone the object and keep its methods as well", () => {
     class Board {
       constructor(public name: string) {}

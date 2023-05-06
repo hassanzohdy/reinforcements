@@ -27,7 +27,7 @@ function isDescriptor(object: any) {
  * Merge deep objects or arrays
  */
 export default function merge(...objects: any[]) {
-  if (objects.length === 0) return objects[0];
+  if (objects.length === 0 || !objects[0]) return objects[0];
 
   const refinedObjects: any[] = [];
 
