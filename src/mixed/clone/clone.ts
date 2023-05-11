@@ -1,4 +1,5 @@
 export default function clone<T>(value: T): T {
+  if (!value) return value;
   if (typeof value === "object" && value !== null) {
     if (Array.isArray(value)) {
       return value.map(item => clone(item)) as any;
