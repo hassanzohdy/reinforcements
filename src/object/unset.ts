@@ -18,7 +18,9 @@ export default function unset(object: any, keys: string[]) {
     } else {
       const lastKey: any = keyPath.pop();
       const parent: any = get(object, keyPath.join("."));
-      delete parent[lastKey];
+      if (parent) {
+        delete parent[lastKey];
+      }
     }
   }
 
