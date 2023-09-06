@@ -1,11 +1,8 @@
 {
     "name": "@mongez/reinforcements",
-    "version": "2.3.7",
+    "version": "2.3.9",
     "description": "A lightweight package to give a massive reinforcements to variant types of data in Nodejs/Javascript",
     "main": "src/index.ts",
-    "dependencies": {
-        "@mongez/supportive-is": "^1.0.12"
-    },
     "scripts": {
         "test": "jest ./src",
         "test:coverage": "jest ./src --coverage",

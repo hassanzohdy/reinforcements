@@ -3,10 +3,12 @@
  * This function is originally taken from https://github.com/jhildenbiddle/mergician
  * But removed unnecessary parts and added some types, also add some comments and updated constant/variable names and types
  */
-import Is from "@mongez/supportive-is";
 
-const isObject = Is.plainObject;
 const isArray = Array.isArray;
+
+const isObject = (value: any) => {
+  return value && value.constructor.name === "Object";
+};
 
 function isDescriptor(object: any) {
   if (!isObject(object)) {
