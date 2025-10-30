@@ -1,3 +1,4 @@
+
 export default function clone<T>(value: T): T {
   if (!value) return value;
   if (typeof value === "object" && value !== null) {
@@ -11,27 +12,24 @@ export default function clone<T>(value: T): T {
       return new Map(
         Array.from(value, ([key, val]) => [key, clone(val)]),
       ) as any;
-    } else {
-      if (! value) return value;
-      const cloned: any = Object.create(Object.getPrototypeOf(value));
+    } else if (typeof value === "object") {
+      const proto = Object.getPrototypeOf(value);
+      const isPlainObject = proto === Object.prototype || proto === null;
+
+      if (!isPlainObject) {
+        return value as T; // skip cloning non-plain objects
+      }
+
+      const cloned: any = Object.create(proto);
       for (const prop in value) {
-        // eslint-disable-next-line no-prototype-builtins
-        if ((value as any).hasOwnProperty?.(prop)) {
-          cloned[prop] = clone(value[prop]);
+        if (Object.prototype.hasOwnProperty.call(value, prop)) {
+          cloned[prop] = clone((value as any)[prop]);
         }
       }
       return cloned as T;
-      
-
-      // const clonedObject = Object.create(Object.getPrototypeOf(value));
-      // return Object.assign(
-      //   clonedObject,
-      //   ...Object.keys(value).map(key => ({
-      //     [key]: clone((value as any)[key]),
-      //   })),
-      // ) as T;
     }
   } else {
     return value;
   }
+  return value;
 }
