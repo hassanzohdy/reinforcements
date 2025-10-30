@@ -12,14 +12,16 @@ export default function clone<T>(value: T): T {
         Array.from(value, ([key, val]) => [key, clone(val)]),
       ) as any;
     } else {
-      const cloned: any = new (value as any).constructor();
+      if (! value) return value;
+      const cloned: any = Object.create(Object.getPrototypeOf(value));
       for (const prop in value) {
         // eslint-disable-next-line no-prototype-builtins
-        if ((value as any).hasOwnProperty(prop)) {
+        if ((value as any).hasOwnProperty?.(prop)) {
           cloned[prop] = clone(value[prop]);
         }
       }
       return cloned as T;
+      
 
       // const clonedObject = Object.create(Object.getPrototypeOf(value));
       // return Object.assign(
