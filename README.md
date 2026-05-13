@@ -1878,6 +1878,7 @@ The section covers general utilities that can be used in any project.
 
 - [Debounce](#debounce): Debounce a function to be called after a specific time.
 - [Escape Regex](#escape-regex): Escape regex special characters.
+- [Lazy](#lazy): Defer a value's computation until first use and memoise the result.
 
 ### Debounce
 
@@ -1940,6 +1941,128 @@ const string =
   "This is a string with special characters like: . * + ? ^ $ { } ( ) | [ ] / \\";
 
 console.log(escapeRegex(string)); // This is a string with special characters like: \\. \\* \\+ \\? \\^ \\$ \\{ \\} \\( \\) \\| \\[ \\] / \\\\
+```
+
+### Lazy
+
+> Added in v2.4.0
+
+Wrap a value-producing function as a lazy reference. The producer isn't invoked until the first `resolve()` call; subsequent calls return the same cached value.
+
+`lazy<T>(producer: () => T): Lazy<T>`
+
+The returned `Lazy<T>` exposes:
+
+- `resolve(): T` — compute (if not yet resolved) and return the cached value
+- `reset(): void` — drop the cached value; next `resolve()` recomputes lazily
+- `isResolved(): boolean` — whether `resolve()` has been called and a value cached
+- `peek(): T | undefined` — return the cached value without forcing computation
+
+Plus a companion type-guard:
+
+`isLazy<T = unknown>(value: unknown): value is Lazy<T>`
+
+#### Deferring expensive computation
+
+The producer runs at most once, the first time you ask for the value. If you never ask, it never runs.
+
+```ts
+import { lazy } from "@mongez/reinforcements";
+
+const config = lazy(() => {
+  console.log("loading config from disk...");
+  return JSON.parse(readFileSync("config.json", "utf-8"));
+});
+
+// nothing has happened yet — the file hasn't been read
+
+config.resolve(); // → "loading config from disk..." then returns parsed object
+config.resolve(); // returns the cached object, no log, no disk read
+```
+
+#### Breaking circular references
+
+JavaScript closures capture variable **bindings**, not values. A `lazy(() => x)` call records "read whatever `x` is when you later call `.resolve()`," so it works even when `x` isn't yet defined at the wrap site.
+
+```ts
+import { lazy } from "@mongez/reinforcements";
+
+// a.ts
+import { b } from "./b";
+
+export const a = {
+  // direct `b` here would crash if b.ts and a.ts import each other at top level
+  partner: lazy(() => b),
+};
+
+// b.ts
+import { a } from "./a";
+
+export const b = {
+  partner: lazy(() => a),
+};
+
+// Both modules finish loading without touching each other's values.
+// When something actually reads them, both are fully defined:
+a.partner.resolve(); // === b
+b.partner.resolve(); // === a
+```
+
+#### Inspecting state without forcing computation
+
+`peek()` reads the cached value if there is one; `isResolved()` tells you whether `resolve()` has run yet.
+
+```ts
+import { lazy } from "@mongez/reinforcements";
+
+const ref = lazy(() => fetchSomethingExpensive());
+
+ref.isResolved(); // false
+ref.peek();       // undefined — producer hasn't run
+
+ref.resolve();    // runs producer, caches result
+
+ref.isResolved(); // true
+ref.peek();       // → cached value (no recomputation)
+```
+
+> Because `peek()` returns `undefined` both for "not yet resolved" and for "resolved to undefined," pair it with `isResolved()` when the distinction matters.
+
+#### Invalidating the cache
+
+`reset()` drops the memoised value so the next `resolve()` recomputes. Handy for tests, manual refresh after config reload, or any case where you want to force a recompute.
+
+```ts
+import { lazy } from "@mongez/reinforcements";
+
+let counter = 0;
+const next = lazy(() => ++counter);
+
+next.resolve(); // 1
+next.resolve(); // 1 — memoised
+
+next.reset();
+next.resolve(); // 2 — producer ran again
+```
+
+`reset()` is a no-op if `resolve()` hasn't been called yet.
+
+#### Identifying lazy values
+
+`isLazy()` is a type-guard you can use to check whether a value came from `lazy()`:
+
+```ts
+import { lazy, isLazy } from "@mongez/reinforcements";
+
+const ref = lazy(() => 42);
+
+isLazy(ref);                  // true
+isLazy({ resolve: () => 1 }); // false — not produced by lazy()
+isLazy(42);                   // false
+
+function unwrap<T>(value: T | Lazy<T>): T {
+  return isLazy<T>(value) ? value.resolve() : value;
+}
 ```
 
 ## Random
@@ -2057,6 +2180,8 @@ To run tests run `npm run test` or `yarn test`
 
 ## Change Log
 
+- 2.4.0
+  - Added [Lazy](#lazy) utility — defer + memoise a value, with `reset` / `peek` / `isResolved` controls and an `isLazy` type-guard.
 - 2.3.5 (06 May 2023)
   - Fixed clone function array cloning does not lose reference for nested objects.
 - 2.3.4 (06 May 2023)

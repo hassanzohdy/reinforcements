@@ -1,6 +1,6 @@
 {
     "name": "@mongez/reinforcements",
-    "version": "2.3.18",
+    "version": "2.4.0",
     "description": "A lightweight package to give a massive reinforcements to variant types of data in Nodejs/Javascript",
     "main": "src/index.ts",
     "scripts": {
@@ -23,7 +23,9 @@
     "keywords": [
         "array",
         "object",
-        "string"
+        "string",
+        "lodash",
+        "lazy"
     ],
     "author": "hassanzohdy",
     "license": "MIT"

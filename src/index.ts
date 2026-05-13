@@ -63,3 +63,4 @@ export * from "./types";
 // utils
 export { default as debounce } from "./utils/debounce";
 export { default as escapeRegex } from "./utils/escapeRegex";
+export { default as lazy, isLazy, type Lazy } from "./utils/lazy";
