@@ -1,22 +1,20 @@
-import capitalize from "./capitalize";
+import words from "./words";
 
 /**
- * Convert current string to camel case
- * i.e hello-world will become: helloWorld
+ * Convert a string to StudlyCase (PascalCase).
  *
- * @param string separator default is by dash(-) or underscore(_)
- * @return string
- * @see String.capitalize
+ * @example
+ * toStudlyCase("hello-world"); // "HelloWorld"
+ * toStudlyCase("ai_agent"); // "AiAgent"
  */
-export default function toStudlyCase(
-  string: string,
-  separator = "-|\\.|_|/|\\s",
-): string {
-  if (!string) return "";
+export default function toStudlyCase(string: string): string {
+  if (!string) {
+    return "";
+  }
 
-  const regex = new RegExp(separator, "g");
-  return string
-    .split(regex)
-    .map(word => capitalize(word))
-    .join("");
+  return words(string).map(capitalize).join("");
+}
+
+function capitalize(word: string): string {
+  return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
 }

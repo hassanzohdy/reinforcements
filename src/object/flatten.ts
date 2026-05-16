@@ -1,65 +1,117 @@
-function canBeFlatten(value: any): boolean {
-  return value !== null && typeof value === "object";
-}
+export type FlattenOptions = {
+  /** Separator between path segments. Default: `"."`. */
+  separator?: string;
+  /** Keep the original nested object/array alongside its flattened entries. Default: `false`. */
+  keepNested?: boolean;
+  /** Maximum recursion depth (`0` = no descent). Default: unlimited. */
+  maxDepth?: number;
+};
 
-function toPlainObject(object) {
-  if (Array.isArray(object)) {
-    return object.map(item => toPlainObject(item));
-  }
-
-  if (canBeFlatten(object)) {
-    const clonedObject: any = Object.keys(object).reduce((acc, key) => {
-      if (typeof object[key] === "function") return acc;
-
-      acc[key] = toPlainObject(object[key]);
-      return acc;
-    }, {});
-
-    // clone the prototype
-    clonedObject.__proto__ = object.__proto__;
-
-    return clonedObject;
-  }
-
-  return object;
-}
+type WalkContext = {
+  root: Record<string, any>;
+  separator: string;
+  keepNested: boolean;
+  maxDepth: number;
+};
 
 /**
- * Flatten the given object into one big fat object
+ * Flatten a nested object/array into a single-level object keyed by
+ * dot-notation paths. Descends into plain objects, arrays, and class
+ * instances; treats `Date`, `RegExp`, `Map`, `Set`, typed arrays, and
+ * primitives as leaves.
+ *
+ * @example
+ * flatten({ a: 1, b: { c: 2 } }); // { a: 1, "b.c": 2 }
+ * flatten({ a: { b: 1 } }, { separator: "/" }); // { "a/b": 1 }
  */
 export default function flatten(
   object: any,
-  separator = ".",
-  keepNestedOriginalObject = false,
-  parent?: string,
-  root: any = {},
-): any {
-  if (canBeFlatten(object) === false) {
-    return object;
+  options: FlattenOptions = {},
+): Record<string, any> {
+  const context: WalkContext = {
+    root: {},
+    separator: options.separator ?? ".",
+    keepNested: options.keepNested ?? false,
+    maxDepth: options.maxDepth ?? Infinity,
+  };
+
+  walk(object, "", 0, context);
+
+  return context.root;
+}
+
+function canDescend(value: any): boolean {
+  if (!value || typeof value !== "object") {
+    return false;
   }
 
-  // object = toPlainObject(object);
+  if (Array.isArray(value)) {
+    return true;
+  }
 
-  for (const key of Object.keys(object)) {
-    const value: any = object[key];
+  if (value instanceof Date) return false;
+  if (value instanceof RegExp) return false;
+  if (value instanceof Map) return false;
+  if (value instanceof Set) return false;
+  if (value instanceof Error) return false;
+  if (value instanceof ArrayBuffer) return false;
+  if (ArrayBuffer.isView(value)) return false;
 
-    const keyChain = parent ? parent + separator + key : key;
+  return true;
+}
 
-    if (
-      (Array.isArray(value) && value.length === 0) ||
-      typeof value === "function"
-    ) {
-      root[keyChain] = value;
-    } else if (canBeFlatten(value)) {
-      if (keepNestedOriginalObject) {
-        root[keyChain] = value;
+function walk(
+  value: any,
+  parent: string,
+  depth: number,
+  context: WalkContext,
+): void {
+  if (!canDescend(value) || depth >= context.maxDepth) {
+    if (parent) {
+      context.root[parent] = value;
+    }
+
+    return;
+  }
+
+  const keys = Array.isArray(value)
+    ? value.map((_, index) => String(index))
+    : Object.keys(value);
+
+  if (keys.length === 0) {
+    if (parent) {
+      context.root[parent] = value;
+    }
+
+    return;
+  }
+
+  for (const key of keys) {
+    const child = value[key];
+    const path = parent ? parent + context.separator + key : key;
+
+    if (typeof child === "function") {
+      context.root[path] = child;
+
+      continue;
+    }
+
+    if (canDescend(child)) {
+      const isEmptyArray = Array.isArray(child) && child.length === 0;
+
+      if (isEmptyArray) {
+        context.root[path] = child;
+
+        continue;
       }
 
-      flatten(value, separator, keepNestedOriginalObject, keyChain, root);
+      if (context.keepNested) {
+        context.root[path] = child;
+      }
+
+      walk(child, path, depth + 1, context);
     } else {
-      root[keyChain] = value;
+      context.root[path] = child;
     }
   }
-
-  return root;
 }

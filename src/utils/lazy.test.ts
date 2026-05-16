@@ -7,7 +7,7 @@ test("resolve returns the producer's return value", () => {
 });
 
 test("producer is not invoked until resolve is called", () => {
-  const producer = jest.fn(() => "hello");
+  const producer = vi.fn(() => "hello");
   const ref = lazy(producer);
 
   expect(producer).not.toHaveBeenCalled();
@@ -18,7 +18,7 @@ test("producer is not invoked until resolve is called", () => {
 });
 
 test("subsequent resolve calls return the cached value without re-invoking the producer", () => {
-  const producer = jest.fn(() => ({ id: 1 }));
+  const producer = vi.fn(() => ({ id: 1 }));
   const ref = lazy(producer);
 
   const first = ref.resolve();
@@ -31,21 +31,21 @@ test("subsequent resolve calls return the cached value without re-invoking the p
 });
 
 test("works with falsy resolved values without re-invoking the producer", () => {
-  const undefinedProducer = jest.fn(() => undefined);
+  const undefinedProducer = vi.fn(() => undefined);
   const undefinedRef = lazy(undefinedProducer);
 
   expect(undefinedRef.resolve()).toBeUndefined();
   expect(undefinedRef.resolve()).toBeUndefined();
   expect(undefinedProducer).toHaveBeenCalledTimes(1);
 
-  const nullProducer = jest.fn(() => null);
+  const nullProducer = vi.fn(() => null);
   const nullRef = lazy(nullProducer);
 
   expect(nullRef.resolve()).toBeNull();
   expect(nullRef.resolve()).toBeNull();
   expect(nullProducer).toHaveBeenCalledTimes(1);
 
-  const zeroProducer = jest.fn(() => 0);
+  const zeroProducer = vi.fn(() => 0);
   const zeroRef = lazy(zeroProducer);
 
   expect(zeroRef.resolve()).toEqual(0);
@@ -82,7 +82,7 @@ test("captures the variable binding, not its value at wrap time", () => {
 
 test("propagates errors thrown by the producer and retries on next resolve call", () => {
   let shouldThrow = true;
-  const producer = jest.fn(() => {
+  const producer = vi.fn(() => {
     if (shouldThrow) {
       throw new Error("boom");
     }
@@ -124,7 +124,7 @@ test("narrows the type when used as a guard", () => {
   if (isLazy<number>(value)) {
     expect(value.resolve()).toEqual(42);
   } else {
-    fail("isLazy should have narrowed the value");
+    throw new Error("isLazy should have narrowed the value");
   }
 });
 
@@ -140,7 +140,7 @@ test("isResolved returns true after resolve is called", () => {
 });
 
 test("peek returns undefined before resolve is called and does not trigger the producer", () => {
-  const producer = jest.fn(() => 42);
+  const producer = vi.fn(() => 42);
   const ref = lazy(producer);
 
   expect(ref.peek()).toBeUndefined();
@@ -148,7 +148,7 @@ test("peek returns undefined before resolve is called and does not trigger the p
 });
 
 test("peek returns the cached value after resolve without re-invoking the producer", () => {
-  const producer = jest.fn(() => ({ id: 1 }));
+  const producer = vi.fn(() => ({ id: 1 }));
   const ref = lazy(producer);
 
   const resolved = ref.resolve();
@@ -159,7 +159,7 @@ test("peek returns the cached value after resolve without re-invoking the produc
 });
 
 test("reset clears the cached value and forces recomputation on next resolve", () => {
-  const producer = jest.fn(() => ({ generation: producer.mock.calls.length + 1 }));
+  const producer = vi.fn(() => ({ generation: producer.mock.calls.length + 1 }));
   const ref = lazy(producer);
 
   const first = ref.resolve();
@@ -184,7 +184,7 @@ test("reset flips isResolved back to false and clears peek", () => {
 });
 
 test("reset is a no-op before resolve has run", () => {
-  const producer = jest.fn(() => 42);
+  const producer = vi.fn(() => 42);
   const ref = lazy(producer);
 
   ref.reset();

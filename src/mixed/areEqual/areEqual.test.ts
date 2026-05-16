@@ -3,75 +3,68 @@ import clone from "../clone/clone";
 import areEqual from "./areEqual";
 
 describe("reinforcements/mixed/areEqual", () => {
-  it("should return true if the given values are equal in values", () => {
+  it("should return true for equal values", () => {
     expect(areEqual([1, 2, 3], [1, 2, 3])).toEqual(true);
-    expect(areEqual([1, 2, 3], [3, 2, 1])).toEqual(true);
     expect(areEqual(orders, [...orders])).toEqual(true);
     expect(areEqual([], [])).toEqual(true);
     expect(areEqual(null, null)).toEqual(true);
     expect(areEqual(undefined, undefined)).toEqual(true);
   });
 
-  it("should return true when comparing two deep nested objects", () => {
+  it("should respect element order in arrays", () => {
+    expect(areEqual([1, 2, 3], [3, 2, 1])).toEqual(false);
+  });
+
+  it("should return true for deep nested objects", () => {
     const obj1 = { a: { b: { c: 1 } } };
     const obj2 = { a: { b: { c: 1 } } };
 
     expect(areEqual(obj1, obj2)).toEqual(true);
 
-    const deeperObject = {
-      a: {
-        b: {
-          c: {
-            d: {
-              e: {
-                f: 1,
-              },
-              m: false,
-            },
-          },
-        },
-      },
+    const deep = {
+      a: { b: { c: { d: { e: { f: 1 }, m: false } } } },
     };
 
-    expect(areEqual(deeperObject, clone(deeperObject))).toEqual(true);
+    expect(areEqual(deep, clone(deep))).toEqual(true);
 
-    const deeperObjectWithNestedArrays = {
+    const nestedArrays = {
       level1: {
         name: "Alice",
-        age: 30,
-        level2: {
-          favoriteFoods: ["pizza", "sushi", "ice cream"],
-          level3: {
-            address: {
-              street: "123 Main St",
-              city: "New York",
-              state: "NY",
-              zipCode: "10001",
-            },
-            level4: {
-              hobbies: ["reading", "hiking", "painting"],
-              level5: {
-                friends: [
-                  { name: "Bob", age: 32 },
-                  { name: "Charlie", age: 29 },
-                  { name: "David", age: 31 },
-                ],
-              },
-            },
-          },
-        },
+        favoriteFoods: ["pizza", "sushi"],
+        friends: [
+          { name: "Bob", age: 32 },
+          { name: "Charlie", age: 29 },
+        ],
       },
     };
 
-    expect(
-      areEqual(
-        deeperObjectWithNestedArrays,
-        clone(deeperObjectWithNestedArrays),
-      ),
-    ).toEqual(true);
+    expect(areEqual(nestedArrays, clone(nestedArrays))).toEqual(true);
   });
 
-  it("should return false if the given values are not equal in values", () => {
+  it("should not mutate its inputs", () => {
+    const a = [3, 1, 2];
+    const b = [3, 1, 2];
+    areEqual(a, b);
+    expect(a).toEqual([3, 1, 2]);
+    expect(b).toEqual([3, 1, 2]);
+  });
+
+  it("should handle Date, RegExp, Map, Set", () => {
+    expect(areEqual(new Date(0), new Date(0))).toEqual(true);
+    expect(areEqual(/abc/g, /abc/g)).toEqual(true);
+    expect(areEqual(new Map([["a", 1]]), new Map([["a", 1]]))).toEqual(true);
+    expect(areEqual(new Set([1, 2]), new Set([2, 1]))).toEqual(true);
+  });
+
+  it("should handle circular references", () => {
+    const a: any = { x: 1 };
+    a.self = a;
+    const b: any = { x: 1 };
+    b.self = b;
+    expect(areEqual(a, b)).toEqual(true);
+  });
+
+  it("should return false for non-equal values", () => {
     expect(areEqual([1, 2, 3], [1, 2, 3, 4])).toEqual(false);
     expect(areEqual([1, 2, 3], [1, 2])).toEqual(false);
     expect(areEqual(2, "2")).toEqual(false);

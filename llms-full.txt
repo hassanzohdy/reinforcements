@@ -1,0 +1,1932 @@
+# @mongez/reinforcements — Full reference
+
+> Complete API reference for `@mongez/reinforcements` v3.0. This file is the concatenation of every per-namespace skill, intended for single-fetch loading by AI agents.
+
+Install: `yarn add @mongez/reinforcements` or `npm i @mongez/reinforcements`.
+
+All exports import from the package root:
+
+```ts
+import {
+  get, set, has, pick, omit, merge, clone, areEqual,
+  toCamelCase, slugify, truncate, template,
+  clamp, formatBytes, percentage,
+  debounce, throttle, memoize, pipe,
+  sleep, retry, pMap, defer,
+  Random, lazy,
+  type Path, type PathValue, type DeepPartial,
+} from "@mongez/reinforcements";
+```
+
+---
+
+# Overview
+
+`@mongez/reinforcements` is a TypeScript utility belt — ~130 functions for objects, strings, numbers, async, randomness, and functional composition.
+
+## Install
+
+```sh
+yarn add @mongez/reinforcements
+# or
+npm i @mongez/reinforcements
+```
+
+## Import pattern
+
+Everything is exported from the package root:
+
+```ts
+import {
+  get, set, has, pick, omit, merge, clone, areEqual,
+  toCamelCase, slugify, truncate, template,
+  clamp, formatBytes, percentage,
+  debounce, throttle, memoize, pipe,
+  sleep, retry, pMap, defer,
+  Random, lazy,
+  type Path, type PathValue, type DeepPartial,
+} from "@mongez/reinforcements";
+```
+
+## Namespaces
+
+| Namespace | Count | Examples |
+|---|---|---|
+| `object` | 23 | `get`, `set`, `pick`, `omit`, `merge`, `clone`, `flatten`, `walk`, `diff` |
+| `string` | ~45 | Casing family, `slugify`, `truncate`, `template`, `mask`, `stripHtmlTags` |
+| `number` | 12 | `round`, `clamp`, `formatBytes`, `percentage`, `safeDivide` |
+| `mixed` | 4 | `clone`, `areEqual`, `shuffle`, `coalesce` |
+| `array` | 18 | `chunk`, `range`, `unique`, `pluck`, `groupBy`, `sum` |
+| `random` | 14 | `Random.int`, `Random.uuid`, `Random.sample`, `Random.seed` |
+| `lazy` | 1 + variants | `lazy`, `lazy.async`, `lazy.from`, `isLazy` |
+| `function` | 17 | `debounce`, `throttle`, `memoize`, `pipe`, `curry`, `once` |
+| `async` | 10 | `sleep`, `retry`, `timeout`, `pMap`, `pFilter`, `defer` |
+| `types` | 16 | `Path`, `PathValue`, `DeepPartial`, `Branded`, `Prettify` |
+
+## Scope boundaries
+
+| Concern | Lives in | Why |
+|---|---|---|
+| Type/shape predicates (`isString`, `isEmpty`, `isURL`, …) | `@mongez/supportive-is` | Single-purpose package |
+| Array collection helpers (`partition`, `keyBy`, `sortBy`, …) | `@mongez/collections` | Richer collection model |
+| HTML sanitization | Use `DOMPurify` | Parser-based, not regex |
+| Schema validation | Use `zod` / `valibot` | Out of scope |
+| Date manipulation | Use `dayjs` / `date-fns` / `Temporal` | Out of scope |
+| HTTP/fetch helpers | Separate concern | Out of scope |
+
+## Mental model
+
+- **Object utilities** prefer **paths over keys** — dot-notation is first-class.
+- **String casings** are powered by a shared `words()` tokenizer that handles acronyms correctly (`AIAgent` → `["AI", "Agent"]`).
+- **Async helpers** mirror common needs without re-implementing the whole Bluebird/p-* ecosystem.
+- **`Random`** is a namespace class — `Random.int(1, 10)`, never `new Random()`.
+- **`lazy`** is the unique tool for breaking ES-module circular imports.
+
+## TypeScript
+
+`get(obj, path)` autocompletes every legal dot-notation path on `obj` and infers the value type. Generics flow through `pick`, `omit`, `merge`, `clone`, `keys`, `values`, `entries`, `mapValues`, `pipe`, `compose`, and the async helpers.
+
+```ts
+type User = { profile: { email: string } };
+const u: User = { profile: { email: "x@y.z" } };
+
+get(u, "profile.email"); // typed as string
+```
+
+---
+
+# Objects
+
+Path-aware reads/writes, deep transforms, structural diff. Import from `@mongez/reinforcements`.
+
+## Path access — `get` / `set` / `has` / `unset`
+
+#### `get`
+
+```ts
+get<T, P extends Path<T>>(obj: T, path: P, default?): PathValue<T, P>
+get<T = any>(obj: any, path: string, default?: T): T
+```
+
+Read by typed dot-notation. Falsy values pass through correctly (no spurious default-substitution on `0` / `""` / `false`).
+
+```ts
+get({ user: { email: "ada@x.com" } }, "user.email"); // "ada@x.com"
+get({ user: {} }, "user.email", "n/a"); // "n/a"
+get(arr, "0.name"); // numeric segments index arrays
+```
+
+#### `set`
+
+```ts
+set<T>(obj: T, path: string, value: unknown): T
+```
+
+Mutating write by dot-notation. **Auto-creates arrays** when the next segment is a numeric index.
+
+```ts
+set({}, "users.0.name", "Ada"); // { users: [{ name: "Ada" }] }
+set(obj, "a.b.c", 1);            // creates a.b.c chain
+```
+
+#### `has`
+
+```ts
+has(obj: any, path: string): boolean
+```
+
+`true` if the path exists, **even when the value is `undefined`**. Use this to distinguish "missing" from "present-but-undefined".
+
+```ts
+has({ a: { b: 1 } }, "a.b");         // true
+has({ a: { b: undefined } }, "a.b"); // true
+has({ a: {} }, "a.b");               // false
+```
+
+#### `unset`
+
+```ts
+unset<T>(obj: T, paths: readonly string[]): T
+```
+
+Mutating remove by dot-notation. Returns the same reference.
+
+```ts
+unset({ a: 1, b: 2 }, ["a"]);          // { b: 2 }
+unset({ a: { b: 1, c: 2 } }, ["a.b"]); // { a: { c: 2 } }
+```
+
+## Key selection — `pick` / `omit`
+
+#### `pick`
+
+```ts
+pick<T, K extends keyof T>(obj: T, keys: readonly K[]): Pick<T, K>
+pick(obj, keys: string[]): Record<string, any>     // supports dot-notation paths
+pick(obj, predicate: (value, key) => boolean): Record<string, any>
+```
+
+```ts
+pick({ a: 1, b: 2, c: 3 }, ["a", "c"]);         // { a: 1, c: 3 }
+pick({ a: { b: 1, c: 2 } }, ["a.b"]);           // { a: { b: 1 } }
+pick({ a: 1, b: 2, c: 3 }, v => v > 1);         // { b: 2, c: 3 }
+```
+
+#### `omit`
+
+```ts
+omit<T, K extends keyof T>(obj: T, keys: readonly K[]): Omit<T, K>
+omit(obj, keys: string[]): Record<string, any>     // supports dot-notation paths
+omit(obj, predicate: (value, key) => boolean): Record<string, any>
+```
+
+Non-mutating; returns a shallow clone minus the keys/paths.
+
+```ts
+omit({ a: 1, b: 2 }, ["b"]);                    // { a: 1 }
+omit({ a: { b: 1, c: 2 } }, ["a.b"]);           // { a: { c: 2 } }
+omit({ a: 1, b: 2 }, (_, k) => k === "a");      // { b: 2 }
+```
+
+> `only` and `except` are kept as **`@deprecated` aliases** of `pick` and `omit` — prefer the new names.
+
+## Deep transforms — `merge` / `clone` / `flatten` / `freeze`
+
+#### `merge`
+
+```ts
+merge<A, B>(a: A, b: B): A & B
+merge(...sources, options?: { arrays?: "replace" | "concat" | "union" }): any
+```
+
+Recursive merge of plain objects. Arrays default to **replace**; pass an options object as the last argument to change strategy.
+
+```ts
+merge({ a: { b: 1 } }, { a: { c: 2 } });
+// { a: { b: 1, c: 2 } }
+
+merge({ list: [1, 2] }, { list: [3, 4] }, { arrays: "concat" });
+// { list: [1, 2, 3, 4] }
+
+merge({ list: [1, 2] }, { list: [2, 3] }, { arrays: "union" });
+// { list: [1, 2, 3] }
+```
+
+Class instances are taken from the latest source rather than merged (cloning custom constructors is out of scope).
+
+#### `clone`
+
+```ts
+clone<T>(value: T): T
+```
+
+Deep clone. Handles `Date`, `RegExp`, `Error` (with own props), `Map`, `Set`, typed arrays, `ArrayBuffer`, and **circular references** via internal `WeakMap`. Non-plain class instances are returned by reference.
+
+```ts
+const copy = clone({ user: { name: "Ada" }, tags: ["x"] });
+copy.user.name = "Bob";
+// original is untouched
+```
+
+#### `flatten`
+
+```ts
+flatten(obj: any, options?: {
+  separator?: string;       // default "."
+  keepNested?: boolean;     // default false
+  maxDepth?: number;        // default Infinity
+}): Record<string, any>
+```
+
+Flatten to a single-level map of dot-keyed paths. Descends into plain objects, arrays, and class instances. Treats `Date` / `RegExp` / `Map` / `Set` / typed arrays as leaves.
+
+```ts
+flatten({ a: { b: 1, c: [2, 3] } });
+// { "a.b": 1, "a.c.0": 2, "a.c.1": 3 }
+
+flatten({ a: { b: 1 } }, { separator: "/" });
+// { "a/b": 1 }
+```
+
+#### `freeze`
+
+```ts
+freeze<T>(value: T): Readonly<T>
+```
+
+Recursive `Object.freeze` across plain objects and arrays.
+
+```ts
+const config = freeze({ api: { url: "..." } });
+config.api.url = "x"; // throws in strict mode
+```
+
+## Defaults & inversion
+
+#### `defaults`
+
+```ts
+defaults<T>(target: T, ...sources): T
+```
+
+Mutating: fills only **`undefined`** keys on `target` from each source, left to right.
+
+```ts
+defaults({ a: 1 }, { a: 2, b: 3 });   // { a: 1, b: 3 }
+defaults({}, { a: 1 }, { a: 2 });     // { a: 1 }  (first source wins)
+```
+
+#### `invert`
+
+```ts
+invert<K, V>(obj: Record<K, V>): Record<string, K>
+```
+
+Swap keys and values; values are coerced to strings; duplicate values collide last-wins.
+
+```ts
+invert({ a: 1, b: 2 }); // { "1": "a", "2": "b" }
+```
+
+## Per-entry mapping
+
+#### `mapValues` / `mapKeys`
+
+```ts
+mapValues<T, U>(obj: T, fn: (value, key, obj) => U): Record<keyof T & string, U>
+mapKeys<T>(obj: T, fn: (key, value, obj) => string): Record<string, T[keyof T]>
+```
+
+```ts
+mapValues({ a: 1, b: 2 }, v => v * 2);              // { a: 2, b: 4 }
+mapKeys({ a: 1, b: 2 }, k => k.toUpperCase());      // { A: 1, B: 2 }
+```
+
+#### `map`
+
+```ts
+map<T, U>(obj: T, fn: (key, value, obj) => U): U[]
+```
+
+Map an object to an array.
+
+```ts
+map({ a: 1, b: 2 }, (k, v) => `${k}=${v}`); // ["a=1", "b=2"]
+```
+
+## Typed enumeration
+
+```ts
+keys<T>(obj: T): Array<keyof T & string>
+values<T>(obj: T): Array<T[keyof T]>
+entries<T>(obj: T): Array<[keyof T & string, T[keyof T]]>
+fromEntries<K, V>(entries: Iterable<readonly [K, V]>): Record<K, V>
+```
+
+Typed wrappers around the matching `Object.*` static methods.
+
+## Traversal & comparison
+
+#### `walk`
+
+```ts
+walk(obj: any, visitor: (value, path, parent, key) => void, parentPath?: string): void
+```
+
+Recursive **leaf** traversal. Descends into plain objects and arrays; calls `visitor` for every non-container value with the full dot-path.
+
+```ts
+walk({ a: { b: 1, c: [2, 3] } }, (value, path) => log(path, value));
+// "a.b" 1
+// "a.c.0" 2
+// "a.c.1" 3
+```
+
+#### `diff`
+
+```ts
+diff(a: object, b: object): {
+  added: Record<string, any>;
+  removed: Record<string, any>;
+  changed: Record<string, { from: any; to: any }>;
+}
+```
+
+Shallow structural diff; uses deep value equality (`areEqual`) for nested comparison.
+
+```ts
+diff({ a: 1, b: 2 }, { a: 1, b: 3, c: 4 });
+// { added: { c: 4 }, removed: {}, changed: { b: { from: 2, to: 3 } } }
+```
+
+## Sorting
+
+#### `sort`
+
+```ts
+sort<T>(obj: T, recursive?: boolean): T  // default recursive = true
+```
+
+Return a new object with keys sorted alphabetically. Arrays of objects are out of scope — use `@mongez/collections` `sortBy`.
+
+```ts
+sort({ b: 1, a: 2, c: 3 });             // { a: 2, b: 1, c: 3 }
+sort({ b: { y: 1, x: 2 }, a: 1 });      // recursive by default
+```
+
+---
+
+# Strings
+
+Casing, trimming, replacement, padding, slugify, truncate, mask, template, HTML helpers, Arabic detection. Import from `@mongez/reinforcements`.
+
+## Casing — powered by `words()`
+
+All casing functions share a single tokenizer that handles **acronyms correctly**.
+
+#### `words`
+
+```ts
+words(input: string): string[]
+```
+
+```ts
+words("XMLHttpRequest");  // ["XML", "Http", "Request"]
+words("AIAgent");         // ["AI", "Agent"]
+words("hello-world");     // ["hello", "world"]
+```
+
+#### Casing family
+
+| Function | Signature | Example |
+|---|---|---|
+| `toCamelCase` | `(str) => string` | `toCamelCase("XMLHttpRequest")` → `"xmlHttpRequest"` |
+| `toStudlyCase` | `(str) => string` | `toStudlyCase("hello-world")` → `"HelloWorld"` |
+| `toPascalCase` | `(str) => string` | Alias of `toStudlyCase` |
+| `toSnakeCase` | `(str, separator?, lowerAll?) => string` | `toSnakeCase("AIAgent")` → `"ai_agent"` |
+| `toKebabCase` | `(str, lowerAll?) => string` | `toKebabCase("getUserID")` → `"get-user-id"` |
+| `toConstantCase` | `(str) => string` | `toConstantCase("apiBaseUrl")` → `"API_BASE_URL"` |
+| `toDotCase` | `(str, lowerAll?) => string` | `toDotCase("helloWorld")` → `"hello.world"` |
+| `toPathCase` | `(str, lowerAll?) => string` | `toPathCase("helloWorld")` → `"hello/world"` |
+| `toTitleCase` | `(str, options?: { stopWords? }) => string` | `toTitleCase("the lord of rings")` → `"The Lord of Rings"` |
+
+## Letter case primitives
+
+```ts
+ucfirst(str: string): string                 // uppercase first char
+capitalize(str: string): string              // ucfirst on every whitespace-separated word
+```
+
+```ts
+ucfirst("hello");          // "Hello"
+capitalize("hello world"); // "Hello World"
+```
+
+## Trimming
+
+| Function | Signature | Notes |
+|---|---|---|
+| `trim` | `(str, needle?: string) => string` | Trims both ends (default whitespace) |
+| `ltrim` | `(str, needle?: string) => string` | Start only |
+| `rtrim` | `(str, needle?: string) => string` | End only |
+
+```ts
+trim("  hi  ");          // "hi"
+trim("---hi---", "-");   // "hi"
+ltrim("//path", "/");    // "path"
+rtrim("file.tmp", ".tmp"); // "file"
+```
+
+## Replacement family
+
+```ts
+replaceAll(str, search, replacement): string
+replaceFirst(str, search, replacement): string
+replaceLast(str, search, replacement): string
+removeFirst(str, needle): string     // = replaceFirst(str, needle, "")
+removeLast(str, needle): string      // = replaceLast(str, needle, "")
+```
+
+`search`/`needle` are **literal strings** — they're regex-escaped internally.
+
+```ts
+replaceAll("a-b-c", "-", "_");        // "a_b_c"
+replaceFirst("foo foo foo", "foo", "bar"); // "bar foo foo"
+replaceLast("foo bar foo", "foo", "baz");  // "foo bar baz"
+```
+
+#### `repeatsOf`
+
+```ts
+repeatsOf(str: string, needle: string, caseSensitive?: boolean): number  // default true
+```
+
+```ts
+repeatsOf("abcabc", "a");       // 2
+repeatsOf("AbcAbc", "a", false); // 2
+```
+
+## Padding
+
+```ts
+pad(str, length, char?): string         // pad both sides; extra char goes to end
+padStart(str, length, char?): string    // typed wrapper around String#padStart
+padEnd(str, length, char?): string      // typed wrapper around String#padEnd
+```
+
+```ts
+pad("hi", 6);       // "  hi  "
+pad("hi", 7, "*");  // "**hi***"
+padStart("7", 3, "0"); // "007"
+padEnd("7", 3, "0");   // "700"
+```
+
+## URL slugs & truncation
+
+#### `slugify`
+
+```ts
+slugify(str, options?: {
+  separator?: string;  // default "-"
+  lower?: boolean;     // default true
+  strict?: boolean;    // default true — strip non-alphanumeric per token
+}): string
+```
+
+```ts
+slugify("Hello, World!");                  // "hello-world"
+slugify("café crème");                     // "cafe-creme"
+slugify("Hello World", { separator: "_" }); // "hello_world"
+```
+
+#### `truncate`
+
+```ts
+truncate(str, length, options?: {
+  suffix?: string;                  // default "..."
+  byWord?: boolean;                 // default false — cut at word boundary
+  position?: "end" | "middle";      // default "end"
+}): string
+```
+
+```ts
+truncate("hello world", 8);                          // "hello..."
+truncate("hello world there", 14, { byWord: true }); // "hello world..."
+truncate("abcdefghij", 7, { position: "middle" });   // "ab...ij"
+```
+
+#### `readMoreChars` / `readMoreWords`
+
+```ts
+readMoreChars(str, length, suffix?: string): string  // default suffix "..."
+readMoreWords(str, wordCount, suffix?: string): string
+```
+
+```ts
+readMoreChars("hello world", 5);     // "hello..."
+readMoreWords("a b c d e", 3);       // "a b c..."
+```
+
+## HTML & masking
+
+#### `escapeHtml` / `unescapeHtml`
+
+```ts
+escapeHtml(str: string): string   // & < > " ' → entities
+unescapeHtml(str: string): string // reverse
+```
+
+```ts
+escapeHtml('<a href="x">');  // "&lt;a href=&quot;x&quot;&gt;"
+```
+
+#### `stripHtmlTags`
+
+```ts
+stripHtmlTags(str, options?: {
+  replacement?: string;              // default ""
+  stripScriptsAndStyles?: boolean;   // default true — drops content too
+  stripComments?: boolean;           // default true
+}): string
+```
+
+**Not a sanitizer** — for untrusted HTML, use DOMPurify.
+
+```ts
+stripHtmlTags("<p>Hello <b>world</b></p>");        // "Hello world"
+stripHtmlTags("<script>alert(1)</script>safe");    // "safe"
+stripHtmlTags("<p>hi</p>", { replacement: " " });  // " hi "
+```
+
+#### `mask`
+
+```ts
+mask(str, options?: {
+  start?: number;  // visible chars from start, default 0
+  end?: number;    // visible chars from end, default 0
+  char?: string;   // mask char, default "*"
+}): string
+```
+
+```ts
+mask("4242424242424242", { start: 0, end: 4 });  // "************4242"
+mask("hassan@gmail.com", { start: 2, end: 4 }); // "ha**********.com"
+```
+
+## Templates
+
+#### `template`
+
+```ts
+template(str: string, vars: Record<string, any>): string
+```
+
+`{path}` interpolation with **dot-notation paths** into `vars`. Missing paths render as `""`.
+
+```ts
+template("Hello {user.name}!", { user: { name: "Ada" } });
+// "Hello Ada!"
+
+template("{count} items", { count: 3 });
+// "3 items"
+```
+
+## Counting & reversal
+
+```ts
+wordCount(str: string): number
+charCount(str: string, options?: { unicode?: boolean }): number  // grapheme-aware when true
+reverse(str: string): string  // unicode-safe (handles surrogate pairs)
+```
+
+```ts
+wordCount("hello world");          // 2
+charCount("hello");                // 5
+charCount("👨‍👩", { unicode: true }); // 1 (single grapheme)
+reverse("hello");                  // "olleh"
+```
+
+## Misc
+
+#### `initials`
+
+```ts
+initials(name: string, separator?: string): string  // default separator ""
+```
+
+```ts
+initials("Ada Lovelace");      // "AL"
+initials("Ada Lovelace", "."); // "A.L"
+```
+
+#### `extension`
+
+```ts
+extension(filename: string): string
+```
+
+Returns the part after the last dot, or `""` if absent.
+
+```ts
+extension("foo.txt");          // "txt"
+extension("archive.tar.gz");   // "gz"
+extension("README");           // ""
+```
+
+#### `toInputName`
+
+```ts
+toInputName(path: string): string
+```
+
+`"a.b.c"` → `"a[b][c]"` for HTML form `name` attributes.
+
+```ts
+toInputName("user.address.city"); // "user[address][city]"
+toInputName("user.tags[]");        // "user[tags][]"
+```
+
+## Arabic
+
+```ts
+startsWithArabic(str: string, trimmed?: boolean): boolean  // default trimmed = true
+containsArabic(str: string): boolean
+ARABIC_REGEX: RegExp                                       // /[؀-ۿ]/
+ARABIC_PATTERN: RegExp                                     // @deprecated — same as ARABIC_REGEX
+```
+
+```ts
+startsWithArabic("مرحبا");        // true
+startsWithArabic("   مرحبا");     // true (trimmed)
+containsArabic("hello مرحبا");    // true
+```
+
+---
+
+# Numbers
+
+Rounding, clamping, formatting, safe arithmetic. Import from `@mongez/reinforcements`.
+
+## Rounding with precision
+
+```ts
+round(value: number, precision?: number): number  // default 2; rounds half-up
+floor(value: number, precision?: number): number  // default 0
+ceil(value: number, precision?: number): number   // default 0
+toFixed(value: number, precision?: number): number  // returns number, not string
+```
+
+```ts
+round(1.235, 2);   // 1.24
+round(1.5, 0);     // 2     (true rounding, not floor)
+floor(1.99, 1);    // 1.9
+ceil(1.01, 1);     // 1.1
+toFixed(1.236, 2); // 1.24  (number, not "1.24")
+```
+
+## Range helpers
+
+```ts
+clamp(value: number, min: number, max: number): number
+inRange(value: number, min: number, max: number, options?: { inclusive?: boolean }): boolean
+lerp(a: number, b: number, t: number): number
+```
+
+`clamp` normalizes swapped bounds. `inRange` defaults to `inclusive: true`.
+
+```ts
+clamp(15, 0, 10);                          // 10
+clamp(-3, 0, 10);                          // 0
+inRange(5, 0, 10);                         // true
+inRange(10, 0, 10, { inclusive: false });  // false
+lerp(0, 100, 0.25);                        // 25
+```
+
+## Safe arithmetic
+
+#### `safeDivide`
+
+```ts
+safeDivide<F = number>(a: number, b: number, fallback?: F): number | F
+```
+
+Returns `fallback` (default `0`) when `b === 0` or the result isn't finite.
+
+```ts
+safeDivide(10, 2);          // 5
+safeDivide(10, 0);          // 0
+safeDivide(10, 0, null);    // null
+```
+
+#### `percentage`
+
+```ts
+percentage(value: number, total: number, decimals?: number): number  // default 2
+```
+
+```ts
+percentage(25, 200);   // 12.5
+percentage(7, 9, 1);   // 77.8
+percentage(1, 0);      // 0   (safe on divide-by-zero)
+```
+
+#### `parseNumber`
+
+```ts
+parseNumber<F = number>(value: unknown, fallback?: F): number | F
+```
+
+Returns `fallback` (default `0`) for `null` / `undefined` / `""` / non-numeric input.
+
+```ts
+parseNumber("42");        // 42
+parseNumber("abc", -1);   // -1
+parseNumber(null, 0);     // 0
+```
+
+## Formatting
+
+#### `formatBytes`
+
+```ts
+formatBytes(bytes: number, options?: {
+  decimals?: number;   // default 2
+  binary?: boolean;    // default false (use 1000-based units)
+}): string
+```
+
+```ts
+formatBytes(1500);                          // "1.50 KB"
+formatBytes(1024, { binary: true, decimals: 0 }); // "1 KiB"
+formatBytes(-1500, { decimals: 0 });        // "-2 KB"
+formatBytes(0);                             // "0 B"
+```
+
+#### `formatNumber`
+
+```ts
+formatNumber(value: number, options?: Intl.NumberFormatOptions & {
+  locale?: string | string[];
+}): string
+```
+
+Thin wrapper around `Intl.NumberFormat`.
+
+```ts
+formatNumber(1234.5);                                     // "1,234.5"
+formatNumber(0.42, { style: "percent" });                 // "42%"
+formatNumber(99, { style: "currency", currency: "USD" }); // "$99.00"
+formatNumber(1234, { locale: "ar-EG" });                  // "١٬٢٣٤"
+```
+
+---
+
+# Mixed (clone, areEqual, shuffle, coalesce)
+
+Deep clone, deep equality, shuffle, coalesce. Import from `@mongez/reinforcements`.
+
+## `clone` — deep copy
+
+```ts
+clone<T>(value: T): T
+```
+
+Handles `Date`, `RegExp`, `Error` (with own props), `Map`, `Set`, typed arrays, `ArrayBuffer`, and **circular references** via internal `WeakMap`. Non-plain class instances are **returned by reference** (cloning user constructors is out of scope — call your own `.clone()` if you have one).
+
+```ts
+const a: any = { name: "Ada" };
+a.self = a;            // circular
+const copy = clone(a);
+copy.self === copy;    // true — circular ref preserved
+
+clone(new Date(0));    // new Date instance, same time
+clone(/abc/gi);        // new RegExp, same source/flags
+clone(new Map([["k", 1]])); // new Map, deep-cloned values
+
+const err = new TypeError("nope");
+(err as any).meta = { detail: true };
+clone(err).meta;       // { detail: true } — own props preserved
+```
+
+## `areEqual` — deep value equality
+
+```ts
+areEqual(a: any, b: any): boolean
+```
+
+Non-mutating deep equality. **Respects element order in arrays.** Handles `Date`, `RegExp`, `Map`, `Set`, and circular references.
+
+```ts
+areEqual({ a: 1 }, { a: 1 });        // true
+areEqual([1, 2, 3], [1, 2, 3]);      // true
+areEqual([1, 2, 3], [3, 2, 1]);      // false — order matters
+
+areEqual(new Date(0), new Date(0));  // true
+areEqual(/abc/g, /abc/g);            // true
+areEqual(new Set([1, 2]), new Set([2, 1])); // true (Set equality)
+
+const a: any = { x: 1 }; a.self = a;
+const b: any = { x: 1 }; b.self = b;
+areEqual(a, b);                       // true — circular-safe
+```
+
+> This is a **value comparator**, not a type/shape predicate. For predicates like `isEmpty` / `isPlainObject`, use `@mongez/supportive-is`.
+
+## `shuffle` — Fisher–Yates
+
+```ts
+shuffle<T>(value: T[], options?: { mutate?: boolean }): T[]
+shuffle(value: string, options?: { mutate?: boolean }): string
+```
+
+Non-mutating by default. Pass `{ mutate: true }` to shuffle the array in place.
+
+```ts
+shuffle([1, 2, 3, 4]);                  // e.g. [3, 1, 4, 2]; original untouched
+shuffle("hello");                        // e.g. "lehlo"
+shuffle(arr, { mutate: true });          // shuffles in place, returns arr
+```
+
+## `coalesce` — first non-nullish
+
+```ts
+coalesce<T>(...values: Array<T | null | undefined>): T | undefined
+```
+
+Returns the first value that isn't `null` or `undefined`. **Falsy-but-defined values** (`0`, `""`, `false`, `NaN`) pass through — unlike `||`.
+
+```ts
+coalesce(null, undefined, "first");  // "first"
+coalesce(undefined, 0, "x");         // 0
+coalesce(undefined, "", "x");        // ""
+coalesce(null, undefined);           // undefined
+```
+
+---
+
+# Random
+
+Namespace class — every method is `public static`. Not instantiable.
+
+```ts
+import { Random, type RandomDateOptions, type WeightedItem } from "@mongez/reinforcements";
+```
+
+## Seeding (reproducible mode)
+
+```ts
+Random.seed(seed?: number): void
+```
+
+Switches the RNG to a deterministic mulberry32 PRNG. Call with no args (or `undefined`) to restore `Math.random`.
+
+```ts
+Random.seed(42);
+const a = Random.int(1, 1000);
+
+Random.seed(42);
+const b = Random.int(1, 1000);
+
+a === b;          // true
+Random.seed();    // back to Math.random
+```
+
+Great for fixture-based tests:
+
+```ts
+beforeEach(() => Random.seed(123));
+afterEach(()  => Random.seed());
+```
+
+## Primitives
+
+```ts
+Random.int(min?: number, max?: number): number          // default [1, 9999999], inclusive
+Random.float(min?: number, max?: number, precision?: number): number  // default [0, 1)
+Random.bool(): boolean
+```
+
+```ts
+Random.int(1, 10);          // e.g. 7
+Random.float(0, 1, 2);      // e.g. 0.42
+Random.bool();              // true or false
+```
+
+## Strings & ids
+
+```ts
+Random.string(length?: number): string                  // alphanumeric, default 32
+Random.id(length?: number, startsWith?: string): string // default 6, "el-"
+Random.uuid(): string                                   // RFC 4122 v4 (crypto.randomUUID when available)
+Random.nanoid(size?: number): string                    // URL-safe, default 21
+Random.token(bytes?: number): string                    // crypto-backed hex, default 16
+```
+
+```ts
+Random.string(8);          // e.g. "Xk2pQ9aZ"
+Random.id();               // e.g. "el-X4kP2a"
+Random.id(4, "user-");     // e.g. "user-q7Zw"
+Random.uuid();             // "0a8b40e1-d3ef-4d2e-87f4-1a8b40e1d3ef"
+Random.nanoid(10);         // "rH3kQ_pX7a"
+Random.token(16);          // 32-char hex
+```
+
+`uuid` / `token` use `crypto.randomUUID` / `crypto.getRandomValues` when available, falling back to the internal PRNG otherwise. **Use for ids only**, not for cryptography.
+
+## Dates & colors
+
+```ts
+Random.date(options?: RandomDateOptions): Date
+type RandomDateOptions = { min?: Date; max?: Date };
+
+Random.color(): string  // "#rrggbb", always 6 hex digits
+```
+
+```ts
+Random.date({ min: new Date("2020-01-01"), max: new Date("2024-12-31") });
+Random.color(); // e.g. "#1f3a8a"
+```
+
+## Pick / sample / weighted
+
+```ts
+Random.pick<T>(array: readonly T[]): T | undefined
+Random.sample<T>(array: readonly T[], n: number): T[]                          // n unique elements
+Random.weighted<T>(items: readonly WeightedItem<T>[]): T | undefined
+type WeightedItem<T> = { value: T; weight: number };
+```
+
+```ts
+Random.pick(["a", "b", "c"]);              // e.g. "b"
+Random.sample([1, 2, 3, 4, 5], 3);         // e.g. [3, 1, 5]
+Random.weighted([
+  { value: "free",    weight: 80 },
+  { value: "premium", weight: 19 },
+  { value: "vip",     weight:  1 },
+]);                                         // weighted choice
+```
+
+`sample` returns at most `array.length` items. Negative weights in `weighted` are clamped to `0`; if every weight is `0` returns `undefined`.
+
+## Gotchas
+
+- `Random` is **not instantiable** — `new Random()` is a TS error. Use the static methods directly.
+- The legacy aliases `Random.integer` / `Random.boolean` from v2 are **removed**. Use `Random.int` / `Random.bool`.
+- Seeded mode persists until cleared — call `Random.seed()` (no args) in `afterEach` to avoid cross-test contamination.
+
+---
+
+# Lazy
+
+Memoised deferred values. The flagship utility of the package — the unique tool for breaking ES-module circular imports.
+
+```ts
+import { lazy, isLazy, type Lazy, type LazyAsync } from "@mongez/reinforcements";
+```
+
+## `lazy(producer)`
+
+```ts
+lazy<T>(producer: () => T): Lazy<T>
+
+type Lazy<T> = {
+  resolve(): T;          // compute (once) and return the cached value
+  reset(): void;         // drop the cache; next resolve() recomputes
+  isResolved(): boolean; // has resolve() been called?
+  peek(): T | undefined; // cached value without forcing computation
+};
+```
+
+The producer **is not invoked** until the first `resolve()`. The result is then memoised.
+
+```ts
+const config = lazy(() => loadHeavyConfig());
+
+config.resolve();   // computes
+config.resolve();   // cached, no recomputation
+config.reset();     // forget cached value
+config.resolve();   // recomputes
+config.peek();      // returns cached value or undefined
+config.isResolved(); // true / false
+```
+
+## Why it exists: circular imports
+
+JavaScript closures capture **variable bindings**, not values. When Module A imports Module B which imports Module A, the value that A wants from B might not be defined yet at module-init time. `lazy()` defers the reference resolution to call time.
+
+```ts
+// In a module that creates a circular dep:
+const service = lazy(() => Service); // Service is undefined right now — fine
+
+export function handler() {
+  return service.resolve().run();    // Service is guaranteed to exist by this point
+}
+```
+
+## `lazy.async(producer)`
+
+```ts
+lazy.async<T>(producer: () => Promise<T>): LazyAsync<T>
+
+type LazyAsync<T> = {
+  resolve(): Promise<T>;
+  reset(): void;
+  isResolved(): boolean;
+  peek(): Promise<T> | undefined;
+};
+```
+
+Same shape as `lazy`, but the cached value is a `Promise<T>`.
+
+```ts
+const user = lazy.async(() => fetch("/api/me").then(r => r.json()));
+
+await user.resolve();  // fetches
+await user.resolve();  // returns the same cached promise — no refetch
+user.reset();
+await user.resolve();  // refetches
+```
+
+## `lazy.from(value)`
+
+```ts
+lazy.from<T>(value: T): Lazy<T>
+```
+
+Pre-resolved lazy — for tests or for API symmetry where a `Lazy<T>` is expected but the value is already known.
+
+```ts
+const ref = lazy.from(42);
+ref.resolve();      // 42
+ref.isResolved();   // true
+ref.reset();        // no-op for pre-resolved lazies
+```
+
+## `isLazy(value)`
+
+```ts
+isLazy<T = unknown>(value: unknown): value is Lazy<T>
+```
+
+Type guard. Returns `true` for both `lazy()` and `lazy.async()` results.
+
+```ts
+if (isLazy<number>(value)) {
+  value.resolve(); // typed as number
+}
+```
+
+## Idioms
+
+**Resetting on config reload:**
+
+```ts
+const cachedConfig = lazy(() => parseConfigFile());
+
+watchConfigFile(() => {
+  cachedConfig.reset();
+});
+
+export function getSetting(key: string) {
+  return cachedConfig.resolve()[key]; // re-parses on first call after reload
+}
+```
+
+**Disambiguating "not yet resolved" from "resolved to undefined":**
+
+```ts
+const maybe = lazy(() => undefined);
+
+maybe.isResolved();  // false
+maybe.peek();        // undefined
+maybe.resolve();
+maybe.isResolved();  // true
+maybe.peek();        // undefined  ← but isResolved() distinguishes the cases
+```
+
+**Error retry:** producers that throw are not memoised; the next `resolve()` re-invokes the producer.
+
+---
+
+# Function utilities
+
+Rate-limiting, memoization, composition, currying, tiny FP primitives.
+
+```ts
+import {
+  debounce, throttle, memoize, once, after, before,
+  pipe, compose, tap, curry, partial, partialRight,
+  noop, identity, constant, negate, escapeRegex,
+} from "@mongez/reinforcements";
+```
+
+## Rate-limiting
+
+#### `debounce`
+
+```ts
+debounce<T>(fn: T, wait: number, options?: {
+  leading?: boolean;   // default false
+  trailing?: boolean;  // default true
+  maxWait?: number;    // force invocation at this cap, even if input keeps coming
+}): Debounced<T>
+
+type Debounced<T> = T & {
+  cancel(): void;   // drop any pending invocation
+  flush(): void;    // invoke the pending call immediately
+  pending(): boolean;
+};
+```
+
+```ts
+const save = debounce(payload => api.save(payload), 500, { maxWait: 3000 });
+
+input.addEventListener("input", e => save(e.target.value));
+button.addEventListener("click", () => save.flush());
+window.addEventListener("beforeunload", () => save.cancel());
+```
+
+#### `throttle`
+
+```ts
+throttle<T>(fn: T, wait: number, options?: {
+  leading?: boolean;   // default true
+  trailing?: boolean;  // default true
+}): Throttled<T>
+
+type Throttled<T> = T & { cancel(): void; flush(): void; pending(): boolean };
+```
+
+```ts
+const onScroll = throttle(() => layout(), 100);
+window.addEventListener("scroll", onScroll);
+```
+
+## Caching
+
+#### `memoize`
+
+```ts
+memoize<T>(fn: T, options?: {
+  resolver?: (...args: Parameters<T>) => string; // default JSON.stringify(args)
+  ttl?: number;                                  // ms; default Infinity
+}): Memoized<T>
+
+type Memoized<T> = T & { clear(): void; forget(key: string): void };
+```
+
+```ts
+const lookup = memoize((id: string) => db.users.find(id), { ttl: 60_000 });
+
+lookup("u1");        // hits DB
+lookup("u1");        // cached
+lookup.forget("u1"); // surgical invalidation
+lookup.clear();      // nuke everything
+```
+
+Custom key:
+
+```ts
+const cached = memoize(
+  (a: User, b: User) => similarity(a, b),
+  { resolver: (a, b) => `${a.id}-${b.id}` },
+);
+```
+
+## Call-count gating
+
+```ts
+once<T>(fn: T): T                                   // run once, cache result forever
+after<T>(n: number, fn: T): (...args) => R | undefined  // only invokes after N-th call
+before<T>(n: number, fn: T): (...args) => R | undefined // up to N times; later calls return last result
+```
+
+```ts
+const init = once(() => expensiveSetup());
+init(); init(); init(); // expensiveSetup runs once
+
+const onAllDone = after(3, () => render());
+onAllDone(); onAllDone(); onAllDone(); // render() on the third call
+
+const tryConnect = before(3, () => connect());
+// up to 3 actual connect() calls; further calls return the last result
+```
+
+## Composition
+
+#### `pipe` / `compose`
+
+```ts
+pipe<A>(value: A): A
+pipe<A, B>(value: A, fn1: (a: A) => B): B
+pipe<A, B, C>(value: A, fn1: (a: A) => B, fn2: (b: B) => C): C
+// …up to 4 typed steps; variadic fallback after that
+
+compose<A, B, C>(fn2: (b: B) => C, fn1: (a: A) => B): (a: A) => C
+// right-to-left
+```
+
+```ts
+pipe(2, n => n + 1, n => n * 10);  // 30
+
+const shout = compose(
+  (s: string) => s + "!",
+  (s: string) => s.toUpperCase(),
+);
+shout("hi");  // "HI!"
+```
+
+#### `tap` / `tap.with`
+
+```ts
+tap<T>(value: T, sideEffect: (value: T) => void): T
+tap.with<T>(sideEffect: (value: T) => void): (value: T) => T
+```
+
+Side-effect probe. `tap.with` returns a pipeline-friendly identity-with-side-effect.
+
+```ts
+pipe(value, trim, tap.with(console.log), toSnakeCase);
+```
+
+## Currying & partial application
+
+```ts
+curry(fn: (...args) => R): any
+partial<T>(fn: T, ...preset): (...rest) => ReturnType<T>
+partialRight<T>(fn: T, ...preset): (...rest) => ReturnType<T>
+```
+
+```ts
+const add = curry((a: number, b: number, c: number) => a + b + c);
+add(1)(2)(3);       // 6
+add(1, 2)(3);       // 6
+add(1, 2, 3);       // 6
+
+const greet = (greeting: string, name: string) => `${greeting}, ${name}`;
+const hello = partial(greet, "Hello");
+hello("Ada");       // "Hello, Ada"
+
+const divide = (a: number, b: number) => a / b;
+const halve = partialRight(divide, 2);
+halve(10);          // 5
+```
+
+## Tiny FP primitives
+
+```ts
+noop(): void                                    // does nothing
+identity<T>(value: T): T                        // returns argument
+constant<T>(value: T): () => T                  // returns a function that always yields value
+negate<T>(predicate: T): (...args) => boolean   // inverts a predicate
+```
+
+```ts
+items.filter(identity);              // drop falsy values
+events.on("data", noop);             // explicitly ignore
+const always42 = constant(42);
+const isOdd = negate((n: number) => n % 2 === 0);
+```
+
+## `escapeRegex`
+
+```ts
+escapeRegex(string: string): string
+```
+
+Escape regex meta-characters so a literal string can be used in a `RegExp`.
+
+```ts
+new RegExp(escapeRegex("a.b+c")); // matches the literal "a.b+c"
+```
+
+---
+
+# Async
+
+Promise-based control flow: sleep, retry, timeout, bounded concurrent map/filter/series, defer, async debounce.
+
+```ts
+import {
+  sleep, retry, timeout,
+  pAll, pAllSettled, pMap, pSeries, pFilter,
+  defer, debounceAsync,
+} from "@mongez/reinforcements";
+```
+
+## `sleep`
+
+```ts
+sleep(ms: number): Promise<void>
+sleep<T>(ms: number, value: T): Promise<T>
+```
+
+```ts
+await sleep(100);
+const ready = await sleep(50, "ok"); // "ok"
+```
+
+## `retry`
+
+```ts
+retry<T>(fn: () => Promise<T> | T, options?: {
+  attempts?: number;                       // default 3
+  delay?: number;                          // ms; default 0
+  backoff?: "linear" | "exponential";      // default "linear"
+  onError?: (error: unknown, attempt: number) => void;
+}): Promise<T>
+```
+
+Throws the **last** error if all attempts fail.
+
+```ts
+const data = await retry(() => fetchUser(id), {
+  attempts: 5,
+  delay: 200,
+  backoff: "exponential",  // 200, 400, 800, 1600 ms between attempts
+  onError: (err, attempt) => log(`attempt ${attempt} failed`, err),
+});
+```
+
+## `timeout`
+
+```ts
+timeout<T>(promise: Promise<T>, ms: number, message?: string): Promise<T>
+```
+
+Races `promise` against a timer; rejects with `new Error(message)` if the timer wins.
+
+```ts
+const result = await timeout(fetch(url), 5_000, "Request too slow");
+```
+
+Combines well with `retry`:
+
+```ts
+await retry(
+  () => timeout(fetch(url), 3_000),
+  { attempts: 3, delay: 500, backoff: "exponential" },
+);
+```
+
+## `pAll` / `pAllSettled`
+
+```ts
+pAll<T extends readonly unknown[]>(
+  promises: readonly [...{ [K in keyof T]: T[K] | Promise<T[K]> }],
+): Promise<T>
+
+pAllSettled<T extends readonly unknown[]>(
+  promises: readonly [...{ [K in keyof T]: T[K] | Promise<T[K]> }],
+): Promise<{ [K in keyof T]: PromiseSettledResult<T[K]> }>
+```
+
+Typed tuple-preserving wrappers around `Promise.all` / `Promise.allSettled`.
+
+```ts
+const [user, posts] = await pAll([fetchUser(), fetchPosts()]);
+// user: User, posts: Post[]
+```
+
+## Bounded concurrency
+
+#### `pMap`
+
+```ts
+pMap<T, U>(
+  items: readonly T[],
+  mapper: (item: T, index: number) => Promise<U> | U,
+  options?: {
+    concurrency?: number;   // default Infinity
+    stopOnError?: boolean;  // default true
+  },
+): Promise<U[]>
+```
+
+Preserves input order in the output. With `stopOnError: false`, every error is collected and the first one is thrown after all items complete.
+
+```ts
+const docs = await pMap(urls, fetch, { concurrency: 5 });
+```
+
+#### `pSeries`
+
+```ts
+pSeries<T, U>(items: readonly T[], mapper: (item, index) => Promise<U> | U): Promise<U[]>
+```
+
+Strictly sequential. Stops at the first thrown error.
+
+```ts
+await pSeries(migrations, m => runMigration(m));
+```
+
+#### `pFilter`
+
+```ts
+pFilter<T>(
+  items: readonly T[],
+  predicate: (item: T, index: number) => Promise<boolean> | boolean,
+  options?: { concurrency?: number },
+): Promise<T[]>
+```
+
+```ts
+const reachable = await pFilter(urls, u => ping(u), { concurrency: 4 });
+```
+
+## `defer`
+
+```ts
+defer<T = void>(): {
+  promise: Promise<T>;
+  resolve: (value: T | PromiseLike<T>) => void;
+  reject: (reason?: unknown) => void;
+}
+```
+
+Externally resolvable promise — useful for bridging callback APIs.
+
+```ts
+function whenReady() {
+  const d = defer<void>();
+  emitter.once("ready", () => d.resolve());
+  emitter.once("error", err => d.reject(err));
+  return d.promise;
+}
+```
+
+## `debounceAsync`
+
+```ts
+debounceAsync<T extends (...args: any[]) => Promise<any>>(
+  fn: T,
+  wait: number,
+): (...args: Parameters<T>) => Promise<Awaited<ReturnType<T>>>
+```
+
+Async-aware debounce: every call returns a promise; bursts collapse into a single `fn` invocation; **all the burst's promises resolve with the same final result**.
+
+```ts
+const search = debounceAsync(
+  (q: string) => fetch(`/search?q=${q}`).then(r => r.json()),
+  250,
+);
+
+const a = search("a");
+const b = search("ab");
+const c = search("abc");
+// 250ms later: one fetch("abc"); a, b, c all resolve with that result
+```
+
+---
+
+# Arrays
+
+Lightweight array helpers. For richer collection operations (`partition`, `keyBy`, `sortBy`, `intersection`, …), use **`@mongez/collections`**.
+
+```ts
+import {
+  chunk, range, unique, pluck, groupBy, countBy, count,
+  sum, average, avg, median, min, max,
+  even, odd, evenIndexes, oddIndexes,
+  pushUnique, unshiftUnique,
+} from "@mongez/reinforcements";
+```
+
+## Reshaping
+
+```ts
+chunk<T>(array: T[] | string, size: number): T[][]
+range(min: number, max: number): number[]
+unique<T>(array: T[], key?: string): T[]
+```
+
+```ts
+chunk([1, 2, 3, 4, 5], 2);  // [[1, 2], [3, 4], [5]]
+chunk("abcdef", 2);          // [["a","b"], ["c","d"], ["e","f"]]
+range(1, 5);                 // [1, 2, 3, 4, 5]
+unique([1, 1, 2, 3, 3]);     // [1, 2, 3]
+unique([{ id: 1 }, { id: 1 }, { id: 2 }], "id"); // [1, 2] — plucked
+```
+
+## Plucking / projection
+
+```ts
+pluck(array: any[], key?: string | string[]): any[]
+```
+
+```ts
+pluck([{ name: "Ada" }, { name: "Bob" }], "name"); // ["Ada", "Bob"]
+pluck([{ a: 1, b: 2 }, { a: 3, b: 4 }], ["a"]);    // [{ a: 1 }, { a: 3 }]
+```
+
+Dot-notation paths work: `pluck(users, "address.city")`.
+
+## Grouping & counting
+
+```ts
+groupBy(array: object[], key: string | string[], listAs?: string): object[]
+countBy(array: any[], key: string): Record<string, number>
+count(array: any[], key: string | ((item) => boolean)): number
+```
+
+```ts
+groupBy(students, "class");                  // [{ class: "A", data: [...] }, ...]
+groupBy(students, ["class", "grade"]);       // multi-key grouping
+groupBy(students, "class", "items");         // rename "data" → "items"
+
+countBy([{ type: "a" }, { type: "b" }, { type: "a" }], "type");
+// { a: 2, b: 1 }
+
+count(items, "name");                  // count items with a defined "name" path
+count(items, item => item.active);     // count by predicate
+```
+
+## Stats
+
+```ts
+sum(array: any[], key?: string): number
+average(array: any[], key?: string): number   // alias: avg
+median(array: any[], key?: string): number
+min(array: any[], key?: string): number
+max(array: any[], key?: string): number
+```
+
+All accept an optional dot-notation key for arrays of objects.
+
+```ts
+sum([1, 2, 3]);                                  // 6
+sum(orders, "total.price");                       // sum of total.price across orders
+average([2, 4, 6]);                               // 4
+median([1, 2, 3, 4]);                             // 2.5
+min(users, "age");                                // smallest age
+max(users, "age");                                // largest age
+```
+
+## Parity filters
+
+```ts
+even(array: any[], key?: string): any[]
+odd(array: any[], key?: string): any[]
+evenIndexes<T>(array: T[]): T[]   // elements at indices 0, 2, 4, …
+oddIndexes<T>(array: T[]): T[]    // elements at indices 1, 3, 5, …
+```
+
+```ts
+even([1, 2, 3, 4]);                  // [2, 4]
+odd([1, 2, 3, 4]);                   // [1, 3]
+even(items, "age");                   // items whose age is even
+evenIndexes(["a", "b", "c", "d"]);   // ["a", "c"]
+oddIndexes(["a", "b", "c", "d"]);    // ["b", "d"]
+```
+
+## Mutating uniques
+
+```ts
+pushUnique<T>(array: T[], ...items: T[]): T[]      // push only if not already present
+unshiftUnique<T>(array: T[], ...items: T[]): T[]   // unshift only if not already present
+```
+
+```ts
+const arr = [1, 2];
+pushUnique(arr, 2, 3);    // [1, 2, 3]   — 2 was skipped
+unshiftUnique(arr, 0, 1); // [0, 1, 2, 3] — 1 was skipped
+```
+
+> These mutate the input array (they return the same reference). Use them when you have a stable array reference you want to grow without dupes.
+
+---
+
+# Types
+
+TypeScript-only exports — zero runtime cost. Import as types:
+
+```ts
+import type {
+  Path, PathValue,
+  DeepPartial, DeepRequired, DeepReadonly, DeepMutable,
+  Prettify, UnionToIntersection, Branded,
+  Nullable, Maybe, Awaitable, NonEmptyArray,
+  GenericObject, AlphaNumeric, Primitive,
+} from "@mongez/reinforcements";
+```
+
+## Dot-notation paths
+
+```ts
+type Path<T, Depth = 6>          // union of every legal dot-notation path
+type PathValue<T, P extends string> // resolved value type at path P
+```
+
+```ts
+type User = {
+  id: number;
+  profile: { email: string; addresses: { city: string }[] };
+};
+
+type UserPath = Path<User>;
+// "id" | "profile" | "profile.email" | "profile.addresses" | "profile.addresses.${number}" | ...
+
+type Email = PathValue<User, "profile.email">; // string
+type City  = PathValue<User, "profile.addresses.0.city">; // string
+```
+
+Used internally to type `get(obj, path)` overloads.
+
+## Recursive transforms
+
+```ts
+type DeepPartial<T>    // all properties (recursively) optional
+type DeepRequired<T>   // all properties (recursively) required
+type DeepReadonly<T>   // all properties (recursively) readonly
+type DeepMutable<T>    // strips readonly recursively
+```
+
+Each preserves primitives, `Date`, `RegExp`, `Function`, `Map<K,V>`, and `Set<T>` rather than recursing into them.
+
+```ts
+type Config = { api: { url: string; retries: number } };
+
+type DraftConfig = DeepPartial<Config>;
+// { api?: { url?: string; retries?: number } }
+
+type FrozenConfig = DeepReadonly<Config>;
+// { readonly api: { readonly url: string; readonly retries: number } }
+```
+
+## Display & combinators
+
+```ts
+type Prettify<T>            // flatten intersections in hover tooltips
+type UnionToIntersection<U> // U union → I intersection (variadic typings)
+```
+
+```ts
+type Combined = Prettify<{ a: 1 } & { b: 2 }>;
+// hovers as { a: 1; b: 2 }  instead of  { a: 1 } & { b: 2 }
+```
+
+## Nominal types
+
+```ts
+type Branded<T, B extends string> = T & { readonly __brand: B }
+```
+
+Distinguish lookalike primitives at the type level.
+
+```ts
+type UserId = Branded<string, "UserId">;
+type Email  = Branded<string, "Email">;
+
+declare function getUser(id: UserId): User;
+
+const id = "abc" as UserId;
+getUser(id);            // ok
+getUser("abc");         // ❌ TS error — string is not assignable to UserId
+```
+
+## Common aliases
+
+```ts
+type Nullable<T>        = T | null
+type Maybe<T>           = T | null | undefined
+type Awaitable<T>       = T | Promise<T>
+type NonEmptyArray<T>   = [T, ...T[]]
+type GenericObject<T=any> = Record<string, T>
+type AlphaNumeric       = string | number
+type Primitive          = AlphaNumeric | boolean
+```
+
+```ts
+function init(input: Awaitable<Config>): Promise<void> { ... }
+
+function first<T>(arr: NonEmptyArray<T>): T {
+  return arr[0]; // safe, no `| undefined`
+}
+```
+
+---
+
+# Recipes
+
+Cross-namespace compositions for common real-world tasks.
+
+## Typed dot-notation reads / writes
+
+```ts
+import { get, set, has } from "@mongez/reinforcements";
+
+type User = { id: number; profile: { email: string } };
+const u: User = { id: 1, profile: { email: "ada@x.com" } };
+
+get(u, "profile.email");        // typed string
+get(u, "profile.email", "n/a"); // typed string
+has(u, "profile.email");        // true
+set(u, "profile.country", "EG");
+```
+
+## Resilient HTTP — `retry` + `timeout` + `pMap`
+
+```ts
+import { retry, timeout, pMap } from "@mongez/reinforcements";
+
+const safeFetch = (id: string) =>
+  retry(() => timeout(fetch(`/users/${id}`).then(r => r.json()), 3_000), {
+    attempts: 5,
+    delay: 200,
+    backoff: "exponential",
+  });
+
+const users = await pMap(userIds, safeFetch, { concurrency: 5 });
+```
+
+## Form submission with cancel & flush
+
+```ts
+import { debounce } from "@mongez/reinforcements";
+
+const autoSave = debounce(payload => api.save(payload), 500, { maxWait: 3_000 });
+
+input.addEventListener("input", e => autoSave(e.target.value));
+button.addEventListener("click", () => autoSave.flush());     // "Save Now"
+window.addEventListener("beforeunload", () => autoSave.cancel());
+```
+
+## Cached, time-bounded lookups
+
+```ts
+import { memoize } from "@mongez/reinforcements";
+
+const lookupUser = memoize(id => db.users.findById(id), { ttl: 60_000 });
+
+await lookupUser("u1");   // hits DB
+await lookupUser("u1");   // cache (within 60s)
+lookupUser.forget("u1");  // on update
+```
+
+## Object change detection — `walk` + `diff`
+
+```ts
+import { walk, diff } from "@mongez/reinforcements";
+
+walk(config, (value, path) => logger.debug(path, value));
+
+const changes = diff(prevState, nextState);
+for (const key of Object.keys(changes.changed)) {
+  audit.log(`${key}: ${changes.changed[key].from} → ${changes.changed[key].to}`);
+}
+```
+
+## Reproducible randomness in tests
+
+```ts
+import { Random } from "@mongez/reinforcements";
+
+beforeEach(() => Random.seed(42));
+afterEach(()  => Random.seed());
+
+test("picks deterministic sample", () => {
+  expect(Random.sample([1, 2, 3, 4, 5], 3)).toEqual(/* same every run */);
+});
+```
+
+## Break a circular import with `lazy`
+
+```ts
+// a.ts
+import { lazy } from "@mongez/reinforcements";
+import { B } from "./b";          // b.ts imports a.ts — circular
+
+const b = lazy(() => B);          // capture binding, defer access
+
+export const A = {
+  callB: () => b.resolve().run(),
+};
+```
+
+## Slug + truncate for URL summaries
+
+```ts
+import { slugify, truncate, pipe } from "@mongez/reinforcements";
+
+const urlSummary = (title: string) =>
+  pipe(title, t => truncate(t, 60, { byWord: true }), t => slugify(t));
+
+urlSummary("How to break circular ES module imports without crying!");
+// "how-to-break-circular-es-module-imports-without"
+```
+
+## PII-safe logging
+
+```ts
+import { mask, pick } from "@mongez/reinforcements";
+
+function logUser(user: { id: string; email: string; phone: string }) {
+  logger.info(
+    pick({ ...user, email: mask(user.email, { start: 2, end: 4 }),
+                    phone: mask(user.phone, { start: 4, end: 2 }) },
+         ["id", "email", "phone"]),
+  );
+}
+```
+
+## Pipeline with side-effect logging
+
+```ts
+import { pipe, tap, trim, toSnakeCase } from "@mongez/reinforcements";
+
+const tokenize = (input: string) =>
+  pipe(
+    input,
+    s => trim(s),
+    tap.with(s => log("trimmed:", s)),
+    toSnakeCase,
+  );
+```
+
+## Deep merge with array union
+
+```ts
+import { merge } from "@mongez/reinforcements";
+
+const config = merge(
+  defaults,
+  userConfig,
+  envConfig,
+  { arrays: "union" },           // de-dupe across all sources
+);
+```
+
+## Templated email body
+
+```ts
+import { template } from "@mongez/reinforcements";
+
+const body = template(
+  "Hi {user.name}, you have {count} {kind} waiting.",
+  { user: { name: "Ada" }, count: 3, kind: "messages" },
+);
+// "Hi Ada, you have 3 messages waiting."
+```
+
+## Form input names from a schema path
+
+```ts
+import { toInputName, flatten } from "@mongez/reinforcements";
+
+const schema = { user: { address: { city: "" }, tags: [] as string[] } };
+
+Object.keys(flatten(schema)).map(toInputName);
+// [ "user[address][city]", "user[tags][0]" ]
+```
+
+## Defer + retry — bridge a callback API
+
+```ts
+import { defer, retry } from "@mongez/reinforcements";
+
+const connect = () => {
+  const d = defer<Connection>();
+  legacy.connect((err, conn) => (err ? d.reject(err) : d.resolve(conn)));
+  return d.promise;
+};
+
+const conn = await retry(connect, { attempts: 3, delay: 500, backoff: "exponential" });
+```
+
+## Burst-tolerant search
+
+```ts
+import { debounceAsync } from "@mongez/reinforcements";
+
+const search = debounceAsync(
+  (q: string) => fetch(`/search?q=${q}`).then(r => r.json()),
+  250,
+);
+
+// User types fast: "a", "ad", "ada"
+// Only the final query is fetched; all three awaiters get the same result.
+```
+
+## Reset-on-config-reload
+
+```ts
+import { lazy } from "@mongez/reinforcements";
+
+const settings = lazy(() => parseConfigFile());
+
+configWatcher.on("change", () => settings.reset());
+
+export const get = (key: string) => settings.resolve()[key];
+```
+
+## Coalesce defaults without `||` falsy bugs
+
+```ts
+import { coalesce } from "@mongez/reinforcements";
+
+const port = coalesce(input.port, env.PORT, 3000);
+// input.port = 0 → uses 0 (not 3000)
+// input.port = undefined → falls through
+```

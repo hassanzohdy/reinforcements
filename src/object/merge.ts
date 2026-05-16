@@ -1,120 +1,133 @@
-/**
- * Disclaimer
- * This function is originally taken from https://github.com/jhildenbiddle/mergician
- * But removed unnecessary parts and added some types, also add some comments and updated constant/variable names and types
- */
+import isPlainObject from "./isPlainObject";
 
-const isArray = Array.isArray;
+export type MergeArrayStrategy = "replace" | "concat" | "union";
 
-const isObject = (value: any) => {
-  return value && value.constructor.name === "Object";
+export type MergeOptions = {
+  /** How to combine arrays. Default: `"replace"`. */
+  arrays?: MergeArrayStrategy;
 };
 
-function isDescriptor(object: any) {
-  if (!isObject(object)) {
-    return false;
-  }
-
-  return (
-    ("get" in object && typeof object.get === "function") ||
-    ("set" in object && typeof object.set === "function") ||
-    ("value" in object &&
-      ("writable" in object ||
-        "enumerable" in object ||
-        "configurable" in object))
-  );
-}
+const DEFAULT_OPTIONS: Required<MergeOptions> = {
+  arrays: "replace",
+};
 
 /**
- * Merge deep objects or arrays
+ * Deep-merge two or more values. Plain objects merge recursively; arrays
+ * are combined according to `options.arrays`. Non-plain objects (Dates,
+ * class instances, Maps, Sets, etc.) are taken from the latest source.
+ *
+ * Pass a `MergeOptions` object as the final argument to configure array
+ * handling. The trailing options object is detected automatically — only
+ * when its single own key is `arrays`.
+ *
+ * @example
+ * merge({ a: { b: 1 } }, { a: { c: 2 } }); // { a: { b: 1, c: 2 } }
+ * merge({ list: [1] }, { list: [2] }, { arrays: "concat" }); // { list: [1, 2] }
  */
-export default function merge(...objects: any[]) {
-  if (objects.length === 0 || !objects[0]) return objects[0];
-
-  const refinedObjects: any[] = [];
-
-  for (let object of objects) {
-    if (isObject(object) || isArray(object)) {
-      refinedObjects.push(object);
-    }
+export default function merge<T extends object, U extends object>(
+  target: T,
+  source: U,
+): T & U;
+export default function merge(...args: any[]): any;
+export default function merge(...args: any[]): any {
+  if (args.length === 0) {
+    return undefined;
   }
 
-  if (refinedObjects.length === 0) {
-    // return last value
-    return objects[objects.length - 1];
+  const { sources, options } = extractOptions(args);
+
+  if (sources.length === 0) {
+    return undefined;
   }
 
-  let mergeKeyList;
+  if (sources.length === 1) {
+    return sources[0];
+  }
 
-  let mergeDepth = 0;
+  let result = sources[0];
 
-  const result: any = refinedObjects.reduce(
-    (targetObject: any, srcObject: any) => {
-      let keys = mergeKeyList || Object.keys(srcObject);
+  for (let i = 1; i < sources.length; i++) {
+    result = mergeTwo(result, sources[i], options);
+  }
 
-      for (let i = 0; i < keys.length; i++) {
-        const key = keys[i];
+  return result;
+}
 
-        if (key in srcObject === false) {
-          continue;
-        }
+function extractOptions(args: any[]): {
+  sources: any[];
+  options: Required<MergeOptions>;
+} {
+  const last = args[args.length - 1];
+  const isOptionsObject =
+    isPlainObject(last) &&
+    "arrays" in last &&
+    Object.keys(last).length === 1;
 
-        const srcValue = srcObject[key];
-        const targetValue = targetObject[key];
+  if (isOptionsObject) {
+    return {
+      sources: args.slice(0, -1),
+      options: { ...DEFAULT_OPTIONS, ...(last as MergeOptions) },
+    };
+  }
 
-        let mergedObject = srcValue;
+  return {
+    sources: args,
+    options: DEFAULT_OPTIONS,
+  };
+}
 
-        if (isArray(mergedObject)) {
-          mergedObject = [...mergedObject];
-        } else if (isObject(mergedObject) && !isDescriptor(mergedObject)) {
-          mergeDepth++;
+function mergeTwo(
+  target: any,
+  source: any,
+  options: Required<MergeOptions>,
+): any {
+  if (source === undefined) {
+    return target;
+  }
 
-          if (isObject(targetValue) || isArray(targetValue)) {
-            mergedObject = merge(targetValue, mergedObject);
-          } else {
-            mergedObject = merge(mergedObject);
-          }
+  if (target === undefined || target === null) {
+    return source;
+  }
 
-          mergeDepth--;
-        }
+  if (Array.isArray(target) && Array.isArray(source)) {
+    return mergeArrays(target, source, options.arrays);
+  }
 
-        // New descriptor returned via callback
-        if (isDescriptor(mergedObject)) {
-          // Accessor and data descriptor
-          mergedObject.configurable = !("configurable" in mergedObject)
-            ? true
-            : mergedObject.configurable;
-          mergedObject.enumerable = !("enumerable" in mergedObject)
-            ? true
-            : mergedObject.enumerable;
+  if (isPlainObject(target) && isPlainObject(source)) {
+    return mergePlainObjects(target, source, options);
+  }
 
-          // Data descriptor
-          if ("value" in mergedObject && !("writable" in mergedObject)) {
-            mergedObject.writable = true;
-          }
+  return source;
+}
 
-          Object.defineProperty(targetObject, key, mergedObject);
-        } else {
-          const mergeDescriptor: any = Object.getOwnPropertyDescriptor(
-            srcObject,
-            key,
-          );
+function mergeArrays(
+  target: any[],
+  source: any[],
+  strategy: MergeArrayStrategy,
+): any[] {
+  switch (strategy) {
+    case "concat":
+      return [...target, ...source];
 
-          // Accessors (getter/setter)
-          if ("get" in mergeDescriptor) {
-            Object.defineProperty(targetObject, key, mergeDescriptor);
-          }
-          // Standard values
-          else {
-            targetObject[key] = mergedObject;
-          }
-        }
-      }
+    case "union":
+      return Array.from(new Set([...target, ...source]));
 
-      return targetObject;
-    },
-    {},
-  );
+    case "replace":
+    default:
+      return [...source];
+  }
+}
+
+function mergePlainObjects(
+  target: Record<string, any>,
+  source: Record<string, any>,
+  options: Required<MergeOptions>,
+): Record<string, any> {
+  const result: Record<string, any> = { ...target };
+
+  for (const key of Object.keys(source)) {
+    result[key] = mergeTwo(target[key], source[key], options);
+  }
 
   return result;
 }

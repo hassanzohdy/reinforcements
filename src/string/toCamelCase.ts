@@ -1,15 +1,26 @@
-import capitalize from "./capitalize";
+import words from "./words";
 
-export default function toCamelCase(
-  string: string,
-  separator = "\\s+|-|/|_|\\.",
-): string {
-  if (!string) return "";
+/**
+ * Convert a string to camelCase.
+ *
+ * @example
+ * toCamelCase("hello-world"); // "helloWorld"
+ * toCamelCase("XMLHttpRequest"); // "xmlHttpRequest"
+ */
+export default function toCamelCase(string: string): string {
+  if (!string) {
+    return "";
+  }
 
-  const regex = new RegExp(separator + "|(?=[A-Z])", "g");
+  const tokens = words(string);
 
-  return string
-    .split(regex)
-    .map((word, index) => (index > 0 ? capitalize(word) : word.toLowerCase()))
-    .join("");
+  return tokens.map(toSegment).join("");
+}
+
+function toSegment(word: string, index: number): string {
+  if (index === 0) {
+    return word.toLowerCase();
+  }
+
+  return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
 }

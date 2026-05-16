@@ -1,27 +1,57 @@
-function getValue(object: any, keyChain: string, defaultValue: any) {
-  // split the key chain into array by dot
-  // then loop through the array and get the value of each key until the last key
-  // then return the value of the last key
-  return keyChain.split(".").reduce((acc, key) => {
-    if (acc === undefined || typeof acc !== "object") {
+import type { Path, PathValue } from "../types";
+
+/**
+ * Get the value at `path` in `object`, returning `defaultValue` (or
+ * `undefined`) if any segment along the path is missing.
+ *
+ * Path supports dot notation and array indices: `"users.0.address.city"`.
+ *
+ * @example
+ * get({ a: { b: { c: 1 } } }, "a.b.c"); // 1
+ * get({ a: { b: { c: 1 } } }, "a.b.x", "fallback"); // "fallback"
+ */
+export default function get<T, P extends Path<T> & string>(
+  object: T,
+  path: P,
+  defaultValue?: PathValue<T, P>,
+): PathValue<T, P>;
+export default function get<T = any>(
+  object: any,
+  path: string,
+  defaultValue?: T,
+): T;
+export default function get(
+  object: any,
+  path: string,
+  defaultValue?: any,
+): any {
+  if (object === null || object === undefined) {
+    return defaultValue;
+  }
+
+  if (path === "") {
+    return defaultValue;
+  }
+
+  const segments = path.split(".");
+
+  let current: any = object;
+
+  for (const key of segments) {
+    if (current === null || current === undefined) {
       return defaultValue;
     }
 
-    if (acc === null) return acc;
+    if (typeof current !== "object") {
+      return defaultValue;
+    }
 
-    return acc.hasOwnProperty && acc.hasOwnProperty(key)
-      ? acc[key]
-      : defaultValue;
-  }, object);
-}
+    if (!Object.prototype.hasOwnProperty.call(current, key)) {
+      return defaultValue;
+    }
 
-/**
- * Get the value of the given key
- */
-export default function get(object: any, key: string, defaultValue?: any): any {
-  if (!object) return defaultValue;
+    current = current[key];
+  }
 
-  if (object[key]) return object[key];
-
-  return getValue(object, key, defaultValue);
+  return current === undefined ? defaultValue : current;
 }

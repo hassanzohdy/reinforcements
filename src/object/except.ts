@@ -1,13 +1,8 @@
-import unset from "./unset";
+import omit from "./omit";
 
 /**
- * Get all object data except for the given keys using dot notation syntax
+ * @deprecated Use {@link omit} instead. Will be removed in a future major release.
  */
 export default function except(object: any, keys: Array<string>): any {
-  if (!object || typeof object !== "object" || Array.isArray(object))
-    return object;
-
-  const newObject = { ...object };
-
-  return unset(newObject, keys);
+  return omit(object, keys);
 }

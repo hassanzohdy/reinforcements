@@ -1,14 +1,21 @@
 import ucfirst from "./ucfirst";
 
+const WHITESPACE_RUN = /\s+/;
+const WHITESPACE_GROUP = /(\s+)/;
+
 /**
- * Capitalize the first letter of the string
+ * Capitalize the first letter of each whitespace-separated word.
  *
- * @return string
+ * @example
+ * capitalize("hello world"); // "Hello World"
  */
 export default function capitalize(string: string): string {
-  if (!string) return "";
+  if (!string) {
+    return "";
+  }
+
   return string
-    .split(" ")
-    .map(word => ucfirst(word))
-    .join(" ");
+    .split(WHITESPACE_GROUP)
+    .map(part => (WHITESPACE_RUN.test(part) ? part : ucfirst(part)))
+    .join("");
 }

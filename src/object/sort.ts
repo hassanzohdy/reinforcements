@@ -1,17 +1,29 @@
+import isPlainObject from "./isPlainObject";
+
 /**
- * Sort the given object by its keys
+ * Return a new object with keys sorted alphabetically. When
+ * `recursive` is `true` (default), nested plain objects are sorted as
+ * well. Arrays are returned as-is.
+ *
+ * For sorting arrays of objects by key, use `sortBy` from
+ * `@mongez/collections`.
+ *
+ * @example
+ * sort({ b: 1, a: 2 }); // { a: 2, b: 1 }
  */
-export default function sort(object: any, recursive = true): any {
-  if (!object || typeof object !== "object" || Array.isArray(object))
+export default function sort<T>(object: T, recursive = true): T {
+  if (!isPlainObject(object)) {
     return object;
+  }
 
-  const sortedObject: any = {};
+  const sortedObject: Record<string, any> = {};
+  const sortedKeys = Object.keys(object as object).sort();
 
-  const keys = Object.keys(object).sort();
+  for (const key of sortedKeys) {
+    const value = (object as any)[key];
 
-  keys.forEach((key: string) => {
-    sortedObject[key] = recursive ? sort(object[key]) : object[key];
-  });
+    sortedObject[key] = recursive ? sort(value, true) : value;
+  }
 
-  return sortedObject;
+  return sortedObject as T;
 }

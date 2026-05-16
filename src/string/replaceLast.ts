@@ -1,25 +1,27 @@
 /**
- * Replace the last occurrence for the the give needle
+ * Replace the last occurrence of `needle` in `string` with
+ * `replacement`. Returns the input unchanged when `needle` is absent.
  *
- * @param  string needle
- * @param  string replacement
- * @return string
+ * @example
+ * replaceLast("foo bar foo", "foo", "baz"); // "foo bar baz"
  */
 export default function replaceLast(
   string: string,
   needle: string,
   replacement: string,
 ): string {
-  if (!string) return "";
+  if (!string) {
+    return "";
+  }
+
   const lastIndex = string.lastIndexOf(needle);
 
   if (lastIndex < 0) {
     return string;
   }
 
-  return (
-    string.substr(0, lastIndex) +
-    replacement +
-    string.substr(lastIndex + needle.length)
-  );
+  const head = string.slice(0, lastIndex);
+  const tail = string.slice(lastIndex + needle.length);
+
+  return head + replacement + tail;
 }

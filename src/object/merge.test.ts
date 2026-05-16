@@ -2,15 +2,21 @@ import merge from "./merge";
 
 describe("reinforcements/object/merge", () => {
   it("should merge two simple objects", () => {
-    const obj1 = { a: 1, b: 2 };
-    const obj2 = { c: 3, d: 4 };
-    expect(merge(obj1, obj2)).toEqual({ a: 1, b: 2, c: 3, d: 4 });
+    expect(merge({ a: 1, b: 2 }, { c: 3, d: 4 })).toEqual({
+      a: 1,
+      b: 2,
+      c: 3,
+      d: 4,
+    });
   });
 
-  it("should merge two complex objects", () => {
-    const obj1 = { a: 1, b: 2, c: { d: 3, e: 4 } };
-    const obj2 = { c: { f: 5, g: 6 }, h: 7 };
-    expect(merge(obj1, obj2)).toEqual({
+  it("should deep-merge nested objects", () => {
+    expect(
+      merge(
+        { a: 1, b: 2, c: { d: 3, e: 4 } },
+        { c: { f: 5, g: 6 }, h: 7 },
+      ),
+    ).toEqual({
       a: 1,
       b: 2,
       c: { d: 3, e: 4, f: 5, g: 6 },
@@ -18,54 +24,39 @@ describe("reinforcements/object/merge", () => {
     });
   });
 
-  it("should merge two complex objects that contains arrays", () => {
-    const obj1 = { a: 1, b: 2, c: { d: 3, e: 4, f: [1, 2, 3] } };
-    const obj2 = { c: { f: [4, 5, 6], g: 6 }, h: 7 };
-    expect(merge(obj1, obj2)).toEqual({
-      a: 1,
-      b: 2,
-      c: { d: 3, e: 4, f: [4, 5, 6], g: 6 },
-      h: 7,
-    });
+  it("should replace arrays by default", () => {
+    expect(
+      merge({ list: [1, 2, 3] }, { list: [4, 5, 6] }),
+    ).toEqual({ list: [4, 5, 6] });
   });
 
-  it("should merge two complex objects that contains methods and instance of es6 classes", () => {
+  it("should concatenate arrays when arrays: 'concat'", () => {
+    expect(
+      merge({ list: [1, 2] }, { list: [3, 4] }, { arrays: "concat" }),
+    ).toEqual({ list: [1, 2, 3, 4] });
+  });
+
+  it("should union arrays when arrays: 'union'", () => {
+    expect(
+      merge({ list: [1, 2] }, { list: [2, 3] }, { arrays: "union" }),
+    ).toEqual({ list: [1, 2, 3] });
+  });
+
+  it("should replace class instances with the latest source", () => {
     class Board {
       constructor(public name: string) {}
-
-      getName() {
-        return this.name;
-      }
     }
-
-    const obj1 = {
-      a: 1,
-      b: 2,
-      c: { d: 3, e: 4, f: [1, 2, 3] },
-      board: new Board("Board 1"),
-    };
-    const obj2 = {
-      c: { f: [4, 5, 6], g: 6 },
-      h: 7,
-      board: new Board("Board 2"),
-    };
-
-    expect(merge(obj1, obj2)).toEqual({
-      a: 1,
-      b: 2,
-      c: { d: 3, e: 4, f: [4, 5, 6], g: 6 },
-      h: 7,
-      board: new Board("Board 2"),
-    });
+    expect(
+      merge({ board: new Board("A") }, { board: new Board("B") }).board.name,
+    ).toEqual("B");
   });
 
-  it("should return first value if it is empty", () => {
-    expect(merge(null, undefined)).toEqual(null);
-    expect(merge(null, 0)).toEqual(null);
-    expect(merge(null, "")).toEqual(null);
-    expect(merge(null, false)).toEqual(null);
-    expect(merge(null, true)).toEqual(null);
-    expect(merge(null, [])).toEqual(null);
-    expect(merge(null, {})).toEqual(null);
+  it("should treat undefined source as no-op", () => {
+    expect(merge({ a: 1 }, undefined)).toEqual({ a: 1 });
+  });
+
+  it("should adopt source when target is nullish", () => {
+    expect(merge(null, { a: 1 })).toEqual({ a: 1 });
+    expect(merge(undefined, [1, 2])).toEqual([1, 2]);
   });
 });

@@ -1,24 +1,27 @@
+import words from "./words";
+
 /**
- * Convert current string to snake case
- * i.e hello-world will become: hello_world
+ * Convert a string to snake_case (or any underscore-style with a
+ * custom separator).
  *
- * @return string
+ * @example
+ * toSnakeCase("HelloWorld"); // "hello_world"
+ * toSnakeCase("AIAgent"); // "ai_agent"
  */
 export default function toSnakeCase(
   string: string,
   separator = "_",
   lowerAll = true,
 ): string {
-  if (!string) return "";
+  if (!string) {
+    return "";
+  }
 
-  return string
-    .replace(/(-|\/|\s|([A-Z]))+/g, function (_match, _v2, matchedUpperLetter) {
-      if (!matchedUpperLetter) return separator;
+  const tokens = words(string);
 
-      return (
-        separator +
-        (lowerAll ? matchedUpperLetter.toLowerCase() : matchedUpperLetter)
-      );
-    })
-    .replace(new RegExp(`^${separator}`), "");
+  if (!lowerAll) {
+    return tokens.join(separator);
+  }
+
+  return tokens.map(word => word.toLowerCase()).join(separator);
 }

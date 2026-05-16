@@ -1,2 +1,12 @@
 node_modules
 coverage
+dist
+build
+
+# Editor / OS artifacts
+.DS_Store
+.vscode
+.idea
+*.log
+yarn-error.log
+*.stackdump

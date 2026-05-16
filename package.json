@@ -1,31 +1,44 @@
 {
     "name": "@mongez/reinforcements",
-    "version": "2.4.0",
+    "version": "3.0.0",
     "description": "A lightweight package to give a massive reinforcements to variant types of data in Nodejs/Javascript",
     "main": "src/index.ts",
     "scripts": {
-        "test": "jest ./src",
-        "test:coverage": "jest ./src --coverage",
-        "test:watch": "jest ./src --watch",
-        "test:file": "jest"
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage",
+        "test:ui": "vitest --ui"
     },
     "repository": {
         "type": "git",
         "url": "https://github.com/hassanzohdy/reinforcements"
     },
     "devDependencies": {
-        "@types/jest": "^29.5.0",
-        "jest": "^29.5.0",
-        "jest-esm-jsx-transform": "^1.0.0",
-        "ts-jest": "^29.0.5",
-        "typescript": "^5.0.2"
+        "@types/node": "^22.0.0",
+        "@vitest/coverage-v8": "^3.0.0",
+        "typescript": "^5.0.2",
+        "vite-tsconfig-paths": "^5.1.0",
+        "vitest": "^3.0.0"
     },
     "keywords": [
         "array",
         "object",
         "string",
+        "number",
+        "async",
+        "promise",
         "lodash",
-        "lazy"
+        "lazy",
+        "debounce",
+        "throttle",
+        "memoize",
+        "pipe",
+        "compose",
+        "clone",
+        "merge",
+        "flatten",
+        "slugify",
+        "typescript"
     ],
     "author": "hassanzohdy",
     "license": "MIT"
