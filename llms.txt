@@ -1,6 +1,6 @@
 # @mongez/reinforcements
 
-> A typed, dependency-free TypeScript utility belt — ~130 functions for objects, strings, numbers, async, randomness, and functional composition. Tree-shakeable, zero runtime deps, 342 tests.
+> A typed, dependency-free TypeScript utility belt — ~130 functions for objects, strings, numbers, async, randomness, and functional composition. Tree-shakeable, zero runtime deps, 372 tests.
 
 This package is designed to be the workhorse for object/string/number manipulation in a Mongez-flavoured stack. Type/shape predicates (`isString`, `isEmpty`, …) live in [`@mongez/supportive-is`](https://github.com/hassanzohdy/supportive-is); richer array/collection helpers live in [`@mongez/collections`](https://github.com/hassanzohdy/collections).
 
@@ -11,18 +11,18 @@ Every export ships from the package root: `import { get, clone, debounce, Random
 - [Overview](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/overview.md): Package pitch, install, namespace counts, scope boundaries.
 - [README](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/README.md): Marketing-style index with recipes and category tables.
 - [Migration v2 → v3](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/MIGRATION.md): Breaking changes and renames.
-- [Changelog](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/CHANGELOG.md): Full v3.0 release notes.
+- [Changelog](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/CHANGELOG.md): Full v3.x release notes.
 
 ## Reference (by namespace)
 
-- [Objects](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/objects.md): `get` / `set` / `has`, `pick` / `omit`, `merge`, `clone`, `flatten`, `walk`, `diff`, `mapValues`, …
+- [Objects](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/objects.md): `get` / `set` / `has`, `pick` / `omit`, `compact`, `merge`, `clone`, `flatten`, `walk`, `diff`, `mapValues`, …
 - [Strings](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/strings.md): Acronym-aware casing family, `slugify`, `truncate`, `template`, `mask`, `escapeHtml`, `stripHtmlTags`, Arabic detection, …
 - [Numbers](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/numbers.md): `round` / `floor` / `ceil`, `clamp`, `formatBytes`, `formatNumber`, `percentage`, `safeDivide`, `parseNumber`, …
 - [Mixed](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/mixed.md): `clone`, `areEqual` (real deep-equal), `shuffle` (Fisher–Yates), `coalesce`.
 - [Random](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/random.md): `Random.int` / `float` / `uuid` / `nanoid` / `pick` / `sample` / `weighted` / `seed` — namespace class with private constructor.
 - [Lazy](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/lazy.md): `lazy`, `lazy.async`, `lazy.from`, `isLazy` — deferred memoised values, primary tool for breaking ES-module circular imports.
 - [Function utilities](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/functions.md): `debounce` (with `cancel` / `flush` / `pending` / `maxWait`), `throttle`, `memoize`, `once`, `after`, `before`, `pipe`, `compose`, `curry`, `partial`, `tap`, …
-- [Async](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/async.md): `sleep`, `retry`, `timeout`, `pAll`, `pAllSettled`, `pMap`, `pSeries`, `pFilter`, `defer`, `debounceAsync`.
+- [Async](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/async.md): `sleep`, `retry`, `timeout`, `pAll`, `pAllSettled`, `pMap`, `pProps`, `pSeries`, `pFilter`, `defer`, `debounceAsync`.
 - [Arrays](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/arrays.md): `chunk`, `range`, `unique`, `pluck`, `groupBy`, `countBy`, `sum`, `average`, `median`, `min`, `max`, parity filters, … (richer collection ops in `@mongez/collections`).
 - [Types](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/types.md): `Path<T>`, `PathValue`, `DeepPartial`, `DeepReadonly`, `Branded`, `Prettify`, `UnionToIntersection`, …
 

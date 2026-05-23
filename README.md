@@ -5,7 +5,7 @@ A typed, dependency-free toolbox of utilities for objects, strings, numbers, asy
 > Looking for arrays? Those live in **`@mongez/collections`**.
 > Looking for type/shape predicates (`isString`, `isEmpty`, …)? Those live in **`@mongez/supportive-is`**.
 
-- 📦 ~120 utilities across 7 namespaces
+- 📦 ~130 utilities across 7 namespaces
 - 🔒 Strict TypeScript — typed dot-notation, deep generics, no `any` in public signatures
 - ⚡️ Zero runtime dependencies
 - 🧪 342 tests, 93 test files
@@ -27,9 +27,9 @@ npm i @mongez/reinforcements
 
 ```ts
 import {
-  clone, get, set, has, pick, omit, merge, slugify, truncate,
+  clone, get, set, has, pick, omit, compact, merge, slugify, truncate,
   toCamelCase, toSnakeCase, formatBytes, clamp, debounce, retry,
-  pMap, Random, lazy, template,
+  pMap, pProps, Random, lazy, template,
 } from "@mongez/reinforcements";
 
 // Typed dot-notation paths
@@ -52,6 +52,17 @@ clamp(150, 0, 100);      // 100
 
 // Async with bounded concurrency
 const docs = await pMap(urls, fetch, { concurrency: 5 });
+
+// Parallel object destructuring
+const { user, settings, home } = await pProps({
+  user: getUser(),
+  settings: loadSettings(),
+  home: getHome(),
+});
+
+// Clean payloads before sending — drops "", null, undefined, [], {}
+compact({ name: "Ada", email: "", phone: null, age: 0 });
+// { name: "Ada", age: 0 }
 
 // Resilient fetch
 const data = await retry(() => fetchUser(id), {
@@ -380,6 +391,7 @@ Every export is documented with `@example` JSDoc — hover in your editor for fu
 | `pick(obj, keys \| predicate)` | New object with only requested keys/paths (or predicate-matching entries). |
 | `omit(obj, keys \| predicate)` | New object excluding the given keys/paths. |
 | `only` / `except` | Deprecated aliases of `pick` / `omit`. |
+| `compact(value, options?)` | Strip nullish / empty-string / empty-container entries. Recursive by default. Keeps `0`/`false`/`NaN`. |
 | `merge(...sources, options?)` | Deep merge; arrays via `{ arrays: "replace" \| "concat" \| "union" }`. |
 | `clone(value)` | Deep clone — handles Date, RegExp, Error, Map, Set, typed arrays, and circular refs. |
 | `flatten(obj, options?)` | `{ separator, keepNested, maxDepth }` — flatten to dot-keyed map. |
@@ -530,7 +542,7 @@ const slow = memoize((id: string) => fetchUser(id), { ttl: 60_000 });
 
 ```ts
 import {
-  sleep, retry, timeout, pAll, pAllSettled, pMap, pSeries, pFilter,
+  sleep, retry, timeout, pAll, pAllSettled, pMap, pProps, pSeries, pFilter,
   defer, debounceAsync,
 } from "@mongez/reinforcements";
 ```
@@ -543,6 +555,7 @@ import {
 | `pAll(promises)` | Tuple-preserving `Promise.all`. |
 | `pAllSettled(promises)` | Tuple-preserving `Promise.allSettled`. |
 | `pMap(items, mapper, { concurrency })` | Bounded concurrent map (preserves order). |
+| `pProps(object)` | Parallel object destructuring: `const { user, settings } = await pProps({ user: ..., settings: ... })`. |
 | `pSeries(items, mapper)` | Sequential map. |
 | `pFilter(items, predicate, { concurrency? })` | Async filter. |
 | `defer<T>()` | Externally-resolvable promise (`promise`, `resolve`, `reject`). |

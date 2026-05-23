@@ -16,11 +16,11 @@ Everything is exported from the package root:
 
 ```ts
 import {
-  get, set, has, pick, omit, merge, clone, areEqual,
+  get, set, has, pick, omit, compact, merge, clone, areEqual,
   toCamelCase, slugify, truncate, template,
   clamp, formatBytes, percentage,
   debounce, throttle, memoize, pipe,
-  sleep, retry, pMap, defer,
+  sleep, retry, pMap, pProps, defer,
   Random, lazy,
   type Path, type PathValue, type DeepPartial,
 } from "@mongez/reinforcements";
@@ -30,7 +30,7 @@ import {
 
 | Namespace | Count | Examples |
 |---|---|---|
-| `object` | 23 | `get`, `set`, `pick`, `omit`, `merge`, `clone`, `flatten`, `walk`, `diff` |
+| `object` | 24 | `get`, `set`, `pick`, `omit`, `compact`, `merge`, `clone`, `flatten`, `walk`, `diff` |
 | `string` | ~45 | Casing family, `slugify`, `truncate`, `template`, `mask`, `stripHtmlTags` |
 | `number` | 12 | `round`, `clamp`, `formatBytes`, `percentage`, `safeDivide` |
 | `mixed` | 4 | `clone`, `areEqual`, `shuffle`, `coalesce` |
@@ -38,7 +38,7 @@ import {
 | `random` | 14 | `Random.int`, `Random.uuid`, `Random.sample`, `Random.seed` |
 | `lazy` | 1 + variants | `lazy`, `lazy.async`, `lazy.from`, `isLazy` |
 | `function` | 17 | `debounce`, `throttle`, `memoize`, `pipe`, `curry`, `once` |
-| `async` | 10 | `sleep`, `retry`, `timeout`, `pMap`, `pFilter`, `defer` |
+| `async` | 11 | `sleep`, `retry`, `timeout`, `pMap`, `pProps`, `pFilter`, `defer` |
 | `types` | 16 | `Path`, `PathValue`, `DeepPartial`, `Branded`, `Prettify` |
 
 ## Scope boundaries
