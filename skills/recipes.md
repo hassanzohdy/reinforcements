@@ -220,3 +220,34 @@ const port = coalesce(input.port, env.PORT, 3000);
 // input.port = 0 → uses 0 (not 3000)
 // input.port = undefined → falls through
 ```
+
+## Clean an API payload before sending
+
+```ts
+import { compact } from "@mongez/reinforcements";
+
+const payload = compact({
+  name: form.name,
+  email: form.email,       // possibly ""
+  phone: form.phone,       // possibly null
+  preferences: form.prefs, // possibly {}
+  age: form.age,           // 0 is valid, kept
+});
+
+await api.post("/users", payload);
+```
+
+## Parallel destructuring with `pProps`
+
+```ts
+import { pProps } from "@mongez/reinforcements";
+
+const { user, settings, home, notifications } = await pProps({
+  user:          getUserFromDB(userId),
+  settings:      loadSettingsAsync(userId),
+  home:          getHomeFeed(userId),
+  notifications: getUnreadCount(userId),
+});
+
+// All four requests run in parallel; one rejection rejects the whole thing.
+```

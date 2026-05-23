@@ -65,6 +65,29 @@ await retry(
 );
 ```
 
+## `pProps` — parallel object destructuring
+
+```ts
+pProps<T extends Record<string, unknown>>(
+  object: T,
+): Promise<{ [K in keyof T]: Awaited<T[K]> }>
+```
+
+Run an object's worth of promises in parallel and resolve to an object with the same keys but unwrapped values. Modelled on Bluebird's `Promise.props`. Non-promise values pass through unchanged.
+
+```ts
+const { user, settings, home } = await pProps({
+  user:     getUserFromDB(),
+  settings: loadSettingsAsync(),
+  home:     getHome(),
+});
+
+// Mixed promises and plain values are fine:
+await pProps({ a: 1, b: Promise.resolve(2) }); // { a: 1, b: 2 }
+```
+
+Rejects on the first rejected promise (same semantics as `Promise.all`).
+
 ## `pAll` / `pAllSettled`
 
 ```ts

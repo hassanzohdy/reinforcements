@@ -14,14 +14,14 @@ Reference cards for AI agents working with this package. Each file is **self-con
 |---|---|---|
 | [`overview.md`](./overview.md) | Package pitch, install, scope boundaries (what's in / what's not) | First touch |
 | [`arrays.md`](./arrays.md) | `chunk`, `range`, `unique`, `pluck`, `groupBy`, `sum`, `average`, … | Array shaping, stats, filtering by parity |
-| [`objects.md`](./objects.md) | `get`/`set`/`has`, `pick`/`omit`, `merge`, `flatten`, `walk`, `diff`, `mapValues`, … | Object reads/writes, transforms, comparison |
+| [`objects.md`](./objects.md) | `get`/`set`/`has`, `pick`/`omit`, `compact`, `merge`, `flatten`, `walk`, `diff`, `mapValues`, … | Object reads/writes, transforms, comparison |
 | [`strings.md`](./strings.md) | Casing family, `slugify`, `truncate`, `template`, `mask`, `escapeHtml`, `stripHtmlTags`, … | Any string manipulation |
 | [`numbers.md`](./numbers.md) | `round`/`floor`/`ceil`, `clamp`, `formatBytes`, `formatNumber`, `safeDivide`, … | Number formatting, math, range checks |
 | [`mixed.md`](./mixed.md) | `clone`, `areEqual`, `shuffle`, `coalesce` | Deep clone, deep equality, randomization |
 | [`random.md`](./random.md) | `Random.int/float/uuid/nanoid/pick/sample/weighted/seed`, … | Any RNG, including reproducible test seeding |
 | [`lazy.md`](./lazy.md) | `lazy`, `lazy.async`, `lazy.from`, `isLazy` | Deferred computation, breaking circular imports |
 | [`functions.md`](./functions.md) | `debounce`, `throttle`, `memoize`, `pipe`, `compose`, `once`, `curry`, … | Function combinators, rate-limiting, caching |
-| [`async.md`](./async.md) | `sleep`, `retry`, `timeout`, `pMap`, `pSeries`, `pFilter`, `defer`, `debounceAsync` | Async control flow, concurrency, retries |
+| [`async.md`](./async.md) | `sleep`, `retry`, `timeout`, `pMap`, `pProps`, `pSeries`, `pFilter`, `defer`, `debounceAsync` | Async control flow, concurrency, retries |
 | [`types.md`](./types.md) | `Path<T>`, `PathValue`, `DeepPartial`, `Branded`, `Prettify`, … | TypeScript-level utilities |
 | [`recipes.md`](./recipes.md) | Cross-namespace compositions for common real-world tasks | Designing a flow that spans categories |
 

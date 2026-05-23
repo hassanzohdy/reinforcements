@@ -2,7 +2,18 @@
 
 All notable changes to `@mongez/reinforcements` are documented in this file.
 
-## 3.0.0 (Unreleased)
+## 3.1.0
+
+### Added
+
+- **`compact(value, options?)`** — strip "empty" entries from an object or array. Default predicate drops `null`, `undefined`, and `""`; keeps `0`/`false`/`NaN`. Empty arrays/objects are dropped, and recursion is enabled by default — parents that become empty after recursion are themselves dropped. Customisable via `{ predicate, empties, deep }`. Typical use: cleaning API payloads, query strings, form data.
+- **`pProps(object)`** — parallel object destructuring (modelled on Bluebird's `Promise.props`). Resolves an object of promises to an object of unwrapped values with the same keys, with full type inference. Non-promise values pass through. Joins the existing `pAll` / `pMap` / `pSeries` / `pFilter` async family.
+
+### Tests
+
+- 96 test files, 372 tests, all passing (+2 files / +18 tests over 3.0.0).
+
+## 3.0.0
 
 ### Breaking
 

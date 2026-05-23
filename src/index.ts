@@ -39,6 +39,7 @@ export { default as safeDivide } from "./number/safeDivide";
 export { default as toFixed } from "./number/toFixed";
 
 // objects
+export { default as compact } from "./object/compact";
 export { default as defaults } from "./object/defaults";
 export { default as diff } from "./object/diff";
 export { default as entries } from "./object/entries";
@@ -144,6 +145,7 @@ export { default as pAll } from "./async/pAll";
 export { default as pAllSettled } from "./async/pAllSettled";
 export { default as pFilter } from "./async/pFilter";
 export { default as pMap } from "./async/pMap";
+export { default as pProps } from "./async/pProps";
 export { default as pSeries } from "./async/pSeries";
 export { default as retry } from "./async/retry";
 export { default as sleep } from "./async/sleep";

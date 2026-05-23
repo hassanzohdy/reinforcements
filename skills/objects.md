@@ -93,6 +93,42 @@ omit({ a: 1, b: 2 }, (_, k) => k === "a");      // { b: 2 }
 
 > `only` and `except` are kept as **`@deprecated` aliases** of `pick` and `omit` — prefer the new names.
 
+## Cleanup — `compact`
+
+#### `compact`
+
+```ts
+compact<T extends Record<string, any>>(obj: T, options?: CompactOptions): Partial<T>
+compact<T>(array: T[], options?: CompactOptions): T[]
+
+type CompactOptions = {
+  predicate?: (value: any) => boolean;  // default: nullish or ""
+  empties?: boolean;                    // default: true — drop [] and {} too
+  deep?: boolean;                       // default: true
+};
+```
+
+Strip "empty" entries from objects/arrays. Default predicate drops `null`, `undefined`, and `""` only — **keeps `0`, `false`, `NaN`** because those are usually meaningful. With `empties` and `deep` on by default, parent containers that become empty after recursion are themselves dropped.
+
+```ts
+compact({ name: "Ada", email: "", phone: null, age: 0 });
+// { name: "Ada", age: 0 }
+
+compact({ user: { name: "Ada", email: "" }, meta: {} });
+// { user: { name: "Ada" } }
+
+compact(["a", "", null, "b"]);
+// ["a", "b"]
+
+compact({ a: 0, b: -1 }, { predicate: v => v === -1 });
+// { a: 0 }
+
+compact({ tags: [], name: "Ada" }, { empties: false });
+// { tags: [], name: "Ada" }
+```
+
+Typical uses: cleaning API request payloads, building query strings from filter objects, sanitizing form data.
+
 ## Deep transforms — `merge` / `clone` / `flatten` / `freeze`
 
 #### `merge`

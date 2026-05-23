@@ -1,6 +1,6 @@
 # @mongez/reinforcements — Full reference
 
-> Complete API reference for `@mongez/reinforcements` v3.0. This file is the concatenation of every per-namespace skill, intended for single-fetch loading by AI agents.
+> Complete API reference for `@mongez/reinforcements` v3.1. This file is the concatenation of every per-namespace skill, intended for single-fetch loading by AI agents.
 
 Install: `yarn add @mongez/reinforcements` or `npm i @mongez/reinforcements`.
 
@@ -8,11 +8,11 @@ All exports import from the package root:
 
 ```ts
 import {
-  get, set, has, pick, omit, merge, clone, areEqual,
+  get, set, has, pick, omit, compact, merge, clone, areEqual,
   toCamelCase, slugify, truncate, template,
   clamp, formatBytes, percentage,
   debounce, throttle, memoize, pipe,
-  sleep, retry, pMap, defer,
+  sleep, retry, pMap, pProps, defer,
   Random, lazy,
   type Path, type PathValue, type DeepPartial,
 } from "@mongez/reinforcements";
@@ -189,6 +189,42 @@ omit({ a: 1, b: 2 }, (_, k) => k === "a");      // { b: 2 }
 ```
 
 > `only` and `except` are kept as **`@deprecated` aliases** of `pick` and `omit` — prefer the new names.
+
+## Cleanup — `compact`
+
+#### `compact`
+
+```ts
+compact<T extends Record<string, any>>(obj: T, options?: CompactOptions): Partial<T>
+compact<T>(array: T[], options?: CompactOptions): T[]
+
+type CompactOptions = {
+  predicate?: (value: any) => boolean;  // default: nullish or ""
+  empties?: boolean;                    // default: true — drop [] and {} too
+  deep?: boolean;                       // default: true
+};
+```
+
+Strip "empty" entries from objects/arrays. Default predicate drops `null`, `undefined`, and `""` only — **keeps `0`, `false`, `NaN`** because those are usually meaningful. With `empties` and `deep` on by default, parent containers that become empty after recursion are themselves dropped.
+
+```ts
+compact({ name: "Ada", email: "", phone: null, age: 0 });
+// { name: "Ada", age: 0 }
+
+compact({ user: { name: "Ada", email: "" }, meta: {} });
+// { user: { name: "Ada" } }
+
+compact(["a", "", null, "b"]);
+// ["a", "b"]
+
+compact({ a: 0, b: -1 }, { predicate: v => v === -1 });
+// { a: 0 }
+
+compact({ tags: [], name: "Ada" }, { empties: false });
+// { tags: [], name: "Ada" }
+```
+
+Typical uses: cleaning API request payloads, building query strings from filter objects, sanitizing form data.
 
 ## Deep transforms — `merge` / `clone` / `flatten` / `freeze`
 
@@ -1369,6 +1405,29 @@ await retry(
 );
 ```
 
+## `pProps` — parallel object destructuring
+
+```ts
+pProps<T extends Record<string, unknown>>(
+  object: T,
+): Promise<{ [K in keyof T]: Awaited<T[K]> }>
+```
+
+Run an object's worth of promises in parallel and resolve to an object with the same keys but unwrapped values. Modelled on Bluebird's `Promise.props`. Non-promise values pass through unchanged.
+
+```ts
+const { user, settings, home } = await pProps({
+  user:     getUserFromDB(),
+  settings: loadSettingsAsync(),
+  home:     getHome(),
+});
+
+// Mixed promises and plain values are fine:
+await pProps({ a: 1, b: Promise.resolve(2) }); // { a: 1, b: 2 }
+```
+
+Rejects on the first rejected promise (same semantics as `Promise.all`).
+
 ## `pAll` / `pAllSettled`
 
 ```ts
@@ -1929,4 +1988,35 @@ import { coalesce } from "@mongez/reinforcements";
 const port = coalesce(input.port, env.PORT, 3000);
 // input.port = 0 → uses 0 (not 3000)
 // input.port = undefined → falls through
+```
+
+## Clean an API payload before sending
+
+```ts
+import { compact } from "@mongez/reinforcements";
+
+const payload = compact({
+  name: form.name,
+  email: form.email,       // possibly ""
+  phone: form.phone,       // possibly null
+  preferences: form.prefs, // possibly {}
+  age: form.age,           // 0 is valid, kept
+});
+
+await api.post("/users", payload);
+```
+
+## Parallel destructuring with `pProps`
+
+```ts
+import { pProps } from "@mongez/reinforcements";
+
+const { user, settings, home, notifications } = await pProps({
+  user:          getUserFromDB(userId),
+  settings:      loadSettingsAsync(userId),
+  home:          getHomeFeed(userId),
+  notifications: getUnreadCount(userId),
+});
+
+// All four requests run in parallel; one rejection rejects the whole thing.
 ```
