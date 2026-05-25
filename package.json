@@ -1,6 +1,6 @@
 {
   "name": "@mongez/reinforcements",
-  "version": "3.1.11",
+  "version": "3.1.12",
   "description": "A lightweight package to give a massive reinforcements to variant types of data in Nodejs/Javascript",
   "main": "src/index.ts",
   "scripts": {
