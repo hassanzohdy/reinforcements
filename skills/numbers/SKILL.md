@@ -1,3 +1,8 @@
+---
+name: mongez-reinforcements-numbers
+description: Number utilities from @mongez/reinforcements — rounding, clamping, range helpers, safe arithmetic (safeDivide, percentage, parseNumber), and formatting (formatBytes, formatNumber).
+when_to_use: User calls round(), floor(), ceil(), clamp(), inRange(), lerp(), safeDivide(), percentage(), parseNumber(), formatBytes(), or formatNumber() from @mongez/reinforcements, or needs number formatting, clamping, or safe division.
+---
 # Numbers
 
 Rounding, clamping, formatting, safe arithmetic. Import from `@mongez/reinforcements`.

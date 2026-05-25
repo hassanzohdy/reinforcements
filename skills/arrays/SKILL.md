@@ -1,3 +1,8 @@
+---
+name: mongez-reinforcements-arrays
+description: Lightweight array helpers from @mongez/reinforcements — chunking, range, unique, pluck, groupBy, stats (sum/average/median/min/max), parity filters, and mutating unique push/unshift.
+when_to_use: User calls chunk(), range(), unique(), pluck(), groupBy(), countBy(), sum(), average(), median(), min(), max(), even(), odd(), pushUnique(), or unshiftUnique() from @mongez/reinforcements, or is working with array reshaping and aggregation.
+---
 # Arrays
 
 Lightweight array helpers. For richer collection operations (`partition`, `keyBy`, `sortBy`, `intersection`, …), use **`@mongez/collections`**.

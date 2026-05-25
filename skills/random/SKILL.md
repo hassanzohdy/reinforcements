@@ -1,3 +1,8 @@
+---
+name: mongez-reinforcements-random
+description: Random value generation via the Random namespace class from @mongez/reinforcements — integers, floats, booleans, strings, UUIDs, nanoids, dates, colors, weighted picks, and seedable deterministic mode.
+when_to_use: User calls Random.int(), Random.float(), Random.bool(), Random.string(), Random.id(), Random.uuid(), Random.nanoid(), Random.token(), Random.date(), Random.color(), Random.pick(), Random.sample(), Random.weighted(), or Random.seed() from @mongez/reinforcements.
+---
 # Random
 
 Namespace class — every method is `public static`. Not instantiable.

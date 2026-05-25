@@ -1,3 +1,8 @@
+---
+name: mongez-reinforcements-async
+description: Async/Promise utilities from @mongez/reinforcements — sleep, retry with backoff, timeout racing, pProps/pAll/pMap/pSeries/pFilter for concurrent work, defer, and debounceAsync.
+when_to_use: User calls sleep(), retry(), timeout(), pProps(), pAll(), pAllSettled(), pMap(), pSeries(), pFilter(), defer(), or debounceAsync() from @mongez/reinforcements, or needs bounded concurrency, async debounce, or externally resolvable promises.
+---
 # Async
 
 Promise-based control flow: sleep, retry, timeout, bounded concurrent map/filter/series, defer, async debounce.

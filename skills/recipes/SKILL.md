@@ -1,3 +1,8 @@
+---
+name: mongez-reinforcements-recipes
+description: Cross-namespace composition recipes for @mongez/reinforcements — real-world patterns combining retry+timeout+pMap, debounce+flush, memoize, walk+diff, lazy circular-import breaking, slug+truncate pipelines, PII masking, and more.
+when_to_use: User is combining multiple @mongez/reinforcements utilities together, looking for best-practice patterns, or needs a complete worked example such as resilient HTTP fetching, auto-save forms, object change detection, reproducible test randomness, or async burst-tolerant search.
+---
 # Recipes
 
 Cross-namespace compositions for common real-world tasks.

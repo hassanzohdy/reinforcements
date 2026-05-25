@@ -1,3 +1,8 @@
+---
+name: mongez-reinforcements-mixed
+description: Cross-type utilities from @mongez/reinforcements — deep clone(), deep equality areEqual(), Fisher-Yates shuffle(), and null-safe coalesce().
+when_to_use: User calls clone(), areEqual(), shuffle(), or coalesce() from @mongez/reinforcements, or needs deep cloning of values with circular references, deep equality comparison, array/string shuffling, or null-safe first-defined value selection.
+---
 # Mixed
 
 Deep clone, deep equality, shuffle, coalesce. Import from `@mongez/reinforcements`.

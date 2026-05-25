@@ -1,3 +1,8 @@
+---
+name: mongez-reinforcements-overview
+description: High-level orientation to @mongez/reinforcements — what the package contains, how to install it, and where each utility namespace lives.
+when_to_use: User asks what @mongez/reinforcements provides, wants the install command, needs to understand the package scope or namespace breakdown, or is deciding whether to use @mongez/reinforcements versus a companion package like @mongez/supportive-is or @mongez/collections.
+---
 # Overview
 
 `@mongez/reinforcements` is a TypeScript utility belt — ~130 functions for objects, strings, numbers, async, randomness, and functional composition.

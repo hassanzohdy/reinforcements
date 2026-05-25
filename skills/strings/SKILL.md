@@ -1,3 +1,8 @@
+---
+name: mongez-reinforcements-strings
+description: String utilities from @mongez/reinforcements — case conversion, trimming, slugify, truncate, mask, template interpolation, HTML helpers, and Arabic detection.
+when_to_use: User calls toCamelCase(), toSnakeCase(), toKebabCase(), slugify(), truncate(), mask(), template(), stripHtmlTags(), words(), trim(), replaceAll(), or any other string function from @mongez/reinforcements.
+---
 # Strings
 
 Casing, trimming, replacement, padding, slugify, truncate, mask, template, HTML helpers, Arabic detection. Import from `@mongez/reinforcements`.

@@ -1,3 +1,8 @@
+---
+name: mongez-reinforcements-objects
+description: Deep path-aware object utilities from @mongez/reinforcements — get/set/has/unset, pick/omit, compact, merge, clone, flatten, walk, diff, and more.
+when_to_use: User calls get(), set(), has(), unset(), pick(), omit(), compact(), merge(), clone(), flatten(), freeze(), defaults(), invert(), mapValues(), mapKeys(), walk(), diff(), sort() from @mongez/reinforcements, or needs dot-notation reads/writes on nested objects.
+---
 # Objects
 
 Path-aware reads/writes, deep transforms, structural diff. Import from `@mongez/reinforcements`.

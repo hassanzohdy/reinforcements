@@ -1,3 +1,8 @@
+---
+name: mongez-reinforcements-lazy
+description: Memoised deferred values via lazy() from @mongez/reinforcements — the primary tool for breaking ES-module circular imports and deferring expensive computation until first use.
+when_to_use: User calls lazy(), lazy.async(), lazy.from(), or isLazy() from @mongez/reinforcements, needs to break a circular ES module import, or wants to defer and memoize a computed value until first access.
+---
 # Lazy
 
 Memoised deferred values. The flagship utility of the package — the unique tool for breaking ES-module circular imports.

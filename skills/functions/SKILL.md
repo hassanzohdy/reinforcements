@@ -1,3 +1,8 @@
+---
+name: mongez-reinforcements-functions
+description: Function utilities from @mongez/reinforcements — debounce, throttle, memoize, once/after/before call-count gating, pipe/compose composition, curry/partial application, and FP primitives.
+when_to_use: User calls debounce(), throttle(), memoize(), once(), after(), before(), pipe(), compose(), tap(), curry(), partial(), partialRight(), noop(), identity(), constant(), negate(), or escapeRegex() from @mongez/reinforcements.
+---
 # Function utilities
 
 Rate-limiting, memoization, composition, currying, tiny FP primitives.

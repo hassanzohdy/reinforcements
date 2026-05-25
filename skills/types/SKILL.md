@@ -1,3 +1,8 @@
+---
+name: mongez-reinforcements-types
+description: TypeScript-only utility types from @mongez/reinforcements — Path/PathValue for dot-notation typing, DeepPartial/DeepRequired/DeepReadonly/DeepMutable transforms, Prettify, UnionToIntersection, Branded nominal types, and common aliases.
+when_to_use: User imports Path, PathValue, DeepPartial, DeepRequired, DeepReadonly, DeepMutable, Prettify, UnionToIntersection, Branded, Nullable, Maybe, Awaitable, NonEmptyArray, GenericObject, AlphaNumeric, or Primitive as a TypeScript type from @mongez/reinforcements.
+---
 # Types
 
 TypeScript-only exports — zero runtime cost. Import as types:
