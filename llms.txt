@@ -9,6 +9,7 @@ Every export ships from the package root: `import { get, clone, debounce, Random
 ## Docs
 
 - [Overview](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/overview.md): Package pitch, install, namespace counts, scope boundaries.
+  - *Auto-trigger:* Load on first import from `@mongez/reinforcements`, install questions, or scope/namespace orientation across @mongez packages.
 - [README](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/README.md): Marketing-style index with recipes and category tables.
 - [Migration v2 → v3](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/MIGRATION.md): Breaking changes and renames.
 - [Changelog](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/CHANGELOG.md): Full v3.x release notes.
@@ -16,19 +17,30 @@ Every export ships from the package root: `import { get, clone, debounce, Random
 ## Reference (by namespace)
 
 - [Objects](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/objects.md): `get` / `set` / `has`, `pick` / `omit`, `compact`, `merge`, `clone`, `flatten`, `walk`, `diff`, `mapValues`, …
+  - *Auto-trigger:* Load on imports of `get`/`set`/`pick`/`omit`/`merge`/`clone`/`flatten`/`walk`/`diff` or any dot-notation read/write on nested objects.
 - [Strings](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/strings.md): Acronym-aware casing family, `slugify`, `truncate`, `template`, `mask`, `escapeHtml`, `stripHtmlTags`, Arabic detection, …
+  - *Auto-trigger:* Load on imports of `toCamelCase`/`toSnakeCase`/`slugify`/`truncate`/`mask`/`template`/`stripHtmlTags` or string casing, padding, replacement, and HTML helpers.
 - [Numbers](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/numbers.md): `round` / `floor` / `ceil`, `clamp`, `formatBytes`, `formatNumber`, `percentage`, `safeDivide`, `parseNumber`, …
+  - *Auto-trigger:* Load on imports of `round`/`clamp`/`formatBytes`/`formatNumber`/`percentage`/`safeDivide`/`parseNumber` or precision rounding, clamping, and safe arithmetic.
 - [Mixed](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/mixed.md): `clone`, `areEqual` (real deep-equal), `shuffle` (Fisher–Yates), `coalesce`.
+  - *Auto-trigger:* Load on imports of `clone`/`areEqual`/`shuffle`/`coalesce` or deep-clone, deep-equality, shuffle, or first-non-nullish needs.
 - [Random](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/random.md): `Random.int` / `float` / `uuid` / `nanoid` / `pick` / `sample` / `weighted` / `seed` — namespace class with private constructor.
+  - *Auto-trigger:* Load on `Random.*` method calls or imports of `Random`/`RandomDateOptions`/`WeightedItem` for ids, UUIDs, sampling, or seedable randomness.
 - [Lazy](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/lazy.md): `lazy`, `lazy.async`, `lazy.from`, `isLazy` — deferred memoised values, primary tool for breaking ES-module circular imports.
+  - *Auto-trigger:* Load on imports of `lazy`/`isLazy`/`Lazy`/`LazyAsync` or whenever breaking ES-module circular imports or deferring memoised initialization.
 - [Function utilities](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/functions.md): `debounce` (with `cancel` / `flush` / `pending` / `maxWait`), `throttle`, `memoize`, `once`, `after`, `before`, `pipe`, `compose`, `curry`, `partial`, `tap`, …
+  - *Auto-trigger:* Load on imports of `debounce`/`throttle`/`memoize`/`once`/`pipe`/`compose`/`curry`/`partial`/`tap` for sync rate-limiting, caching, composition, or currying.
 - [Async](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/async.md): `sleep`, `retry`, `timeout`, `pAll`, `pAllSettled`, `pMap`, `pProps`, `pSeries`, `pFilter`, `defer`, `debounceAsync`.
+  - *Auto-trigger:* Load on imports of `sleep`/`retry`/`timeout`/`pMap`/`pProps`/`pAll`/`pSeries`/`pFilter`/`defer`/`debounceAsync` for retry, timeout, bounded concurrency, or async debounce.
 - [Arrays](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/arrays.md): `chunk`, `range`, `unique`, `pluck`, `groupBy`, `countBy`, `sum`, `average`, `median`, `min`, `max`, parity filters, … (richer collection ops in `@mongez/collections`).
+  - *Auto-trigger:* Load on imports of `chunk`/`range`/`unique`/`pluck`/`groupBy`/`countBy`/`sum`/`average`/`median`/`min`/`max` or array dedupe, chunking, grouping, and stats.
 - [Types](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/types.md): `Path<T>`, `PathValue`, `DeepPartial`, `DeepReadonly`, `Branded`, `Prettify`, `UnionToIntersection`, …
+  - *Auto-trigger:* Load on `import type` of `Path`/`PathValue`/`DeepPartial`/`DeepReadonly`/`Branded`/`Prettify`/`UnionToIntersection` or any TS-only utility-type usage.
 
 ## Recipes
 
 - [Cross-namespace recipes](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/recipes.md): Typed dot-notation reads, resilient HTTP with `retry` + `timeout` + `pMap`, debounced auto-save with `cancel` / `flush`, breaking circular imports with `lazy`, PII-safe logging with `mask` + `pick`, deep-merge with array union, async burst-tolerant search, and more.
+  - *Auto-trigger:* Load when combining two or more `@mongez/reinforcements` utilities or needing an end-to-end worked example, not a single-function lookup.
 
 ## Optional
 

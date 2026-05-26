@@ -1,7 +1,9 @@
 ---
 name: mongez-reinforcements-strings
-description: String utilities from @mongez/reinforcements — case conversion, trimming, slugify, truncate, mask, template interpolation, HTML helpers, and Arabic detection.
-when_to_use: User calls toCamelCase(), toSnakeCase(), toKebabCase(), slugify(), truncate(), mask(), template(), stripHtmlTags(), words(), trim(), replaceAll(), or any other string function from @mongez/reinforcements.
+description: |
+  String utilities from @mongez/reinforcements — case conversion, trimming, slugify, truncate, mask, template interpolation, HTML helpers, and Arabic detection.
+  TRIGGER when: code imports `words`, `toCamelCase`, `toStudlyCase`, `toPascalCase`, `toSnakeCase`, `toKebabCase`, `toConstantCase`, `toDotCase`, `toPathCase`, `toTitleCase`, `ucfirst`, `capitalize`, `trim`, `ltrim`, `rtrim`, `replaceAll`, `replaceFirst`, `replaceLast`, `removeFirst`, `removeLast`, `repeatsOf`, `pad`, `padStart`, `padEnd`, `slugify`, `truncate`, `readMoreChars`, `readMoreWords`, `escapeHtml`, `unescapeHtml`, `stripHtmlTags`, `mask`, `template`, `wordCount`, `charCount`, `reverse`, `initials`, `extension`, `toInputName`, `startsWithArabic`, `containsArabic`, `ARABIC_REGEX`, or `ARABIC_PATTERN` from `@mongez/reinforcements`; user asks "how do I camelCase / snake_case / slugify / truncate / mask / strip HTML / get file extension / template with dot-notation / detect Arabic"; `import { toCamelCase, slugify, truncate, mask, template } from "@mongez/reinforcements"`.
+  SKIP: @mongez/supportive-is is type predicates (`isString`, `isEmail`, `isURL`) — use that for validation, not transformation; HTML sanitization for untrusted input (use `DOMPurify`); i18n translation/pluralization (use `i18next`, `intl-messageformat`); regex escaping uses `escapeRegex` from @mongez/reinforcements-functions, not this skill.
 ---
 # Strings
 

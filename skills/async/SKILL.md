@@ -1,7 +1,9 @@
 ---
 name: mongez-reinforcements-async
-description: Async/Promise utilities from @mongez/reinforcements — sleep, retry with backoff, timeout racing, pProps/pAll/pMap/pSeries/pFilter for concurrent work, defer, and debounceAsync.
-when_to_use: User calls sleep(), retry(), timeout(), pProps(), pAll(), pAllSettled(), pMap(), pSeries(), pFilter(), defer(), or debounceAsync() from @mongez/reinforcements, or needs bounded concurrency, async debounce, or externally resolvable promises.
+description: |
+  Async/Promise utilities from @mongez/reinforcements — sleep, retry with backoff, timeout racing, pProps/pAll/pMap/pSeries/pFilter for concurrent work, defer, and debounceAsync.
+  TRIGGER when: code imports `sleep`, `retry`, `timeout`, `pProps`, `pAll`, `pAllSettled`, `pMap`, `pSeries`, `pFilter`, `defer`, or `debounceAsync` from `@mongez/reinforcements`; user asks "how do I retry with backoff / race a promise against a timeout / limit concurrency / debounce an async call"; `import { sleep, retry, timeout, pMap, defer } from "@mongez/reinforcements"`.
+  SKIP: @mongez/reinforcements-functions handles sync `debounce`/`throttle`/`memoize` — use this skill only for promise-returning helpers; raw `Promise.all`/`Promise.race` usage without `@mongez/reinforcements` imports; HTTP client features (fetch wrappers, interceptors) belong to a request library, not this package.
 ---
 # Async
 

@@ -1,7 +1,9 @@
 ---
 name: mongez-reinforcements-types
-description: TypeScript-only utility types from @mongez/reinforcements — Path/PathValue for dot-notation typing, DeepPartial/DeepRequired/DeepReadonly/DeepMutable transforms, Prettify, UnionToIntersection, Branded nominal types, and common aliases.
-when_to_use: User imports Path, PathValue, DeepPartial, DeepRequired, DeepReadonly, DeepMutable, Prettify, UnionToIntersection, Branded, Nullable, Maybe, Awaitable, NonEmptyArray, GenericObject, AlphaNumeric, or Primitive as a TypeScript type from @mongez/reinforcements.
+description: |
+  TypeScript-only utility types from @mongez/reinforcements — Path/PathValue for dot-notation typing, DeepPartial/DeepRequired/DeepReadonly/DeepMutable transforms, Prettify, UnionToIntersection, Branded nominal types, and common aliases.
+  TRIGGER when: code imports `Path`, `PathValue`, `DeepPartial`, `DeepRequired`, `DeepReadonly`, `DeepMutable`, `Prettify`, `UnionToIntersection`, `Branded`, `Nullable`, `Maybe`, `Awaitable`, `NonEmptyArray`, `GenericObject`, `AlphaNumeric`, or `Primitive` as a `type` from `@mongez/reinforcements`; user asks "how do I type a dot-notation path / make all properties recursively optional / create a branded nominal type / flatten an intersection in hover / convert a union to an intersection"; `import type { Path, PathValue, DeepPartial } from "@mongez/reinforcements"`.
+  SKIP: runtime utilities (`get`, `pick`, `omit`, etc.) — use @mongez/reinforcements-objects for those; `type-fest` or other third-party type-utility libraries when not going through `@mongez/reinforcements`; Zod/Valibot runtime schema definitions (different layer).
 ---
 # Types
 

@@ -1,7 +1,9 @@
 ---
 name: mongez-reinforcements-objects
-description: Deep path-aware object utilities from @mongez/reinforcements — get/set/has/unset, pick/omit, compact, merge, clone, flatten, walk, diff, and more.
-when_to_use: User calls get(), set(), has(), unset(), pick(), omit(), compact(), merge(), clone(), flatten(), freeze(), defaults(), invert(), mapValues(), mapKeys(), walk(), diff(), sort() from @mongez/reinforcements, or needs dot-notation reads/writes on nested objects.
+description: |
+  Deep path-aware object utilities from @mongez/reinforcements — get/set/has/unset, pick/omit, compact, merge, clone, flatten, walk, diff, and more.
+  TRIGGER when: code imports `get`, `set`, `has`, `unset`, `pick`, `omit`, `compact`, `merge`, `clone`, `flatten`, `freeze`, `defaults`, `invert`, `mapValues`, `mapKeys`, `map`, `keys`, `values`, `entries`, `fromEntries`, `walk`, `diff`, or `sort` from `@mongez/reinforcements`; user asks "how do I read/write a deep path / dot-notation get / pick keys / omit keys / deep merge / flatten an object / diff two objects"; `import { get, set, pick, omit, merge, clone } from "@mongez/reinforcements"`.
+  SKIP: @mongez/supportive-is is type predicates (`isPlainObject`, `isEmpty`) — use it to test shape, not transform; @mongez/collections handles array-of-object operations (`sortBy`, `keyBy`, `partition`); native `Object.assign`/spread when nesting isn't involved.
 ---
 # Objects
 

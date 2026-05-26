@@ -1,7 +1,9 @@
 ---
 name: mongez-reinforcements-functions
-description: Function utilities from @mongez/reinforcements — debounce, throttle, memoize, once/after/before call-count gating, pipe/compose composition, curry/partial application, and FP primitives.
-when_to_use: User calls debounce(), throttle(), memoize(), once(), after(), before(), pipe(), compose(), tap(), curry(), partial(), partialRight(), noop(), identity(), constant(), negate(), or escapeRegex() from @mongez/reinforcements.
+description: |
+  Function utilities from @mongez/reinforcements — debounce, throttle, memoize, once/after/before call-count gating, pipe/compose composition, curry/partial application, and FP primitives.
+  TRIGGER when: code imports `debounce`, `throttle`, `memoize`, `once`, `after`, `before`, `pipe`, `compose`, `tap`, `curry`, `partial`, `partialRight`, `noop`, `identity`, `constant`, `negate`, or `escapeRegex` from `@mongez/reinforcements`; user asks "how do I debounce / throttle / memoize / cache / pipe / curry a function"; `import { debounce, throttle, memoize, pipe } from "@mongez/reinforcements"`.
+  SKIP: @mongez/reinforcements-async handles promise-returning rate limiting (`debounceAsync`, `retry`, `timeout`) — use that skill for async equivalents; lodash/ramda equivalents without `@mongez/reinforcements` imports; React `useCallback`/`useMemo` hooks (component-scoped, not these utilities).
 ---
 # Function utilities
 

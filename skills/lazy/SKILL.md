@@ -1,7 +1,9 @@
 ---
 name: mongez-reinforcements-lazy
-description: Memoised deferred values via lazy() from @mongez/reinforcements — the primary tool for breaking ES-module circular imports and deferring expensive computation until first use.
-when_to_use: User calls lazy(), lazy.async(), lazy.from(), or isLazy() from @mongez/reinforcements, needs to break a circular ES module import, or wants to defer and memoize a computed value until first access.
+description: |
+  Memoised deferred values via lazy() from @mongez/reinforcements — the primary tool for breaking ES-module circular imports and deferring expensive computation until first use.
+  TRIGGER when: code imports `lazy`, `isLazy`, `Lazy`, or `LazyAsync` from `@mongez/reinforcements`, or calls `lazy.async()` / `lazy.from()`; user asks "how do I break a circular import / defer initialization / memoize a computed value lazily"; `import { lazy, isLazy } from "@mongez/reinforcements"`.
+  SKIP: React.lazy code-splitting (different concept — component dynamic imports); plain `memoize()` for pure-function caching (use @mongez/reinforcements-functions instead); one-shot init that just needs `once()` from the functions skill.
 ---
 # Lazy
 

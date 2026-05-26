@@ -1,7 +1,9 @@
 ---
 name: mongez-reinforcements-arrays
-description: Lightweight array helpers from @mongez/reinforcements — chunking, range, unique, pluck, groupBy, stats (sum/average/median/min/max), parity filters, and mutating unique push/unshift.
-when_to_use: User calls chunk(), range(), unique(), pluck(), groupBy(), countBy(), sum(), average(), median(), min(), max(), even(), odd(), pushUnique(), or unshiftUnique() from @mongez/reinforcements, or is working with array reshaping and aggregation.
+description: |
+  @mongez/reinforcements array helpers — chunking, ranges, unique/dedupe, pluck, groupBy, countBy, stats (sum/avg/median/min/max), even/odd parity filters, and mutating pushUnique/unshiftUnique.
+  TRIGGER when: code imports `chunk`, `range`, `unique`, `pluck`, `groupBy`, `countBy`, `count`, `sum`, `average`, `avg`, `median`, `min`, `max`, `even`, `odd`, `evenIndexes`, `oddIndexes`, `pushUnique`, or `unshiftUnique` from `@mongez/reinforcements`; user asks "how do I dedupe / chunk / group / count / sum / average / pluck from an array"; file does aggregation or reshaping over object arrays.
+  SKIP: richer collection ops (`partition`, `keyBy`, `sortBy`, `intersection`, `where`, pagination) — use `mongez-collection-*` skills instead; plain native `Array` methods without `@mongez/reinforcements` imports; React-specific list rendering or virtualization.
 ---
 # Arrays
 

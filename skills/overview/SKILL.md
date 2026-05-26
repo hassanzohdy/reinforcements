@@ -1,7 +1,9 @@
 ---
 name: mongez-reinforcements-overview
-description: High-level orientation to @mongez/reinforcements — what the package contains, how to install it, and where each utility namespace lives.
-when_to_use: User asks what @mongez/reinforcements provides, wants the install command, needs to understand the package scope or namespace breakdown, or is deciding whether to use @mongez/reinforcements versus a companion package like @mongez/supportive-is or @mongez/collections.
+description: |
+  High-level orientation to @mongez/reinforcements — what the package contains, how to install it, and where each utility namespace lives.
+  TRIGGER when: code first imports anything from `@mongez/reinforcements` and orientation is needed; user asks "what is @mongez/reinforcements / how do I install it / what does this package do / which @mongez package should I use for X"; package.json adds `"@mongez/reinforcements"` as a dependency.
+  SKIP: a specific namespace skill (objects, strings, numbers, arrays, async, functions, lazy, random, mixed, types, recipes) already covers the user's concrete task — load that one directly; questions about unrelated `@mongez/*` packages (`@mongez/supportive-is`, `@mongez/collections`) beyond brief scope-boundary mentions.
 ---
 # Overview
 

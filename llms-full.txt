@@ -22,6 +22,9 @@ import {
 
 # Overview
 
+> **Auto-trigger:** code first imports anything from `@mongez/reinforcements` and orientation is needed; user asks "what is @mongez/reinforcements / how do I install it / what does this package do / which @mongez package should I use for X"; package.json adds `"@mongez/reinforcements"` as a dependency.
+> **Skip when:** a specific namespace skill (objects, strings, numbers, arrays, async, functions, lazy, random, mixed, types, recipes) already covers the user's concrete task — load that one directly; questions about unrelated `@mongez/*` packages (`@mongez/supportive-is`, `@mongez/collections`) beyond brief scope-boundary mentions.
+
 `@mongez/reinforcements` is a TypeScript utility belt — ~130 functions for objects, strings, numbers, async, randomness, and functional composition.
 
 ## Install
@@ -96,6 +99,9 @@ get(u, "profile.email"); // typed as string
 ---
 
 # Objects
+
+> **Auto-trigger:** code imports `get`, `set`, `has`, `unset`, `pick`, `omit`, `compact`, `merge`, `clone`, `flatten`, `freeze`, `defaults`, `invert`, `mapValues`, `mapKeys`, `map`, `keys`, `values`, `entries`, `fromEntries`, `walk`, `diff`, or `sort` from `@mongez/reinforcements`; user asks "how do I read/write a deep path / dot-notation get / pick keys / omit keys / deep merge / flatten an object / diff two objects"; `import { get, set, pick, omit, merge, clone } from "@mongez/reinforcements"`.
+> **Skip when:** @mongez/supportive-is is type predicates (`isPlainObject`, `isEmpty`) — use it to test shape, not transform; @mongez/collections handles array-of-object operations (`sortBy`, `keyBy`, `partition`); native `Object.assign`/spread when nesting isn't involved.
 
 Path-aware reads/writes, deep transforms, structural diff. Import from `@mongez/reinforcements`.
 
@@ -414,6 +420,9 @@ sort({ b: { y: 1, x: 2 }, a: 1 });      // recursive by default
 
 # Strings
 
+> **Auto-trigger:** code imports `words`, `toCamelCase`, `toStudlyCase`, `toPascalCase`, `toSnakeCase`, `toKebabCase`, `toConstantCase`, `toDotCase`, `toPathCase`, `toTitleCase`, `ucfirst`, `capitalize`, `trim`, `ltrim`, `rtrim`, `replaceAll`, `replaceFirst`, `replaceLast`, `removeFirst`, `removeLast`, `repeatsOf`, `pad`, `padStart`, `padEnd`, `slugify`, `truncate`, `readMoreChars`, `readMoreWords`, `escapeHtml`, `unescapeHtml`, `stripHtmlTags`, `mask`, `template`, `wordCount`, `charCount`, `reverse`, `initials`, `extension`, `toInputName`, `startsWithArabic`, `containsArabic`, `ARABIC_REGEX`, or `ARABIC_PATTERN` from `@mongez/reinforcements`; user asks "how do I camelCase / snake_case / slugify / truncate / mask / strip HTML / get file extension / template with dot-notation / detect Arabic"; `import { toCamelCase, slugify, truncate, mask, template } from "@mongez/reinforcements"`.
+> **Skip when:** @mongez/supportive-is is type predicates (`isString`, `isEmail`, `isURL`) — use that for validation, not transformation; HTML sanitization for untrusted input (use `DOMPurify`); i18n translation/pluralization (use `i18next`, `intl-messageformat`); regex escaping uses `escapeRegex` from @mongez/reinforcements-functions, not this skill.
+
 Casing, trimming, replacement, padding, slugify, truncate, mask, template, HTML helpers, Arabic detection. Import from `@mongez/reinforcements`.
 
 ## Casing — powered by `words()`
@@ -701,6 +710,9 @@ containsArabic("hello مرحبا");    // true
 
 # Numbers
 
+> **Auto-trigger:** code imports `round`, `floor`, `ceil`, `toFixed`, `clamp`, `inRange`, `lerp`, `safeDivide`, `percentage`, `parseNumber`, `formatBytes`, or `formatNumber` from `@mongez/reinforcements`; user asks "how do I clamp a number / format bytes / safely divide by zero / round with precision / format currency"; `import { clamp, round, formatBytes, percentage } from "@mongez/reinforcements"`.
+> **Skip when:** @mongez/supportive-is handles `isNumber`/`isInteger` predicates — use that for type checks, not arithmetic; date/time math (use `dayjs`, `date-fns`, or `Temporal`); BigInt arithmetic (out of scope).
+
 Rounding, clamping, formatting, safe arithmetic. Import from `@mongez/reinforcements`.
 
 ## Rounding with precision
@@ -819,6 +831,9 @@ formatNumber(1234, { locale: "ar-EG" });                  // "١٬٢٣٤"
 
 # Mixed (clone, areEqual, shuffle, coalesce)
 
+> **Auto-trigger:** code imports `clone`, `areEqual`, `shuffle`, or `coalesce` from `@mongez/reinforcements`; user asks "how do I deep clone / deep compare / shuffle an array / get the first non-null value"; `import { clone, areEqual, shuffle, coalesce } from "@mongez/reinforcements"`.
+> **Skip when:** @mongez/supportive-is is type predicates (`isEmpty`, `isPlainObject`) — use that for shape/type checks, not value equality; native `structuredClone` for environments where it suffices and circular custom-class handling isn't required; nullish-coalescing `??` operator when only one fallback is needed.
+
 Deep clone, deep equality, shuffle, coalesce. Import from `@mongez/reinforcements`.
 
 ## `clone` — deep copy
@@ -901,6 +916,9 @@ coalesce(null, undefined);           // undefined
 ---
 
 # Random
+
+> **Auto-trigger:** code imports `Random`, `RandomDateOptions`, or `WeightedItem` from `@mongez/reinforcements`, or calls `Random.int`/`Random.float`/`Random.bool`/`Random.string`/`Random.id`/`Random.uuid`/`Random.nanoid`/`Random.token`/`Random.date`/`Random.color`/`Random.pick`/`Random.sample`/`Random.weighted`/`Random.seed`; user asks "how do I generate a UUID / nanoid / random integer / pick a random element / seed randomness for tests / make a weighted random choice"; `import { Random } from "@mongez/reinforcements"`.
+> **Skip when:** cryptographic-strength randomness for security (use `crypto.randomBytes`, `crypto.subtle`); `nanoid`/`uuid` npm packages when not going through `@mongez/reinforcements`; seedable PRNGs for simulations needing different distributions (use a stats library).
 
 Namespace class — every method is `public static`. Not instantiable.
 
@@ -1013,6 +1031,9 @@ Random.weighted([
 ---
 
 # Lazy
+
+> **Auto-trigger:** code imports `lazy`, `isLazy`, `Lazy`, or `LazyAsync` from `@mongez/reinforcements`, or calls `lazy.async()` / `lazy.from()`; user asks "how do I break a circular import / defer initialization / memoize a computed value lazily"; `import { lazy, isLazy } from "@mongez/reinforcements"`.
+> **Skip when:** React.lazy code-splitting (different concept — component dynamic imports); plain `memoize()` for pure-function caching (use @mongez/reinforcements-functions instead); one-shot init that just needs `once()` from the functions skill.
 
 Memoised deferred values. The flagship utility of the package — the unique tool for breaking ES-module circular imports.
 
@@ -1145,6 +1166,9 @@ maybe.peek();        // undefined  ← but isResolved() distinguishes the cases
 ---
 
 # Function utilities
+
+> **Auto-trigger:** code imports `debounce`, `throttle`, `memoize`, `once`, `after`, `before`, `pipe`, `compose`, `tap`, `curry`, `partial`, `partialRight`, `noop`, `identity`, `constant`, `negate`, or `escapeRegex` from `@mongez/reinforcements`; user asks "how do I debounce / throttle / memoize / cache / pipe / curry a function"; `import { debounce, throttle, memoize, pipe } from "@mongez/reinforcements"`.
+> **Skip when:** @mongez/reinforcements-async handles promise-returning rate limiting (`debounceAsync`, `retry`, `timeout`) — use that skill for async equivalents; lodash/ramda equivalents without `@mongez/reinforcements` imports; React `useCallback`/`useMemo` hooks (component-scoped, not these utilities).
 
 Rate-limiting, memoization, composition, currying, tiny FP primitives.
 
@@ -1339,6 +1363,9 @@ new RegExp(escapeRegex("a.b+c")); // matches the literal "a.b+c"
 ---
 
 # Async
+
+> **Auto-trigger:** code imports `sleep`, `retry`, `timeout`, `pProps`, `pAll`, `pAllSettled`, `pMap`, `pSeries`, `pFilter`, `defer`, or `debounceAsync` from `@mongez/reinforcements`; user asks "how do I retry with backoff / race a promise against a timeout / limit concurrency / debounce an async call"; `import { sleep, retry, timeout, pMap, defer } from "@mongez/reinforcements"`.
+> **Skip when:** @mongez/reinforcements-functions handles sync `debounce`/`throttle`/`memoize` — use this skill only for promise-returning helpers; raw `Promise.all`/`Promise.race` usage without `@mongez/reinforcements` imports; HTTP client features (fetch wrappers, interceptors) belong to a request library, not this package.
 
 Promise-based control flow: sleep, retry, timeout, bounded concurrent map/filter/series, defer, async debounce.
 
@@ -1542,6 +1569,9 @@ const c = search("abc");
 
 # Arrays
 
+> **Auto-trigger:** code imports `chunk`, `range`, `unique`, `pluck`, `groupBy`, `countBy`, `count`, `sum`, `average`, `avg`, `median`, `min`, `max`, `even`, `odd`, `evenIndexes`, `oddIndexes`, `pushUnique`, or `unshiftUnique` from `@mongez/reinforcements`; user asks "how do I dedupe / chunk / group / count / sum / average / pluck from an array"; file does aggregation or reshaping over object arrays.
+> **Skip when:** richer collection ops (`partition`, `keyBy`, `sortBy`, `intersection`, `where`, pagination) — use `mongez-collection-*` skills instead; plain native `Array` methods without `@mongez/reinforcements` imports; React-specific list rendering or virtualization.
+
 Lightweight array helpers. For richer collection operations (`partition`, `keyBy`, `sortBy`, `intersection`, …), use **`@mongez/collections`**.
 
 ```ts
@@ -1659,6 +1689,9 @@ unshiftUnique(arr, 0, 1); // [0, 1, 2, 3] — 1 was skipped
 
 # Types
 
+> **Auto-trigger:** code imports `Path`, `PathValue`, `DeepPartial`, `DeepRequired`, `DeepReadonly`, `DeepMutable`, `Prettify`, `UnionToIntersection`, `Branded`, `Nullable`, `Maybe`, `Awaitable`, `NonEmptyArray`, `GenericObject`, `AlphaNumeric`, or `Primitive` as a `type` from `@mongez/reinforcements`; user asks "how do I type a dot-notation path / make all properties recursively optional / create a branded nominal type / flatten an intersection in hover / convert a union to an intersection"; `import type { Path, PathValue, DeepPartial } from "@mongez/reinforcements"`.
+> **Skip when:** runtime utilities (`get`, `pick`, `omit`, etc.) — use @mongez/reinforcements-objects for those; `type-fest` or other third-party type-utility libraries when not going through `@mongez/reinforcements`; Zod/Valibot runtime schema definitions (different layer).
+
 TypeScript-only exports — zero runtime cost. Import as types:
 
 ```ts
@@ -1768,6 +1801,9 @@ function first<T>(arr: NonEmptyArray<T>): T {
 ---
 
 # Recipes
+
+> **Auto-trigger:** code combines two or more `@mongez/reinforcements` imports (e.g. `retry` + `timeout` + `pMap`, `debounce` + `flush`, `walk` + `diff`, `mask` + `pick`, `slugify` + `truncate` + `pipe`); user asks "how do I build resilient HTTP retries / auto-save with cancel / detect object changes / write PII-safe logs / make a tokenization pipeline / break a circular import with lazy"; user wants an end-to-end worked example, not a single-function reference.
+> **Skip when:** single-function lookups — load the matching per-namespace skill (objects/strings/numbers/async/functions/lazy/random) for one specific utility; questions about non-@mongez/reinforcements libraries even if the recipe shape looks similar.
 
 Cross-namespace compositions for common real-world tasks.
 
