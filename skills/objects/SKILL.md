@@ -3,7 +3,7 @@ name: mongez-reinforcements-objects
 description: |
   Deep path-aware object utilities from @mongez/reinforcements — get/set/has/unset, pick/omit, compact, merge, clone, flatten, walk, diff, and more.
   TRIGGER when: code imports `get`, `set`, `has`, `unset`, `pick`, `omit`, `compact`, `merge`, `clone`, `flatten`, `freeze`, `defaults`, `invert`, `mapValues`, `mapKeys`, `map`, `keys`, `values`, `entries`, `fromEntries`, `walk`, `diff`, or `sort` from `@mongez/reinforcements`; user asks "how do I read/write a deep path / dot-notation get / pick keys / omit keys / deep merge / flatten an object / diff two objects"; `import { get, set, pick, omit, merge, clone } from "@mongez/reinforcements"`.
-  SKIP: @mongez/supportive-is is type predicates (`isPlainObject`, `isEmpty`) — use it to test shape, not transform; @mongez/collections handles array-of-object operations (`sortBy`, `keyBy`, `partition`); native `Object.assign`/spread when nesting isn't involved.
+  SKIP: @mongez/supportive-is is type predicates (`isPlainObject`, `isEmpty`) — use it to test shape, not transform; @mongez/collection handles array-of-object operations (`sortBy`, `keyBy`, `partition`); native `Object.assign`/spread when nesting isn't involved.
 ---
 # Objects
 
@@ -313,7 +313,7 @@ diff({ a: 1, b: 2 }, { a: 1, b: 3, c: 4 });
 sort<T>(obj: T, recursive?: boolean): T  // default recursive = true
 ```
 
-Return a new object with keys sorted alphabetically. Arrays of objects are out of scope — use `@mongez/collections` `sortBy`.
+Return a new object with keys sorted alphabetically. Arrays of objects are out of scope — use `@mongez/collection` `sortBy`.
 
 ```ts
 sort({ b: 1, a: 2, c: 3 });             // { a: 2, b: 1, c: 3 }

@@ -75,10 +75,10 @@ type Memoized<T> = T & { clear(): void; forget(key: string): void };
 ```ts
 const lookup = memoize((id: string) => db.users.find(id), { ttl: 60_000 });
 
-lookup("u1");        // hits DB
-lookup("u1");        // cached
-lookup.forget("u1"); // surgical invalidation
-lookup.clear();      // nuke everything
+lookup("u1");                       // hits DB
+lookup("u1");                       // cached
+lookup.forget(JSON.stringify(["u1"])); // surgical invalidation (default key = JSON.stringify(args))
+lookup.clear();                     // nuke everything
 ```
 
 Custom key:

@@ -71,9 +71,9 @@ import { memoize } from "@mongez/reinforcements";
 
 const lookupUser = memoize(id => db.users.findById(id), { ttl: 60_000 });
 
-await lookupUser("u1");   // hits DB
-await lookupUser("u1");   // cache (within 60 s)
-lookupUser.forget("u1");  // on update, invalidate just this key
+await lookupUser("u1");                      // hits DB
+await lookupUser("u1");                      // cache (within 60 s)
+lookupUser.forget(JSON.stringify(["u1"]));   // invalidate just this key (default key = JSON.stringify(args))
 ```
 
 `forget(key)` lets you invalidate surgically when a write happens. Without it you'd need a TTL low enough to outpace staleness, which sacrifices the win.
@@ -205,7 +205,7 @@ const config = merge(
 );
 ```
 
-`arrays: "union"` matches by deep equality. For primitive arrays it's just a set; for object arrays it works with a key matcher.
+`arrays: "union"` builds a `Set` from the concatenated entries — so primitive arrays dedupe cleanly, but **object arrays dedupe by reference**, not by deep equality or a key. If you need shape-based dedup of object arrays, post-process with `unique(arr, "id")` from the arrays skill.
 
 ## Render a templated message with nested data
 
@@ -230,13 +230,13 @@ You're building an HTML form whose input `name` attributes need to be `user[addr
 ```ts
 import { toInputName, flatten } from "@mongez/reinforcements";
 
-const schema = { user: { address: { city: "" }, tags: [] as string[] } };
+const schema = { user: { address: { city: "" }, tags: ["news", "blog"] } };
 
 Object.keys(flatten(schema)).map(toInputName);
-// [ "user[address][city]", "user[tags][0]" ]
+// [ "user[address][city]", "user[tags][0]", "user[tags][1]" ]
 ```
 
-`flatten` produces dot-paths; `toInputName` converts each one to the HTML bracket form. Pair the two when you don't want to hand-author input names alongside the schema.
+`flatten` produces dot-paths (empty arrays are kept as leaves — populate `tags` with at least one entry if you need indexed names); `toInputName` converts each path to the HTML bracket form. Pair the two when you don't want to hand-author input names alongside the schema.
 
 ## Promisify a legacy callback API, with retries
 

@@ -7,7 +7,7 @@ description: |
 ---
 # Arrays
 
-Lightweight array helpers. For richer collection operations (`partition`, `keyBy`, `sortBy`, `intersection`, …), use **`@mongez/collections`**.
+Lightweight array helpers. For richer collection operations (`partition`, `keyBy`, `sortBy`, `intersection`, …), use **`@mongez/collection`**.
 
 ```ts
 import {
