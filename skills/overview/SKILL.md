@@ -12,9 +12,29 @@ description: |
 ## Install
 
 ```sh
+# npm
+npm install @mongez/reinforcements
+
+# yarn
 yarn add @mongez/reinforcements
-# or
-npm i @mongez/reinforcements
+
+# pnpm
+pnpm add @mongez/reinforcements
+```
+
+## Quick example
+
+A taste of the breadth — typed path access, casing, debouncing, retries, parallel mapping, and randomness all from one import:
+
+```ts
+import { get, slugify, debounce, retry, pMap, Random } from "@mongez/reinforcements";
+
+const email = get(user, "profile.email");                   // typed by path
+const slug  = slugify("Café & Croissant");                  // "cafe-croissant"
+const save  = debounce(persist, 500, { maxWait: 3_000 });   // cancel / flush / pending
+const data  = await retry(() => fetch(url), { attempts: 5 });
+const docs  = await pMap(urls, fetch, { concurrency: 5 });
+const id    = Random.uuid();
 ```
 
 ## Import pattern
