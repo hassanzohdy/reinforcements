@@ -17,8 +17,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
-      matrix:
-        node: [18, 20, 22]
+        # vitest 3 (this package's test runner) requires Node 20+, so the
+        # test matrix starts at 20. The library itself (zero runtime deps,
+        # pure ES) still runs on Node 18+ at runtime.
+        node: [20, 22]
         os: [ubuntu-latest]
         # Also smoke-test the supported LTS on Windows so path/CRLF
         # regressions are caught before they ship.
