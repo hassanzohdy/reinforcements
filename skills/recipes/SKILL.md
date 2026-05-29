@@ -2,8 +2,6 @@
 name: mongez-reinforcements-recipes
 description: |
   Cross-namespace composition recipes for @mongez/reinforcements — real-world patterns combining retry+timeout+pMap, debounce+flush, memoize, walk+diff, lazy circular-import breaking, slug+truncate pipelines, PII masking, and more.
-  TRIGGER when: code combines two or more `@mongez/reinforcements` imports (e.g. `retry` + `timeout` + `pMap`, `debounce` + `flush`, `walk` + `diff`, `mask` + `pick`, `slugify` + `truncate` + `pipe`); user asks "how do I build resilient HTTP retries / auto-save with cancel / detect object changes / write PII-safe logs / make a tokenization pipeline / break a circular import with lazy"; user wants an end-to-end worked example, not a single-function reference.
-  SKIP: single-function lookups — load the matching per-namespace skill (objects/strings/numbers/async/functions/lazy/random) for one specific utility; questions about non-@mongez/reinforcements libraries even if the recipe shape looks similar.
 ---
 
 # Recipes

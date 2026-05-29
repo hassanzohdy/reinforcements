@@ -63,7 +63,7 @@ import {
 | `random` | 14 | `Random.int`, `Random.uuid`, `Random.sample`, `Random.seed` |
 | `lazy` | 1 + variants | `lazy`, `lazy.async`, `lazy.from`, `isLazy` |
 | `function` | 17 | `debounce`, `throttle`, `memoize`, `pipe`, `curry`, `once` |
-| `async` | 10 | `sleep`, `retry`, `timeout`, `pMap`, `pFilter`, `defer` |
+| `async` | 11 | `sleep`, `retry`, `retryable`, `timeout`, `pMap`, `pFilter`, `defer` |
 | `types` | 16 | `Path`, `PathValue`, `DeepPartial`, `Branded`, `Prettify` |
 
 ## Scope boundaries
@@ -1371,7 +1371,7 @@ Promise-based control flow: sleep, retry, timeout, bounded concurrent map/filter
 
 ```ts
 import {
-  sleep, retry, timeout,
+  sleep, retry, retryable, timeout,
   pAll, pAllSettled, pMap, pSeries, pFilter,
   defer, debounceAsync,
 } from "@mongez/reinforcements";
@@ -1393,14 +1393,20 @@ const ready = await sleep(50, "ok"); // "ok"
 
 ```ts
 retry<T>(fn: () => Promise<T> | T, options?: {
-  attempts?: number;                       // default 3
-  delay?: number;                          // ms; default 0
-  backoff?: "linear" | "exponential";      // default "linear"
-  onError?: (error: unknown, attempt: number) => void;
+  attempts?: number;                                          // default 3
+  delay?: number;                                             // base ms; default 0
+  backoff?: "linear" | "exponential"                          // default "linear"
+         | ((attempt: number, baseDelay: number) => number);  // or a custom fn
+  maxDelay?: number;                                          // ceiling on the computed delay
+  jitter?: boolean | "full" | "equal";                        // spread delays; default false
+  onError?: (error: unknown, attempt: number) => void;        // observe (1-based attempt)
+  shouldRetry?: (error: unknown, attempt: number)             // decide; false = stop now
+             => boolean | Promise<boolean>;
+  signal?: AbortSignal;                                       // cancel between/during attempts
 }): Promise<T>
 ```
 
-Throws the **last** error if all attempts fail.
+Throws the **last** error if all attempts fail. All options are optional and default to the original behaviour — no breaking change.
 
 ```ts
 const data = await retry(() => fetchUser(id), {
@@ -1409,6 +1415,38 @@ const data = await retry(() => fetchUser(id), {
   backoff: "exponential",  // 200, 400, 800, 1600 ms between attempts
   onError: (err, attempt) => log(`attempt ${attempt} failed`, err),
 });
+
+// Bail out on non-retryable errors (observe with onError, decide with shouldRetry):
+await retry(() => placeOrder(input), {
+  attempts: 3,
+  delay: 500,
+  shouldRetry: err => !(err instanceof ValidationError), // don't retry 4xx
+});
+
+// Avoid thundering herd + cap the wait + cancel:
+await retry(() => fetch(url), {
+  attempts: 6,
+  delay: 100,
+  backoff: "exponential",
+  maxDelay: 2_000,         // never wait more than 2s as backoff grows
+  jitter: "full",          // randomise each delay across [0, computed]
+  signal: controller.signal,
+});
+```
+
+`jitter: "full"` (or `true`) → `random(0, delay)`; `"equal"` → `delay/2 + random(0, delay/2)`. Jitter draws from the seedable `Random`, so `Random.seed(n)` makes the schedule reproducible. With a `signal`, a pending delay is raced against the abort so cancellation resolves promptly. Tip: `exponential` + many `attempts` with no `maxDelay` produces very long waits — set `maxDelay`.
+
+## `retryable`
+
+```ts
+retryable<A, T>(fn: (...args: A) => Promise<T> | T, options?: RetryOptions): (...args: A) => Promise<T>
+```
+
+Pre-bind retry options to a function, returning a reusable wrapper so you don't re-pass options at every call site.
+
+```ts
+const fetchUser = retryable(getUser, { attempts: 4, backoff: "exponential" });
+await fetchUser(id);
 ```
 
 ## `timeout`

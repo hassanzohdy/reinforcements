@@ -2,8 +2,6 @@
 name: mongez-reinforcements-numbers
 description: |
   Number utilities from @mongez/reinforcements — rounding, clamping, range helpers, safe arithmetic (safeDivide, percentage, parseNumber), and formatting (formatBytes, formatNumber).
-  TRIGGER when: code imports `round`, `floor`, `ceil`, `toFixed`, `clamp`, `inRange`, `lerp`, `safeDivide`, `percentage`, `parseNumber`, `formatBytes`, or `formatNumber` from `@mongez/reinforcements`; user asks "how do I clamp a number / format bytes / safely divide by zero / round with precision / format currency"; `import { clamp, round, formatBytes, percentage } from "@mongez/reinforcements"`.
-  SKIP: @mongez/supportive-is handles `isNumber`/`isInteger` predicates — use that for type checks, not arithmetic; date/time math (use `dayjs`, `date-fns`, or `Temporal`); BigInt arithmetic (out of scope).
 ---
 # Numbers
 

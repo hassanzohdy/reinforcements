@@ -2,6 +2,23 @@
 
 All notable changes to `@mongez/reinforcements` are documented in this file.
 
+## 3.2.0
+
+### Added
+
+- **`retry` — `shouldRetry` predicate.** Bail out of the retry loop early on non-retryable errors (4xx / validation). Returning `false` stops immediately and throws the current error, with no further attempts or delay. Async-capable. Runs after `onError` (observe, then decide).
+- **`retry` — jitter.** `jitter: "full" | "equal" | true` randomises each delay (`"full"` = `random(0, delay)`, `"equal"` = `delay/2 + random(0, delay/2)`) to avoid thundering herd. Draws from the seedable `Random`, so schedules stay reproducible under `Random.seed(n)`.
+- **`retry` — `maxDelay`.** Caps the computed delay (after backoff, before jitter) so exponential backoff can't grow without bound.
+- **`retry` — function-form `backoff`.** `backoff: (attempt, baseDelay) => number` for custom strategies (decorrelated jitter, Fibonacci, capped-exponential) beyond the built-in `"linear" | "exponential"`.
+- **`retry` — `AbortSignal` support.** Pass `signal` to cancel between or during attempts; a pending delay is raced against the signal so cancellation resolves promptly.
+- **`retryable(fn, options?)`** — new export. Pre-binds retry options to a function, returning a reusable wrapper.
+
+All additions are optional with defaults preserving the previous behaviour — **no breaking change**.
+
+### Tests
+
+- `retry.test.ts` expanded to 14 tests covering each option, seeded-jitter determinism, abort timing, and async `shouldRetry`.
+
 ## 3.1.0
 
 ### Added

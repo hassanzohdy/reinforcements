@@ -2,8 +2,6 @@
 name: mongez-reinforcements-random
 description: |
   Random value generation via the Random namespace class from @mongez/reinforcements — integers, floats, booleans, strings, UUIDs, nanoids, dates, colors, weighted picks, and seedable deterministic mode.
-  TRIGGER when: code imports `Random`, `RandomDateOptions`, or `WeightedItem` from `@mongez/reinforcements`, or calls `Random.int`/`Random.float`/`Random.bool`/`Random.string`/`Random.id`/`Random.uuid`/`Random.nanoid`/`Random.token`/`Random.date`/`Random.color`/`Random.pick`/`Random.sample`/`Random.weighted`/`Random.seed`; user asks "how do I generate a UUID / nanoid / random integer / pick a random element / seed randomness for tests / make a weighted random choice"; `import { Random } from "@mongez/reinforcements"`.
-  SKIP: cryptographic-strength randomness for security (use `crypto.randomBytes`, `crypto.subtle`); `nanoid`/`uuid` npm packages when not going through `@mongez/reinforcements`; seedable PRNGs for simulations needing different distributions (use a stats library).
 ---
 # Random
 

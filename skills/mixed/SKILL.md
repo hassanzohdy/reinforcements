@@ -2,8 +2,6 @@
 name: mongez-reinforcements-mixed
 description: |
   Cross-type utilities from @mongez/reinforcements — deep clone(), deep equality areEqual(), Fisher-Yates shuffle(), and null-safe coalesce().
-  TRIGGER when: code imports `clone`, `areEqual`, `shuffle`, or `coalesce` from `@mongez/reinforcements`; user asks "how do I deep clone / deep compare / shuffle an array / get the first non-null value"; `import { clone, areEqual, shuffle, coalesce } from "@mongez/reinforcements"`.
-  SKIP: @mongez/supportive-is is type predicates (`isEmpty`, `isPlainObject`) — use that for shape/type checks, not value equality; native `structuredClone` for environments where it suffices and circular custom-class handling isn't required; nullish-coalescing `??` operator when only one fallback is needed.
 ---
 # Mixed
 

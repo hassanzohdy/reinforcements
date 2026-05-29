@@ -147,6 +147,12 @@ export { default as pFilter } from "./async/pFilter";
 export { default as pMap } from "./async/pMap";
 export { default as pProps } from "./async/pProps";
 export { default as pSeries } from "./async/pSeries";
-export { default as retry } from "./async/retry";
+export { default as retry, retryable } from "./async/retry";
+export type {
+  RetryOptions,
+  RetryBackoff,
+  RetryBackoffFn,
+  RetryJitter,
+} from "./async/retry";
 export { default as sleep } from "./async/sleep";
 export { default as timeout } from "./async/timeout";
