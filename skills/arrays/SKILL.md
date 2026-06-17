@@ -6,7 +6,7 @@ description: |
 
 # Arrays
 
-Lightweight, tree-shakable array helpers. Every function imports from the package root — `import { unique } from "@mongez/reinforcements"`. For richer collection operations (`partition`, `keyBy`, `sortBy`, `intersection`, …) reach for [`@mongez/collection`](/collection/overview/).
+Lightweight, tree-shakable array helpers. Every function imports from the package root — `import { unique } from "@mongez/reinforcements"`. For a chainable collection API and heavier operations (`sortBy`, `where`, `flatMap`, …) reach for [`@mongez/collection`](/collection/overview/).
 
 ## `chunk()`
 
@@ -203,3 +203,91 @@ unshiftUnique(arr, 0, 1); // [0, 1, 2, 3] — 1 was skipped
 ```
 
 > **These mutate the input array** (and return the same reference). Reach for them when you have a stable array you want to grow without duplicates. For a non-mutating dedupe, use [`unique()`](#unique).
+
+## `partition()`
+
+Split an array into two groups by a predicate: `[pass, fail]`. Single pass, original order preserved.
+
+```ts
+partition<T>(array: T[], predicate: (item: T, index: number) => unknown): [T[], T[]]
+```
+
+```ts
+partition([1, 2, 3, 4], n => n % 2 === 0);  // [[2, 4], [1, 3]]
+const [active, archived] = partition(users, u => u.active);
+```
+
+## `keyBy()`
+
+Index an array into an object keyed by each item's `key` — a dot-notation string path or a selector function. Last item wins on key collision.
+
+```ts
+keyBy<T>(array: T[], key: string | ((item: T, index: number) => PropertyKey)): Record<string, T>
+```
+
+```ts
+keyBy([{ id: 1 }, { id: 2 }], "id"); // { "1": { id: 1 }, "2": { id: 2 } }
+keyBy(users, user => user.email);    // keyed by email
+```
+
+## `intersection()`
+
+Unique values present in **every** array (set intersection). Order follows the first array; values compared by `SameValueZero`.
+
+```ts
+intersection<T>(...arrays: T[][]): T[]
+```
+
+```ts
+intersection([1, 2, 3], [2, 3, 4], [3, 2]); // [2, 3]
+```
+
+## `difference()`
+
+Unique values from the first array that appear in **none** of the others (set difference). Order follows the first array.
+
+```ts
+difference<T>(array: T[], ...others: T[][]): T[]
+```
+
+```ts
+difference([1, 2, 3, 4], [2, 4]); // [1, 3]
+difference([1, 2, 3], [2], [3]);  // [1]
+```
+
+## `union()`
+
+Concatenate all arrays and return the unique values, preserving first-seen order (set union).
+
+```ts
+union<T>(...arrays: T[][]): T[]
+```
+
+```ts
+union([1, 2], [2, 3], [3, 4]); // [1, 2, 3, 4]
+```
+
+## `zip()`
+
+Combine several arrays into tuples paired by index. Length matches the **longest** input; missing slots are `undefined`.
+
+```ts
+zip(...arrays: T[][]): Array<[...tuple]>
+```
+
+```ts
+zip([1, 2], ["a", "b"]); // [[1, "a"], [2, "b"]]
+zip([1], ["a", "b"]);    // [[1, "a"], [undefined, "b"]]
+```
+
+## `unzip()`
+
+The inverse of `zip` — turn an array of tuples back into a tuple of arrays grouped by position.
+
+```ts
+unzip<T>(array: T[][]): (T | undefined)[][]
+```
+
+```ts
+unzip([[1, "a"], [2, "b"]]); // [[1, 2], ["a", "b"]]
+```

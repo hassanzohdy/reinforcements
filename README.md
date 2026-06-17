@@ -39,13 +39,13 @@ const id    = Random.uuid();
 
 | Namespace | Count | Examples |
 |---|---|---|
-| **Objects** | 24 | `get`, `set`, `has`, `pick`, `omit`, `compact`, `merge`, `clone`, `flatten`, `walk`, `diff`, `mapValues`, `mapKeys` |
+| **Objects** | 25 | `get`, `set`, `has`, `pick`, `omit`, `compact`, `when`, `merge`, `clone`, `flatten`, `walk`, `diff`, `mapValues`, `mapKeys` |
 | **Strings** | 38 | `words`, `slugify`, `truncate`, `template`, `mask`, `toCamelCase`, `toSnakeCase`, `toKebabCase`, `escapeHtml`, `stripHtmlTags` |
-| **Numbers** | 12 | `round`, `floor`, `ceil`, `clamp`, `inRange`, `lerp`, `percentage`, `safeDivide`, `formatBytes`, `formatNumber` |
+| **Numbers** | 14 | `round`, `floor`, `ceil`, `clamp`, `inRange`, `lerp`, `percentage`, `safeDivide`, `formatBytes`, `formatNumber`, `formatDuration`, `ordinal` |
 | **Mixed** | 4 | `clone`, `areEqual`, `shuffle`, `coalesce` |
-| **Arrays** | 17 | `chunk`, `range`, `unique`, `pluck`, `groupBy`, `countBy`, `sum`, `average`, `median`, `min`, `max` |
-| **Function utilities** | 18 | `debounce`, `throttle`, `memoize`, `once`, `pipe`, `compose`, `tap`, `curry`, `partial`, `lazy`, `isLazy` |
-| **Async** | 11 | `sleep`, `retry`, `timeout`, `pAll`, `pAllSettled`, `pMap`, `pProps`, `pSeries`, `pFilter`, `defer`, `debounceAsync` |
+| **Arrays** | 24 | `chunk`, `range`, `unique`, `pluck`, `groupBy`, `countBy`, `partition`, `keyBy`, `intersection`, `difference`, `union`, `zip`, `unzip`, `sum`, `average`, `median`, `min`, `max` |
+| **Function utilities** | 19 | `debounce`, `throttle`, `memoize`, `once`, `pipe`, `compose`, `tap`, `curry`, `partial`, `attempt`, `lazy`, `isLazy` |
+| **Async** | 14 | `sleep`, `retry`, `timeout`, `pAll`, `pAllSettled`, `pMap`, `pProps`, `pSeries`, `pFilter`, `pReduce`, `poll`, `waitFor`, `defer`, `debounceAsync` |
 | **Random** | 13 | `Random.int`, `Random.float`, `Random.uuid`, `Random.nanoid`, `Random.pick`, `Random.sample`, `Random.weighted`, `Random.seed` |
 | **Types** | 13 | `Path<T>`, `PathValue`, `DeepPartial`, `DeepRequired`, `DeepReadonly`, `DeepMutable`, `Branded`, `Prettify` |
 
@@ -185,6 +185,7 @@ unset(user, ["profile.email"]);             // delete by path
 | `omit(obj, keys \| predicate)` | New object excluding requested keys/paths or predicate-matching entries. |
 | `only` / `except` | Deprecated v2 aliases of `pick` / `omit` — still work. |
 | `compact(value, options?)` | Strip nullish / empty-string / empty-container entries. Recursive by default. Keeps `0`/`false`/`NaN`. |
+| `when(condition, value)` | Return `value` (or `value()`) when `condition` is truthy, else `{}`. For inline conditional spreading; factory value runs lazily. |
 | `defaults(target, ...sources)` | Fill `undefined` keys on `target` from `sources`, left-to-right. |
 | `invert(obj)` | Swap keys and values (values coerced to strings). |
 | `mapValues(obj, fn)` / `mapKeys(obj, fn)` | Transform values or keys, return new object. |
@@ -311,8 +312,8 @@ mask("+201234567890", { start: 4, end: 2, char: "•" });         // "+201••
 
 ```ts
 import {
-  sleep, retry, timeout, pAll, pAllSettled, pMap, pProps, pSeries, pFilter,
-  defer, debounceAsync,
+  sleep, retry, timeout, pAll, pAllSettled, pMap, pProps, pSeries, pFilter, pReduce,
+  poll, waitFor, defer, debounceAsync,
 } from "@mongez/reinforcements";
 ```
 
@@ -323,6 +324,8 @@ import {
 | `sleep(ms, value?)` | Delay; resolves to `value` (or `undefined`). |
 | `retry(fn, options?)` | `{ attempts, delay, backoff: "linear" \| "exponential", onError }`. |
 | `timeout(promise, ms, message?)` | Race against a timer; rejects with the message when the timer wins. |
+| `poll(fn, { interval?, timeout?, attempts?, until?, signal? })` | Repeat `fn` until `until(result)` is truthy; resolves with that result. |
+| `waitFor(condition, options?)` | Resolve once `condition` is truthy; `poll` wrapper for readiness checks. |
 | `defer<T>()` | Externally-resolvable promise: `{ promise, resolve, reject }`. |
 
 ```ts
@@ -338,6 +341,15 @@ const data = await retry(() => fetch(url).then(r => r.json()), {
 });
 
 await timeout(slowFetch(), 3_000, "Request took too long");
+
+// Poll a background job until it finishes (or 60s elapses)
+const job = await poll(() => api.getJob(id), {
+  interval: 2_000,
+  timeout: 60_000,
+  until: j => j.status === "done",
+});
+
+await waitFor(() => queue.isEmpty(), { interval: 100, timeout: 5_000 });
 ```
 
 ### Collection helpers
@@ -350,6 +362,7 @@ await timeout(slowFetch(), 3_000, "Request took too long");
 | `pProps({ ... })` | Parallel object destructuring; awaits every value, returns the unwrapped object. |
 | `pSeries(items, mapper)` | Sequential map. |
 | `pFilter(items, predicate, { concurrency? })` | Async filter. |
+| `pReduce(items, reducer, initial)` | Sequential async reduce; awaits the accumulator between steps. |
 | `debounceAsync(fn, wait)` | Async-aware debounce; bursts resolve to the final call's result. |
 
 ```ts
@@ -443,9 +456,14 @@ const lookupByName = memoize(
 | `tap(value, fn)` / `tap.with(fn)` | Side-effect probe that returns the value unchanged. |
 | `noop` / `identity` / `constant(v)` / `negate(predicate)` | Tiny helpers. |
 | `escapeRegex(s)` | Escape regex metacharacters. |
+| `attempt(fn, fallback?)` | Run `fn`; on throw/reject return `fallback` (or `undefined`). Sync + async. |
 
 ```ts
-import { pipe, tap, toSnakeCase, trim } from "@mongez/reinforcements";
+import { attempt, pipe, tap, toSnakeCase, trim } from "@mongez/reinforcements";
+
+const config = attempt(() => JSON.parse(rawConfig), {});  // never throws on bad JSON
+const user = await attempt(() => api.getUser(id), null);  // null if the request fails
+
 
 const result = pipe(
   rawInput,
@@ -549,11 +567,12 @@ stub.isResolved();                          // true
 
 ## Arrays
 
-A focused set of array helpers — dedupe, chunk, group, basic stats. Reach for **[`@mongez/collection`](https://github.com/hassanzohdy/collection)** when you need richer collection operations (sort-by, partition, key-by, etc.).
+A focused set of array helpers — dedupe, chunk, group, set operations, basic stats. Reach for **[`@mongez/collection`](https://github.com/hassanzohdy/collection)** when you need the chainable collection API and heavier operations (`sortBy`, `where`, `flatMap`, etc.).
 
 ```ts
 import {
   chunk, range, unique, pluck, groupBy, countBy,
+  partition, keyBy, intersection, difference, union, zip, unzip,
   sum, average, min, max, median,
   pushUnique, unshiftUnique,
   even, odd, evenIndexes, oddIndexes,
@@ -568,6 +587,12 @@ import {
 | `pluck(array, key?)` | Map by dot-notation key (string) or build subsets (string array). |
 | `groupBy(array, key \| keys[], listAs?)` | Group by one or more dot-notation keys. |
 | `countBy(array, key)` | Count occurrences per `get(item, key)` value. |
+| `partition(array, predicate)` | Split into `[pass, fail]` by predicate, single pass. |
+| `keyBy(array, key \| selector)` | Index into an object keyed by a dot-path or selector; last wins. |
+| `intersection(...arrays)` | Unique values present in **every** array. |
+| `difference(array, ...others)` | Unique values in the first array but none of the others. |
+| `union(...arrays)` | Unique values across all arrays, first-seen order. |
+| `zip(...arrays)` / `unzip(rows)` | Pair arrays into tuples by index / the inverse. |
 | `sum(array, key?)` / `average(array, key?)` / `median(array)` | Stats, optional dot-notation key. |
 | `min(array)` / `max(array)` / `count(value)` | Basic helpers. |
 | `pushUnique(array, ...items)` / `unshiftUnique(array, ...items)` | Mutating dedup-append / dedup-prepend. |
@@ -595,6 +620,13 @@ groupBy(
 countBy([{ status: "active" }, { status: "active" }, { status: "done" }], "status");
 // { active: 2, done: 1 }
 
+partition([1, 2, 3, 4], n => n % 2 === 0);  // [[2, 4], [1, 3]]
+keyBy([{ id: 1 }, { id: 2 }], "id");        // { "1": { id: 1 }, "2": { id: 2 } }
+intersection([1, 2, 3], [2, 3, 4]);         // [2, 3]
+difference([1, 2, 3, 4], [2, 4]);           // [1, 3]
+union([1, 2], [2, 3]);                      // [1, 2, 3]
+zip([1, 2], ["a", "b"]);                    // [[1, "a"], [2, "b"]]
+
 sum([{ price: 10 }, { price: 20 }, { price: 30 }], "price"); // 60
 average([10, 20, 30]);                      // 20
 median([1, 2, 3, 4]);                       // 2.5
@@ -609,7 +641,7 @@ import {
   round, floor, ceil, toFixed,
   clamp, inRange, lerp,
   percentage, safeDivide, parseNumber,
-  formatBytes, formatNumber,
+  formatBytes, formatNumber, formatDuration, ordinal,
 } from "@mongez/reinforcements";
 ```
 
@@ -626,6 +658,8 @@ import {
 | `parseNumber(value, fallback?)` | Permissive numeric parse. |
 | `formatBytes(bytes, { decimals?, binary? })` | `1500` → `"1.50 KB"`, `{ binary: true }` → `"1.46 KiB"`. |
 | `formatNumber(value, IntlOptions)` | `Intl.NumberFormat` wrapper. |
+| `formatDuration(ms, { units?, long?, separator? })` | Human-readable duration: `3661000` → `"1h 1m 1s"`. |
+| `ordinal(value, { withNumber? })` | English ordinal: `1` → `"1st"`, `22` → `"22nd"`. |
 
 ```ts
 clamp(150, 0, 100);                         // 100
@@ -634,6 +668,9 @@ safeDivide(10, 0);                          // 0
 safeDivide(10, 0, null);                    // null
 formatBytes(1_500_000);                     // "1.50 MB"
 formatBytes(1500, { binary: true });        // "1.46 KiB"
+formatDuration(3661000);                    // "1h 1m 1s"
+formatDuration(90000, { long: true });      // "1 minute 30 seconds"
+ordinal(22);                                // "22nd"
 ```
 
 ---

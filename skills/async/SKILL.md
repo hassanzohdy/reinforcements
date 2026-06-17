@@ -10,8 +10,8 @@ Promise-based control flow: sleep, retry, timeout, bounded concurrent map/filter
 ```ts
 import {
   sleep, retry, retryable, timeout,
-  pAll, pAllSettled, pMap, pSeries, pFilter,
-  defer, debounceAsync,
+  pAll, pAllSettled, pMap, pSeries, pFilter, pReduce,
+  poll, waitFor, defer, debounceAsync,
 } from "@mongez/reinforcements";
 ```
 
@@ -254,4 +254,57 @@ const a = search("a");
 const b = search("ab");
 const c = search("abc");
 // 250ms later: one fetch("abc"); a, b, c all resolve with that result
+```
+
+## `poll`
+
+```ts
+poll<T>(fn: (attempt: number) => Promise<T> | T, options?: {
+  interval?: number;                                // ms between attempts; default 1000
+  timeout?: number;                                 // give up after ms; default none
+  attempts?: number;                                // max attempts; default none
+  until?: (result: T, attempt: number) => boolean;  // stop condition; default: result is truthy
+  signal?: AbortSignal;                             // abort early
+}): Promise<T>
+```
+
+Repeatedly call `fn` until `until(result)` is truthy, then resolve with that result. Rejects on `timeout`, the `attempts` cap, or abort. Ideal for polling job status or readiness.
+
+```ts
+const job = await poll(() => api.getJob(id), {
+  interval: 2_000,
+  timeout: 60_000,
+  until: job => job.status === "done",
+});
+```
+
+## `waitFor`
+
+```ts
+waitFor(
+  condition: (attempt: number) => Promise<boolean> | boolean,
+  options?: WaitForOptions, // = Omit<PollOptions, "until">
+): Promise<void>
+```
+
+Convenience wrapper around `poll` for boolean readiness checks — resolves once `condition` is truthy.
+
+```ts
+await waitFor(() => queue.isEmpty(), { interval: 100, timeout: 5_000 });
+```
+
+## `pReduce`
+
+```ts
+pReduce<T, A>(
+  items: readonly T[],
+  reducer: (acc: A, item: T, index: number) => Promise<A> | A,
+  initial: A,
+): Promise<A>
+```
+
+Sequential async reduce — awaits the accumulator between steps. The async sibling of `Array.prototype.reduce`.
+
+```ts
+const total = await pReduce(ids, async (sum, id) => sum + (await fetchScore(id)), 0);
 ```

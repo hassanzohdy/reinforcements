@@ -134,6 +134,30 @@ compact({ tags: [], name: "Ada" }, { empties: false });
 
 Typical uses: cleaning API request payloads, building query strings from filter objects, sanitizing form data.
 
+## Conditional construction — `when`
+
+#### `when`
+
+```ts
+when<T extends object>(condition: unknown, value: T | (() => T)): Partial<T>
+```
+
+Return `value` when `condition` is truthy, otherwise `{}`. Built for **inline conditional spreading** — a key is only present when the condition holds. The value may be a **factory function**, invoked lazily and only when the condition is truthy, so the cost of building it is skipped otherwise.
+
+```ts
+const payload = {
+  name: "Ada",
+  ...when(isAdmin, { role: "admin" }),
+};
+// isAdmin === true  -> { name: "Ada", role: "admin" }
+// isAdmin === false -> { name: "Ada" }
+
+// Lazy value — buildHeavyConfig() runs only when `ready` is truthy.
+when(ready, () => ({ config: buildHeavyConfig() }));
+```
+
+Cleaner than `...(condition && { … })` (which can spread `false`) and reads as intent at the call site.
+
 ## Deep transforms — `merge` / `clone` / `flatten` / `freeze`
 
 #### `merge`

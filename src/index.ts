@@ -3,20 +3,27 @@ export { default as average, default as avg } from "./array/average";
 export { default as chunk } from "./array/chunk";
 export { default as count } from "./array/count";
 export { default as countBy } from "./array/countBy";
+export { default as difference } from "./array/difference";
 export { default as even } from "./array/even";
 export { default as evenIndexes } from "./array/evenIndexes";
 export { default as groupBy } from "./array/groupBy";
+export { default as intersection } from "./array/intersection";
+export { default as keyBy } from "./array/keyBy";
 export { default as max } from "./array/max";
 export { default as median } from "./array/median";
 export { default as min } from "./array/min";
 export { default as odd } from "./array/odd";
 export { default as oddIndexes } from "./array/oddIndexes";
+export { default as partition } from "./array/partition";
 export { default as pluck } from "./array/pluck";
 export { default as pushUnique } from "./array/pushUnique";
 export { default as range } from "./array/range";
 export { default as sum } from "./array/sum";
+export { default as union } from "./array/union";
 export { default as unique } from "./array/unique";
 export { default as unshiftUnique } from "./array/unshiftUnique";
+export { default as unzip } from "./array/unzip";
+export { default as zip } from "./array/zip";
 
 // mixed
 export { default as areEqual } from "./mixed/areEqual/areEqual";
@@ -29,9 +36,11 @@ export { default as ceil } from "./number/ceil";
 export { default as clamp } from "./number/clamp";
 export { default as floor } from "./number/floor";
 export { default as formatBytes } from "./number/formatBytes";
+export { default as formatDuration } from "./number/formatDuration";
 export { default as formatNumber } from "./number/formatNumber";
 export { default as inRange } from "./number/inRange";
 export { default as lerp } from "./number/lerp";
+export { default as ordinal } from "./number/ordinal";
 export { default as parseNumber } from "./number/parseNumber";
 export { default as percentage } from "./number/percentage";
 export { default as round } from "./number/round";
@@ -63,6 +72,7 @@ export { default as sort } from "./object/sort";
 export { default as unset } from "./object/unset";
 export { default as values } from "./object/values";
 export { default as walk } from "./object/walk";
+export { default as when } from "./object/when";
 
 // Random
 export { default as Random } from "./Random/random";
@@ -120,6 +130,7 @@ export * from "./types";
 
 // utils
 export { default as after } from "./utils/after";
+export { default as attempt } from "./utils/attempt";
 export { default as before } from "./utils/before";
 export { default as compose } from "./utils/compose";
 export { default as constant } from "./utils/constant";
@@ -145,7 +156,10 @@ export { default as pAll } from "./async/pAll";
 export { default as pAllSettled } from "./async/pAllSettled";
 export { default as pFilter } from "./async/pFilter";
 export { default as pMap } from "./async/pMap";
+export { default as poll } from "./async/poll";
+export type { PollOptions } from "./async/poll";
 export { default as pProps } from "./async/pProps";
+export { default as pReduce } from "./async/pReduce";
 export { default as pSeries } from "./async/pSeries";
 export { default as retry, retryable } from "./async/retry";
 export type {
@@ -156,3 +170,5 @@ export type {
 } from "./async/retry";
 export { default as sleep } from "./async/sleep";
 export { default as timeout } from "./async/timeout";
+export { default as waitFor } from "./async/waitFor";
+export type { WaitForOptions } from "./async/waitFor";

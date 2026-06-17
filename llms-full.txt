@@ -1,6 +1,6 @@
 # @mongez/reinforcements — Full reference
 
-> Complete API reference for `@mongez/reinforcements` v3.1. This file is the concatenation of every per-namespace skill, intended for single-fetch loading by AI agents.
+> Complete API reference for `@mongez/reinforcements` v3.3. This file is the concatenation of every per-namespace skill, intended for single-fetch loading by AI agents.
 
 Install: `yarn add @mongez/reinforcements` or `npm i @mongez/reinforcements`.
 
@@ -55,15 +55,15 @@ import {
 
 | Namespace | Count | Examples |
 |---|---|---|
-| `object` | 23 | `get`, `set`, `pick`, `omit`, `merge`, `clone`, `flatten`, `walk`, `diff` |
+| `object` | 24 | `get`, `set`, `pick`, `omit`, `merge`, `clone`, `flatten`, `walk`, `diff`, `when` |
 | `string` | ~45 | Casing family, `slugify`, `truncate`, `template`, `mask`, `stripHtmlTags` |
-| `number` | 12 | `round`, `clamp`, `formatBytes`, `percentage`, `safeDivide` |
+| `number` | 14 | `round`, `clamp`, `formatBytes`, `formatDuration`, `ordinal`, `percentage`, `safeDivide` |
 | `mixed` | 4 | `clone`, `areEqual`, `shuffle`, `coalesce` |
-| `array` | 18 | `chunk`, `range`, `unique`, `pluck`, `groupBy`, `sum` |
+| `array` | 25 | `chunk`, `range`, `unique`, `pluck`, `groupBy`, `partition`, `keyBy`, `union`, `zip`, `sum` |
 | `random` | 14 | `Random.int`, `Random.uuid`, `Random.sample`, `Random.seed` |
 | `lazy` | 1 + variants | `lazy`, `lazy.async`, `lazy.from`, `isLazy` |
-| `function` | 17 | `debounce`, `throttle`, `memoize`, `pipe`, `curry`, `once` |
-| `async` | 11 | `sleep`, `retry`, `retryable`, `timeout`, `pMap`, `pFilter`, `defer` |
+| `function` | 18 | `debounce`, `throttle`, `memoize`, `pipe`, `curry`, `once`, `attempt` |
+| `async` | 14 | `sleep`, `retry`, `retryable`, `timeout`, `pMap`, `pFilter`, `pReduce`, `poll`, `waitFor`, `defer` |
 | `types` | 16 | `Path`, `PathValue`, `DeepPartial`, `Branded`, `Prettify` |
 
 ## Scope boundaries
@@ -71,7 +71,7 @@ import {
 | Concern | Lives in | Why |
 |---|---|---|
 | Type/shape predicates (`isString`, `isEmpty`, `isURL`, …) | `@mongez/supportive-is` | Single-purpose package |
-| Array collection helpers (`partition`, `keyBy`, `sortBy`, …) | `@mongez/collections` | Richer collection model |
+| Chainable collection API + heavy ops (`sortBy`, `where`, `flatMap`, …) | `@mongez/collection` | Richer collection model |
 | HTML sanitization | Use `DOMPurify` | Parser-based, not regex |
 | Schema validation | Use `zod` / `valibot` | Out of scope |
 | Date manipulation | Use `dayjs` / `date-fns` / `Temporal` | Out of scope |
@@ -231,6 +231,30 @@ compact({ tags: [], name: "Ada" }, { empties: false });
 ```
 
 Typical uses: cleaning API request payloads, building query strings from filter objects, sanitizing form data.
+
+## Conditional construction — `when`
+
+#### `when`
+
+```ts
+when<T extends object>(condition: unknown, value: T | (() => T)): Partial<T>
+```
+
+Return `value` when `condition` is truthy, otherwise `{}`. Built for **inline conditional spreading** — a key is only present when the condition holds. The value may be a **factory function**, invoked lazily and only when the condition is truthy, so the cost of building it is skipped otherwise.
+
+```ts
+const payload = {
+  name: "Ada",
+  ...when(isAdmin, { role: "admin" }),
+};
+// isAdmin === true  -> { name: "Ada", role: "admin" }
+// isAdmin === false -> { name: "Ada" }
+
+// Lazy value — buildHeavyConfig() runs only when `ready` is truthy.
+when(ready, () => ({ config: buildHeavyConfig() }));
+```
+
+Cleaner than `...(condition && { … })` (which can spread `false`) and reads as intent at the call site.
 
 ## Deep transforms — `merge` / `clone` / `flatten` / `freeze`
 
@@ -827,6 +851,39 @@ formatNumber(99, { style: "currency", currency: "USD" }); // "$99.00"
 formatNumber(1234, { locale: "ar-EG" });                  // "١٬٢٣٤"
 ```
 
+#### `formatDuration`
+
+```ts
+formatDuration(ms: number, options?: {
+  units?: number;      // max unit parts, largest-first; default Infinity
+  long?: boolean;      // "1 hour 2 minutes" vs "1h 2m"; default false
+  separator?: string;  // default " "
+}): string
+```
+
+Human-readable duration from milliseconds (days → ms). Shows every non-zero unit by default; cap with `units`.
+
+```ts
+formatDuration(3661000);                // "1h 1m 1s"
+formatDuration(3661000, { units: 2 });  // "1h 1m"
+formatDuration(90000, { long: true });  // "1 minute 30 seconds"
+```
+
+#### `ordinal`
+
+```ts
+ordinal(value: number, options?: { withNumber?: boolean }): string  // withNumber default true
+```
+
+English ordinal for an integer; handles the 11–13 exception and negatives. The fraction is truncated.
+
+```ts
+ordinal(1);   // "1st"
+ordinal(22);  // "22nd"
+ordinal(113); // "113th"
+ordinal(2, { withNumber: false }); // "nd"
+```
+
 ---
 
 # Mixed (clone, areEqual, shuffle, coalesce)
@@ -1360,6 +1417,20 @@ Escape regex meta-characters so a literal string can be used in a `RegExp`.
 new RegExp(escapeRegex("a.b+c")); // matches the literal "a.b+c"
 ```
 
+## `attempt`
+
+```ts
+attempt<T, F = undefined>(fn: () => Promise<T>, fallback?: F): Promise<T | F>
+attempt<T, F = undefined>(fn: () => T, fallback?: F): T | F
+```
+
+Run `fn` and return its result; if it throws or rejects, return `fallback` (or `undefined`). Works for sync and async functions — a promise-returning `fn` yields a promise. Removes one-off try/catch boilerplate.
+
+```ts
+const config = attempt(() => JSON.parse(raw), {});
+const user = await attempt(() => api.getUser(id), null);
+```
+
 ---
 
 # Async
@@ -1603,6 +1674,59 @@ const c = search("abc");
 // 250ms later: one fetch("abc"); a, b, c all resolve with that result
 ```
 
+## `poll`
+
+```ts
+poll<T>(fn: (attempt: number) => Promise<T> | T, options?: {
+  interval?: number;                                // ms between attempts; default 1000
+  timeout?: number;                                 // give up after ms; default none
+  attempts?: number;                                // max attempts; default none
+  until?: (result: T, attempt: number) => boolean;  // stop condition; default: result is truthy
+  signal?: AbortSignal;                             // abort early
+}): Promise<T>
+```
+
+Repeatedly call `fn` until `until(result)` is truthy, then resolve with that result. Rejects on `timeout`, the `attempts` cap, or abort. Ideal for polling job status or readiness.
+
+```ts
+const job = await poll(() => api.getJob(id), {
+  interval: 2_000,
+  timeout: 60_000,
+  until: job => job.status === "done",
+});
+```
+
+## `waitFor`
+
+```ts
+waitFor(
+  condition: (attempt: number) => Promise<boolean> | boolean,
+  options?: WaitForOptions, // = Omit<PollOptions, "until">
+): Promise<void>
+```
+
+Convenience wrapper around `poll` for boolean readiness checks — resolves once `condition` is truthy.
+
+```ts
+await waitFor(() => queue.isEmpty(), { interval: 100, timeout: 5_000 });
+```
+
+## `pReduce`
+
+```ts
+pReduce<T, A>(
+  items: readonly T[],
+  reducer: (acc: A, item: T, index: number) => Promise<A> | A,
+  initial: A,
+): Promise<A>
+```
+
+Sequential async reduce — awaits the accumulator between steps. The async sibling of `Array.prototype.reduce`.
+
+```ts
+const total = await pReduce(ids, async (sum, id) => sum + (await fetchScore(id)), 0);
+```
+
 ---
 
 # Arrays
@@ -1722,6 +1846,94 @@ unshiftUnique(arr, 0, 1); // [0, 1, 2, 3] — 1 was skipped
 ```
 
 > These mutate the input array (they return the same reference). Use them when you have a stable array reference you want to grow without dupes.
+
+## `partition()`
+
+Split an array into two groups by a predicate: `[pass, fail]`. Single pass, original order preserved.
+
+```ts
+partition<T>(array: T[], predicate: (item: T, index: number) => unknown): [T[], T[]]
+```
+
+```ts
+partition([1, 2, 3, 4], n => n % 2 === 0);  // [[2, 4], [1, 3]]
+const [active, archived] = partition(users, u => u.active);
+```
+
+## `keyBy()`
+
+Index an array into an object keyed by each item's `key` — a dot-notation string path or a selector function. Last item wins on key collision.
+
+```ts
+keyBy<T>(array: T[], key: string | ((item: T, index: number) => PropertyKey)): Record<string, T>
+```
+
+```ts
+keyBy([{ id: 1 }, { id: 2 }], "id"); // { "1": { id: 1 }, "2": { id: 2 } }
+keyBy(users, user => user.email);    // keyed by email
+```
+
+## `intersection()`
+
+Unique values present in **every** array (set intersection). Order follows the first array; values compared by `SameValueZero`.
+
+```ts
+intersection<T>(...arrays: T[][]): T[]
+```
+
+```ts
+intersection([1, 2, 3], [2, 3, 4], [3, 2]); // [2, 3]
+```
+
+## `difference()`
+
+Unique values from the first array that appear in **none** of the others (set difference). Order follows the first array.
+
+```ts
+difference<T>(array: T[], ...others: T[][]): T[]
+```
+
+```ts
+difference([1, 2, 3, 4], [2, 4]); // [1, 3]
+difference([1, 2, 3], [2], [3]);  // [1]
+```
+
+## `union()`
+
+Concatenate all arrays and return the unique values, preserving first-seen order (set union).
+
+```ts
+union<T>(...arrays: T[][]): T[]
+```
+
+```ts
+union([1, 2], [2, 3], [3, 4]); // [1, 2, 3, 4]
+```
+
+## `zip()`
+
+Combine several arrays into tuples paired by index. Length matches the **longest** input; missing slots are `undefined`.
+
+```ts
+zip(...arrays: T[][]): Array<[...tuple]>
+```
+
+```ts
+zip([1, 2], ["a", "b"]); // [[1, "a"], [2, "b"]]
+zip([1], ["a", "b"]);    // [[1, "a"], [undefined, "b"]]
+```
+
+## `unzip()`
+
+The inverse of `zip` — turn an array of tuples back into a tuple of arrays grouped by position.
+
+```ts
+unzip<T>(array: T[][]): (T | undefined)[][]
+```
+
+```ts
+unzip([[1, "a"], [2, "b"]]); // [[1, 2], ["a", "b"]]
+```
 
 ---
 

@@ -11,7 +11,7 @@ Rate-limiting, memoization, composition, currying, tiny FP primitives.
 import {
   debounce, throttle, memoize, once, after, before,
   pipe, compose, tap, curry, partial, partialRight,
-  noop, identity, constant, negate, escapeRegex,
+  noop, identity, constant, negate, escapeRegex, attempt,
 } from "@mongez/reinforcements";
 ```
 
@@ -193,4 +193,18 @@ Escape regex meta-characters so a literal string can be used in a `RegExp`.
 
 ```ts
 new RegExp(escapeRegex("a.b+c")); // matches the literal "a.b+c"
+```
+
+## `attempt`
+
+```ts
+attempt<T, F = undefined>(fn: () => Promise<T>, fallback?: F): Promise<T | F>
+attempt<T, F = undefined>(fn: () => T, fallback?: F): T | F
+```
+
+Run `fn` and return its result; if it throws or rejects, return `fallback` (or `undefined`). Works for sync and async functions — a promise-returning `fn` yields a promise. Removes one-off try/catch boilerplate.
+
+```ts
+const config = attempt(() => JSON.parse(raw), {});
+const user = await attempt(() => api.getUser(id), null);
 ```

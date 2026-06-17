@@ -16,24 +16,24 @@ Every export ships from the package root: `import { get, clone, debounce, Random
 
 ## Reference (by namespace)
 
-- [Objects](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/objects.md): `get` / `set` / `has`, `pick` / `omit`, `compact`, `merge`, `clone`, `flatten`, `walk`, `diff`, `mapValues`, …
+- [Objects](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/objects.md): `get` / `set` / `has`, `pick` / `omit`, `compact`, `when`, `merge`, `clone`, `flatten`, `walk`, `diff`, `mapValues`, …
   - *Auto-trigger:* Load on imports of `get`/`set`/`pick`/`omit`/`merge`/`clone`/`flatten`/`walk`/`diff` or any dot-notation read/write on nested objects.
 - [Strings](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/strings.md): Acronym-aware casing family, `slugify`, `truncate`, `template`, `mask`, `escapeHtml`, `stripHtmlTags`, Arabic detection, …
   - *Auto-trigger:* Load on imports of `toCamelCase`/`toSnakeCase`/`slugify`/`truncate`/`mask`/`template`/`stripHtmlTags` or string casing, padding, replacement, and HTML helpers.
-- [Numbers](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/numbers.md): `round` / `floor` / `ceil`, `clamp`, `formatBytes`, `formatNumber`, `percentage`, `safeDivide`, `parseNumber`, …
-  - *Auto-trigger:* Load on imports of `round`/`clamp`/`formatBytes`/`formatNumber`/`percentage`/`safeDivide`/`parseNumber` or precision rounding, clamping, and safe arithmetic.
+- [Numbers](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/numbers.md): `round` / `floor` / `ceil`, `clamp`, `formatBytes`, `formatNumber`, `formatDuration`, `ordinal`, `percentage`, `safeDivide`, `parseNumber`, …
+  - *Auto-trigger:* Load on imports of `round`/`clamp`/`formatBytes`/`formatNumber`/`formatDuration`/`ordinal`/`percentage`/`safeDivide`/`parseNumber` or precision rounding, clamping, duration/ordinal formatting, and safe arithmetic.
 - [Mixed](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/mixed.md): `clone`, `areEqual` (real deep-equal), `shuffle` (Fisher–Yates), `coalesce`.
   - *Auto-trigger:* Load on imports of `clone`/`areEqual`/`shuffle`/`coalesce` or deep-clone, deep-equality, shuffle, or first-non-nullish needs.
 - [Random](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/random.md): `Random.int` / `float` / `uuid` / `nanoid` / `pick` / `sample` / `weighted` / `seed` — namespace class with private constructor.
   - *Auto-trigger:* Load on `Random.*` method calls or imports of `Random`/`RandomDateOptions`/`WeightedItem` for ids, UUIDs, sampling, or seedable randomness.
 - [Lazy](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/lazy.md): `lazy`, `lazy.async`, `lazy.from`, `isLazy` — deferred memoised values, primary tool for breaking ES-module circular imports.
   - *Auto-trigger:* Load on imports of `lazy`/`isLazy`/`Lazy`/`LazyAsync` or whenever breaking ES-module circular imports or deferring memoised initialization.
-- [Function utilities](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/functions.md): `debounce` (with `cancel` / `flush` / `pending` / `maxWait`), `throttle`, `memoize`, `once`, `after`, `before`, `pipe`, `compose`, `curry`, `partial`, `tap`, …
-  - *Auto-trigger:* Load on imports of `debounce`/`throttle`/`memoize`/`once`/`pipe`/`compose`/`curry`/`partial`/`tap` for sync rate-limiting, caching, composition, or currying.
-- [Async](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/async.md): `sleep`, `retry`, `timeout`, `pAll`, `pAllSettled`, `pMap`, `pProps`, `pSeries`, `pFilter`, `defer`, `debounceAsync`.
-  - *Auto-trigger:* Load on imports of `sleep`/`retry`/`timeout`/`pMap`/`pProps`/`pAll`/`pSeries`/`pFilter`/`defer`/`debounceAsync` for retry, timeout, bounded concurrency, or async debounce.
-- [Arrays](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/arrays.md): `chunk`, `range`, `unique`, `pluck`, `groupBy`, `countBy`, `sum`, `average`, `median`, `min`, `max`, parity filters, … (richer collection ops in `@mongez/collections`).
-  - *Auto-trigger:* Load on imports of `chunk`/`range`/`unique`/`pluck`/`groupBy`/`countBy`/`sum`/`average`/`median`/`min`/`max` or array dedupe, chunking, grouping, and stats.
+- [Function utilities](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/functions.md): `debounce` (with `cancel` / `flush` / `pending` / `maxWait`), `throttle`, `memoize`, `once`, `after`, `before`, `pipe`, `compose`, `curry`, `partial`, `tap`, `attempt`, …
+  - *Auto-trigger:* Load on imports of `debounce`/`throttle`/`memoize`/`once`/`pipe`/`compose`/`curry`/`partial`/`tap`/`attempt` for sync rate-limiting, caching, composition, currying, or safe (try/catch) calls.
+- [Async](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/async.md): `sleep`, `retry`, `timeout`, `pAll`, `pAllSettled`, `pMap`, `pProps`, `pSeries`, `pFilter`, `pReduce`, `poll`, `waitFor`, `defer`, `debounceAsync`.
+  - *Auto-trigger:* Load on imports of `sleep`/`retry`/`timeout`/`pMap`/`pProps`/`pAll`/`pSeries`/`pFilter`/`pReduce`/`poll`/`waitFor`/`defer`/`debounceAsync` for retry, timeout, bounded concurrency, polling/waiting, or async debounce.
+- [Arrays](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/arrays.md): `chunk`, `range`, `unique`, `pluck`, `groupBy`, `countBy`, `partition`, `keyBy`, `intersection`, `difference`, `union`, `zip`, `unzip`, `sum`, `average`, `median`, `min`, `max`, parity filters, … (chainable collection API in `@mongez/collection`).
+  - *Auto-trigger:* Load on imports of `chunk`/`range`/`unique`/`pluck`/`groupBy`/`countBy`/`partition`/`keyBy`/`intersection`/`difference`/`union`/`zip`/`sum`/`average`/`median`/`min`/`max` or array dedupe, chunking, grouping, set operations, restructuring, and stats.
 - [Types](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/types.md): `Path<T>`, `PathValue`, `DeepPartial`, `DeepReadonly`, `Branded`, `Prettify`, `UnionToIntersection`, …
   - *Auto-trigger:* Load on `import type` of `Path`/`PathValue`/`DeepPartial`/`DeepReadonly`/`Branded`/`Prettify`/`UnionToIntersection` or any TS-only utility-type usage.
 

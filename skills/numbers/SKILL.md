@@ -118,3 +118,36 @@ formatNumber(0.42, { style: "percent" });                 // "42%"
 formatNumber(99, { style: "currency", currency: "USD" }); // "$99.00"
 formatNumber(1234, { locale: "ar-EG" });                  // "١٬٢٣٤"
 ```
+
+#### `formatDuration`
+
+```ts
+formatDuration(ms: number, options?: {
+  units?: number;      // max unit parts, largest-first; default Infinity
+  long?: boolean;      // "1 hour 2 minutes" vs "1h 2m"; default false
+  separator?: string;  // default " "
+}): string
+```
+
+Human-readable duration from milliseconds (days → ms). Shows every non-zero unit by default; cap with `units`.
+
+```ts
+formatDuration(3661000);                // "1h 1m 1s"
+formatDuration(3661000, { units: 2 });  // "1h 1m"
+formatDuration(90000, { long: true });  // "1 minute 30 seconds"
+```
+
+#### `ordinal`
+
+```ts
+ordinal(value: number, options?: { withNumber?: boolean }): string  // withNumber default true
+```
+
+English ordinal for an integer; handles the 11–13 exception and negatives. The fraction is truncated.
+
+```ts
+ordinal(1);   // "1st"
+ordinal(22);  // "22nd"
+ordinal(113); // "113th"
+ordinal(2, { withNumber: false }); // "nd"
+```
