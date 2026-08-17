@@ -2,6 +2,10 @@
 
 All notable changes to `@mongez/reinforcements` are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.1] — 2026-08-17
+
+Declare Node 20+ engine — Random CSPRNG (string/nanoid/id/token/uuid) requires WebCrypto, unavailable by default before Node 19. No API change.
+
 ## [4.0.0] — 2026-08-17 — Security release (MAJOR)
 
 Prototype-pollution hardening, a ReDoS/regex-injection fix, and a **breaking** change to `Random`'s security-shaped generators. Bumped to a new major because of the `Random` behavior change below — everything else in this release is additive/hardening and non-breaking on its own.

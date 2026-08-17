@@ -67,7 +67,7 @@ yarn add @mongez/reinforcements
 pnpm add @mongez/reinforcements
 ```
 
-No peer dependencies. Node 18+ recommended for `crypto.randomUUID` / `crypto.getRandomValues` in `Random`; older runtimes fall back to the internal PRNG.
+No peer dependencies. Node 20+ required for `crypto.randomUUID` / `crypto.getRandomValues` in `Random.string`/`nanoid`/`id`/`token`/`uuid` (CSPRNG-only, no fallback since 4.0.0).
 
 ---
 
