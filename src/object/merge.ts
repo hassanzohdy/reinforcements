@@ -1,3 +1,4 @@
+import isForbiddenKey from "./isForbiddenKey";
 import isPlainObject from "./isPlainObject";
 
 export type MergeArrayStrategy = "replace" | "concat" | "union";
@@ -19,6 +20,9 @@ const DEFAULT_OPTIONS: Required<MergeOptions> = {
  * Pass a `MergeOptions` object as the final argument to configure array
  * handling. The trailing options object is detected automatically — only
  * when its single own key is `arrays`.
+ *
+ * Source keys named `__proto__`, `constructor` or `prototype` are never
+ * merged — they are skipped so untrusted input cannot pollute prototypes.
  *
  * @example
  * merge({ a: { b: 1 } }, { a: { c: 2 } }); // { a: { b: 1, c: 2 } }
@@ -126,6 +130,14 @@ function mergePlainObjects(
   const result: Record<string, any> = { ...target };
 
   for (const key of Object.keys(source)) {
+    // `__proto__`, `constructor` and `prototype` are skipped rather than
+    // rejected so the merge contract still holds for every other key —
+    // assigning them would reach a prototype and pollute unrelated
+    // objects. `JSON.parse` hands these over as ordinary own keys.
+    if (isForbiddenKey(key)) {
+      continue;
+    }
+
     result[key] = mergeTwo(target[key], source[key], options);
   }
 

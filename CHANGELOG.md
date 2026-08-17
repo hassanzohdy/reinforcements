@@ -2,6 +2,32 @@
 
 All notable changes to `@mongez/reinforcements` are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.0] — 2026-08-17 — Security release (MAJOR)
+
+Prototype-pollution hardening, a ReDoS/regex-injection fix, and a **breaking** change to `Random`'s security-shaped generators. Bumped to a new major because of the `Random` behavior change below — everything else in this release is additive/hardening and non-breaking on its own.
+
+### Security
+
+**Objects**
+
+- **`set` / `pick` / `omit`** — dot-notation paths containing a `__proto__`, `constructor`, or `prototype` segment are now rejected; `set` returns the object unchanged instead of writing through to a prototype. `pick`/`omit` inherit this via their internal use of `set`/`get`. Closes a prototype-pollution vector for any code that walks a path derived from untrusted input (e.g. a JSON request body) into `set`.
+- **`merge` / `defaults`** — source keys named `__proto__`, `constructor`, or `prototype` are now silently skipped at every recursion depth, rather than merged/copied onto the target. Closes the same class of prototype-pollution vector for deep-merging untrusted objects (`JSON.parse` produces `__proto__` as an ordinary own key). New internal helper `src/object/isForbiddenKey.ts` (default export `isForbiddenKey`, named export `FORBIDDEN_KEYS`) backs all four — not exported from the package root.
+
+**Strings**
+
+- **`repeatsOf`** — `needle` is now escaped before being compiled into a `RegExp`. Previously an attacker-controlled `needle` was interpolated into a regex unescaped, which could inject unintended matching behavior or, with a crafted pattern, cause catastrophic backtracking (ReDoS). `needle` is now always matched literally.
+
+### Breaking
+
+- **`Random.string`, `Random.nanoid`, `Random.id`, `Random.token`, `Random.uuid` are now exclusively CSPRNG-backed (`crypto.getRandomValues` / `crypto.randomUUID`) and are no longer seedable.** Previously these fell back to the internal seedable PRNG when no CSPRNG was available (or, for `uuid`/`token`, described that fallback in their docs) — meaning a predictable "random" identifier could be produced in some environments, which is unsafe wherever the value is used as a token, invite code, or anything session-adjacent. `Random.seed(n)` no longer has any effect on these five methods, and each one now **throws** `"No CSPRNG available: crypto.getRandomValues is required"` on a runtime with no WebCrypto (very old browsers, Node < 15 without a `crypto` global) instead of silently degrading.
+  - **Unaffected:** `Random.int`, `Random.float`, `Random.bool`, `Random.pick`, `Random.sample`, `Random.weighted`, `Random.date`, `Random.color` — still `Math.random`-backed by default and seedable via `Random.seed(n)`, exactly as before.
+  - **Migration:** if you called `Random.seed(n)` expecting reproducible `string`/`nanoid`/`id`/`token`/`uuid` output in fixtures or snapshot tests, that output is no longer reproducible. Switch those fixtures to a fixed literal, an incrementing counter, or an explicitly-seeded id library. See [`MIGRATION.md`](./MIGRATION.md) for the full guide.
+
+### Docs
+
+- `src/Random/random.ts` JSDoc updated on `string`/`id`/`nanoid`/`token`/`uuid` to describe the CSPRNG-only contract and the throw, replacing the previous "falls back to the internal PRNG" description.
+- `README.md`, `skills/objects/SKILL.md`, `skills/strings/SKILL.md`, `skills/random/SKILL.md`, `llms.txt`, `llms-full.txt` updated to match.
+
 ## [3.3.0] — 2026-06-17
 
 ### Added

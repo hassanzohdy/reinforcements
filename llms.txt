@@ -16,7 +16,7 @@ Every export ships from the package root: `import { get, clone, debounce, Random
 
 ## Reference (by namespace)
 
-- [Objects](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/objects.md): `get` / `set` / `has`, `pick` / `omit`, `compact`, `when`, `merge`, `clone`, `flatten`, `walk`, `diff`, `mapValues`, …
+- [Objects](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/objects.md): `get` / `set` / `has`, `pick` / `omit`, `compact`, `when`, `merge`, `clone`, `flatten`, `walk`, `diff`, `mapValues`, … `set`/`pick`/`omit`/`merge`/`defaults` guard against prototype pollution.
   - *Auto-trigger:* Load on imports of `get`/`set`/`pick`/`omit`/`merge`/`clone`/`flatten`/`walk`/`diff` or any dot-notation read/write on nested objects.
 - [Strings](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/strings.md): Acronym-aware casing family, `slugify`, `truncate`, `template`, `mask`, `escapeHtml`, `stripHtmlTags`, Arabic detection, …
   - *Auto-trigger:* Load on imports of `toCamelCase`/`toSnakeCase`/`slugify`/`truncate`/`mask`/`template`/`stripHtmlTags` or string casing, padding, replacement, and HTML helpers.
@@ -24,7 +24,7 @@ Every export ships from the package root: `import { get, clone, debounce, Random
   - *Auto-trigger:* Load on imports of `round`/`clamp`/`formatBytes`/`formatNumber`/`formatDuration`/`ordinal`/`percentage`/`safeDivide`/`parseNumber` or precision rounding, clamping, duration/ordinal formatting, and safe arithmetic.
 - [Mixed](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/mixed.md): `clone`, `areEqual` (real deep-equal), `shuffle` (Fisher–Yates), `coalesce`.
   - *Auto-trigger:* Load on imports of `clone`/`areEqual`/`shuffle`/`coalesce` or deep-clone, deep-equality, shuffle, or first-non-nullish needs.
-- [Random](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/random.md): `Random.int` / `float` / `uuid` / `nanoid` / `pick` / `sample` / `weighted` / `seed` — namespace class with private constructor.
+- [Random](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/random.md): `Random.int` / `float` / `uuid` / `nanoid` / `pick` / `sample` / `weighted` / `seed` — namespace class with private constructor. `string`/`id`/`nanoid`/`token`/`uuid` are CSPRNG-backed, not seedable, and throw without WebCrypto.
   - *Auto-trigger:* Load on `Random.*` method calls or imports of `Random`/`RandomDateOptions`/`WeightedItem` for ids, UUIDs, sampling, or seedable randomness.
 - [Lazy](https://raw.githubusercontent.com/hassanzohdy/reinforcements/main/skills/lazy.md): `lazy`, `lazy.async`, `lazy.from`, `isLazy` — deferred memoised values, primary tool for breaking ES-module circular imports.
   - *Auto-trigger:* Load on imports of `lazy`/`isLazy`/`Lazy`/`LazyAsync` or whenever breaking ES-module circular imports or deferring memoised initialization.

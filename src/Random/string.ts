@@ -1,12 +1,10 @@
-import { ALPHANUMERIC, next } from "./_internal";
+import { ALPHANUMERIC, cryptoStringOf } from "./_internal";
 
-/** Internal: random alphanumeric string. See {@link Random.string}. */
+/**
+ * Internal: random alphanumeric string. See {@link Random.string}.
+ *
+ * Token-shaped, so it is CSPRNG-backed and never seedable.
+ */
 export default function randomString(length = 32): string {
-  let text = "";
-
-  for (let i = 0; i < length; i++) {
-    text += ALPHANUMERIC.charAt(Math.floor(next() * ALPHANUMERIC.length));
-  }
-
-  return text;
+  return cryptoStringOf(ALPHANUMERIC, length);
 }

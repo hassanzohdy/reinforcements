@@ -1,3 +1,5 @@
+import isForbiddenKey from "./isForbiddenKey";
+
 const NUMERIC_SEGMENT = /^\d+$/;
 
 /**
@@ -5,9 +7,13 @@ const NUMERIC_SEGMENT = /^\d+$/;
  * arrays when the next segment is a numeric index) along the way.
  * Mutates and returns the input.
  *
+ * Paths containing `__proto__`, `constructor` or `prototype` are
+ * rejected — the object is returned untouched.
+ *
  * @example
  * set({}, "a.b.c", 1); // { a: { b: { c: 1 } } }
  * set({}, "users.0.name", "Ada"); // { users: [{ name: "Ada" }] }
+ * set({}, "__proto__.polluted", 1); // {} — rejected
  */
 export default function set<T extends Record<string, any>>(
   object: T,
@@ -24,6 +30,12 @@ export default function set<T extends Record<string, any>>(
 
   const segments = path.split(".");
   const lastIndex = segments.length - 1;
+
+  // Validated before any write so a rejected path never leaves behind
+  // half-created containers.
+  if (segments.some(isForbiddenKey)) {
+    return object;
+  }
 
   let current: any = object;
 

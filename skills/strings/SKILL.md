@@ -93,6 +93,8 @@ repeatsOf("abcabc", "a");       // 2
 repeatsOf("AbcAbc", "a", false); // 2
 ```
 
+`needle` is matched literally — internally escaped before being compiled into a `RegExp`, so regex metacharacters (`.`, `*`, `(`, `|`, …) in `needle` carry no special meaning and a long adversarial `needle` can't trigger catastrophic backtracking (ReDoS).
+
 ## Padding
 
 ```ts

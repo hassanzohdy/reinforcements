@@ -37,6 +37,8 @@ beforeEach(() => Random.seed(123));
 afterEach(()  => Random.seed());
 ```
 
+`seed` only affects `int` / `float` / `bool` / `pick` / `sample` / `weighted` / `date` / `color`. **`string`, `id`, `nanoid`, `token`, and `uuid` are CSPRNG-backed and ignore the seed entirely** — see below.
+
 ## Primitives
 
 ```ts
@@ -70,7 +72,11 @@ Random.nanoid(10);         // "rH3kQ_pX7a"
 Random.token(16);          // 32-char hex
 ```
 
-`uuid` / `token` use `crypto.randomUUID` / `crypto.getRandomValues` when available, falling back to the internal PRNG otherwise. **Use for ids only**, not for cryptography.
+**`string`, `id`, `nanoid`, and `token` are always CSPRNG-backed** (`crypto.getRandomValues`) — never drawn from the seedable PRNG, even under `Random.seed(n)`. `uuid` uses `crypto.randomUUID` when available, otherwise `crypto.getRandomValues`. All five **throw `"No CSPRNG available: crypto.getRandomValues is required"`** on a runtime with no WebCrypto (pre-ES2020 browsers, Node < 15 without a `crypto` global) — they never silently degrade to a predictable generator.
+
+> **Breaking change (v4):** prior to v4, `string`/`id`/`nanoid`/`token`/`uuid` fell back to the internal PRNG and therefore *could* be seeded/reproduced under test. That fallback was a security bug — a predictable "random" identifier is exploitable wherever it's used as a token, invite code, or session-adjacent value. If you relied on seeded output from these five methods for fixtures, generate fixture values a different way (a fixed literal, a counter, or an explicitly-seeded UUID library) — do not reach for `Random.seed()` expecting them to comply.
+
+**Use for ids only**, not for cryptographic key/token material beyond opaque identifiers — for anything security-sensitive, prefer the Web Crypto API directly and document the derivation.
 
 ## Dates & colors
 
@@ -111,4 +117,5 @@ Random.weighted([
 
 - `Random` is **not instantiable** — `new Random()` is a TS error. Use the static methods directly.
 - The legacy aliases `Random.integer` / `Random.boolean` from v2 are **removed**. Use `Random.int` / `Random.bool`.
-- Seeded mode persists until cleared — call `Random.seed()` (no args) in `afterEach` to avoid cross-test contamination.
+- Seeded mode persists until cleared — call `Random.seed()` (no args) in `afterEach` to avoid cross-test contamination. Seeding has **no effect** on `string` / `id` / `nanoid` / `token` / `uuid`.
+- `Random.string` / `id` / `nanoid` / `token` / `uuid` **throw** on a runtime without `crypto.getRandomValues` — wrap calls in test environments that stub out WebCrypto, or polyfill it.

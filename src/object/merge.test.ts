@@ -59,4 +59,41 @@ describe("reinforcements/object/merge", () => {
     expect(merge(null, { a: 1 })).toEqual({ a: 1 });
     expect(merge(undefined, [1, 2])).toEqual([1, 2]);
   });
+
+  it("should not pollute the prototype from a top-level __proto__ key", () => {
+    const result = merge({}, JSON.parse('{"__proto__":{"polluted":"x"}}'));
+
+    expect(({} as any).polluted).toBeUndefined();
+    expect((result as any).polluted).toBeUndefined();
+    expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
+  });
+
+  it("should not pollute the prototype from a nested __proto__ key", () => {
+    const result = merge(
+      {},
+      JSON.parse('{"a":{"__proto__":{"polluted":"x"}}}'),
+    );
+
+    expect(({} as any).polluted).toBeUndefined();
+    expect((result as any).a.polluted).toBeUndefined();
+  });
+
+  it("should not merge constructor or prototype keys", () => {
+    const result: any = merge(
+      { a: 1 },
+      JSON.parse('{"b":2,"constructor":"x","prototype":"y"}'),
+    );
+
+    expect(result).toEqual({ a: 1, b: 2 });
+    expect(result.constructor).toBe(Object);
+    expect(Object.prototype.hasOwnProperty.call(result, "prototype")).toBe(
+      false,
+    );
+  });
+
+  it("should keep merging the remaining keys of a polluted source", () => {
+    expect(
+      merge({ a: 1 }, JSON.parse('{"__proto__":{"polluted":"x"},"b":2}')),
+    ).toEqual({ a: 1, b: 2 });
+  });
 });

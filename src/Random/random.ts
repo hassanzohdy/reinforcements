@@ -92,6 +92,11 @@ export default class Random {
   /**
    * Random alphanumeric string of the given length.
    *
+   * CSPRNG-backed (`crypto.getRandomValues`) and never seedable —
+   * `Random.seed()` has no effect. Throws `"No CSPRNG available:
+   * crypto.getRandomValues is required"` on a runtime with no
+   * WebCrypto.
+   *
    * @example
    * Random.string(8); // e.g. "Xk2pQ9aZ"
    */
@@ -101,6 +106,10 @@ export default class Random {
 
   /**
    * Random alphanumeric id prefixed by `startsWith`.
+   *
+   * CSPRNG-backed via {@link Random.string} and never seedable. Throws
+   * `"No CSPRNG available: crypto.getRandomValues is required"` on a
+   * runtime with no WebCrypto.
    *
    * @example
    * Random.id();          // e.g. "el-X4kP2a"
@@ -174,8 +183,10 @@ export default class Random {
 
   /**
    * Generate an RFC 4122 v4 UUID. Uses `crypto.randomUUID` when
-   * available; falls back to `crypto.getRandomValues`, then to the
-   * internal PRNG.
+   * available, otherwise `crypto.getRandomValues`. Never seedable —
+   * `Random.seed()` has no effect. Throws `"No CSPRNG available:
+   * crypto.getRandomValues is required"` on a runtime with no
+   * WebCrypto.
    *
    * @example
    * Random.uuid(); // "0a8b40e1-d3ef-4d2e-87f4-1a8b40e1d3ef"
@@ -188,6 +199,10 @@ export default class Random {
    * URL-safe random id of the given size. Uses the alphabet
    * `A-Z a-z 0-9 _ -`.
    *
+   * CSPRNG-backed (`crypto.getRandomValues`) and never seedable.
+   * Throws `"No CSPRNG available: crypto.getRandomValues is
+   * required"` on a runtime with no WebCrypto.
+   *
    * @example
    * Random.nanoid();   // 21-char default
    * Random.nanoid(10); // "rH3kQ_pX7a"
@@ -199,6 +214,10 @@ export default class Random {
   /**
    * Crypto-backed hex string of `bytes` random bytes. Returns a
    * `bytes * 2`-character lowercase hex string.
+   *
+   * Never seedable — `Random.seed()` has no effect. Throws
+   * `"No CSPRNG available: crypto.getRandomValues is required"` on a
+   * runtime with no WebCrypto.
    *
    * @example
    * Random.token(16); // 32-char hex token

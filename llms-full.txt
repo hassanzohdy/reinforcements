@@ -135,6 +135,12 @@ set({}, "users.0.name", "Ada"); // { users: [{ name: "Ada" }] }
 set(obj, "a.b.c", 1);            // creates a.b.c chain
 ```
 
+**Prototype-pollution guard.** A path with a segment of `__proto__`, `constructor`, or `prototype` is rejected — the object is returned untouched. Matters whenever `path` comes from untrusted input (e.g. a JSON body walked into `set`).
+
+```ts
+set({}, "__proto__.polluted", 1); // {} — rejected, no throw
+```
+
 #### `has`
 
 ```ts
@@ -195,6 +201,8 @@ omit({ a: 1, b: 2 }, (_, k) => k === "a");      // { b: 2 }
 ```
 
 > `only` and `except` are kept as **`@deprecated` aliases** of `pick` and `omit` — prefer the new names.
+
+> `pick` and `omit` walk dot-notation paths through `set`/`get` internally and inherit the `__proto__`/`constructor`/`prototype` guard — a malicious path can't be used to read or reconstruct a polluted prototype.
 
 ## Cleanup — `compact`
 
@@ -280,6 +288,12 @@ merge({ list: [1, 2] }, { list: [2, 3] }, { arrays: "union" });
 
 Class instances are taken from the latest source rather than merged (cloning custom constructors is out of scope).
 
+**Prototype-pollution guard.** Source keys named `__proto__`, `constructor`, or `prototype` are silently skipped (not merged) at every recursion depth — merging untrusted JSON can never reach `Object.prototype`.
+
+```ts
+merge({}, JSON.parse('{"__proto__":{"polluted":1}}')); // {} — key skipped
+```
+
 #### `clone`
 
 ```ts
@@ -341,6 +355,8 @@ Mutating: fills only **`undefined`** keys on `target` from each source, left to 
 defaults({ a: 1 }, { a: 2, b: 3 });   // { a: 1, b: 3 }
 defaults({}, { a: 1 }, { a: 2 });     // { a: 1 }  (first source wins)
 ```
+
+Same prototype-pollution guard as `merge`: `__proto__` / `constructor` / `prototype` keys on any source are skipped.
 
 #### `invert`
 
@@ -534,6 +550,8 @@ repeatsOf(str: string, needle: string, caseSensitive?: boolean): number  // defa
 repeatsOf("abcabc", "a");       // 2
 repeatsOf("AbcAbc", "a", false); // 2
 ```
+
+`needle` is matched literally — internally escaped before being compiled into a `RegExp`, so regex metacharacters (`.`, `*`, `(`, `|`, …) in `needle` carry no special meaning and a long adversarial `needle` can't trigger catastrophic backtracking (ReDoS).
 
 ## Padding
 
@@ -1009,6 +1027,8 @@ beforeEach(() => Random.seed(123));
 afterEach(()  => Random.seed());
 ```
 
+`seed` only affects `int` / `float` / `bool` / `pick` / `sample` / `weighted` / `date` / `color`. **`string`, `id`, `nanoid`, `token`, and `uuid` are CSPRNG-backed and ignore the seed entirely** — see below.
+
 ## Primitives
 
 ```ts
@@ -1042,7 +1062,11 @@ Random.nanoid(10);         // "rH3kQ_pX7a"
 Random.token(16);          // 32-char hex
 ```
 
-`uuid` / `token` use `crypto.randomUUID` / `crypto.getRandomValues` when available, falling back to the internal PRNG otherwise. **Use for ids only**, not for cryptography.
+**`string`, `id`, `nanoid`, and `token` are always CSPRNG-backed** (`crypto.getRandomValues`) — never drawn from the seedable PRNG, even under `Random.seed(n)`. `uuid` uses `crypto.randomUUID` when available, otherwise `crypto.getRandomValues`. All five **throw `"No CSPRNG available: crypto.getRandomValues is required"`** on a runtime with no WebCrypto (pre-ES2020 browsers, Node < 15 without a `crypto` global) — they never silently degrade to a predictable generator.
+
+> **Breaking change (v4):** prior to v4, `string`/`id`/`nanoid`/`token`/`uuid` fell back to the internal PRNG and therefore *could* be seeded/reproduced under test. That fallback was a security bug — a predictable "random" identifier is exploitable wherever it's used as a token, invite code, or session-adjacent value. If you relied on seeded output from these five methods for fixtures, generate fixture values a different way (a fixed literal, a counter, or an explicitly-seeded UUID library) — do not reach for `Random.seed()` expecting them to comply.
+
+**Use for ids only**, not for cryptographic key/token material beyond opaque identifiers — for anything security-sensitive, prefer the Web Crypto API directly and document the derivation.
 
 ## Dates & colors
 
@@ -1083,7 +1107,8 @@ Random.weighted([
 
 - `Random` is **not instantiable** — `new Random()` is a TS error. Use the static methods directly.
 - The legacy aliases `Random.integer` / `Random.boolean` from v2 are **removed**. Use `Random.int` / `Random.bool`.
-- Seeded mode persists until cleared — call `Random.seed()` (no args) in `afterEach` to avoid cross-test contamination.
+- Seeded mode persists until cleared — call `Random.seed()` (no args) in `afterEach` to avoid cross-test contamination. Seeding has **no effect** on `string` / `id` / `nanoid` / `token` / `uuid`.
+- `Random.string` / `id` / `nanoid` / `token` / `uuid` **throw** on a runtime without `crypto.getRandomValues` — wrap calls in test environments that stub out WebCrypto, or polyfill it.
 
 ---
 

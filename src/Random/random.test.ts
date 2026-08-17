@@ -101,3 +101,82 @@ describe("reinforcements/random", () => {
     Random.seed(undefined);
   });
 });
+
+describe("reinforcements/random/csprng", () => {
+  /**
+   * Reload the Random modules with `globalThis.crypto` removed — the
+   * crypto reference is captured at module load time.
+   */
+  async function withoutCrypto<T>(
+    run: (random: typeof Random) => Promise<T> | T,
+  ): Promise<T> {
+    const descriptor = Object.getOwnPropertyDescriptor(globalThis, "crypto");
+
+    delete (globalThis as any).crypto;
+    vi.resetModules();
+
+    try {
+      const { default: reloaded } = await import("./random");
+
+      return await run(reloaded);
+    } finally {
+      if (descriptor) {
+        Object.defineProperty(globalThis, "crypto", descriptor);
+      }
+
+      vi.resetModules();
+    }
+  }
+
+  it("should throw instead of falling back for tokens and uuids", async () => {
+    await withoutCrypto(random => {
+      expect(() => random.token(16)).toThrow(/No CSPRNG available/);
+      expect(() => random.uuid()).toThrow(/No CSPRNG available/);
+    });
+  });
+
+  it("should throw instead of falling back for ids and random strings", async () => {
+    await withoutCrypto(random => {
+      expect(() => random.string(32)).toThrow(/No CSPRNG available/);
+      expect(() => random.nanoid()).toThrow(/No CSPRNG available/);
+      expect(() => random.id()).toThrow(/No CSPRNG available/);
+      // Even a zero-length request must not look like a success.
+      expect(() => random.string(0)).toThrow(/No CSPRNG available/);
+    });
+  });
+
+  it("should not honor the seed for token-shaped generators", () => {
+    Random.seed(42);
+    const first = [Random.string(16), Random.nanoid(16), Random.token(16)];
+    Random.seed(42);
+    const second = [Random.string(16), Random.nanoid(16), Random.token(16)];
+    Random.seed(undefined);
+
+    expect(second).not.toEqual(first);
+  });
+
+  it("should produce correct-length CSPRNG output", () => {
+    for (const length of [1, 6, 21, 32, 100]) {
+      expect(Random.string(length)).toMatch(
+        new RegExp(`^[A-Za-z0-9]{${length}}$`),
+      );
+      expect(Random.nanoid(length)).toMatch(
+        new RegExp(`^[A-Za-z0-9_-]{${length}}$`),
+      );
+      expect(Random.id(length, "user-")).toMatch(
+        new RegExp(`^user-[A-Za-z0-9]{${length}}$`),
+      );
+    }
+
+    expect(Random.string(0)).toBe("");
+    expect(Random.string()).toHaveLength(32);
+    expect(Random.nanoid()).toHaveLength(21);
+  });
+
+  it("should cover the whole charset without modulo bias", () => {
+    const seen = new Set(Random.nanoid(20000).split(""));
+
+    // 64 URL-safe characters; rejection sampling keeps them equiprobable.
+    expect(seen.size).toBe(64);
+  });
+});

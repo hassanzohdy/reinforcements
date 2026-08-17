@@ -37,6 +37,12 @@ set({}, "users.0.name", "Ada"); // { users: [{ name: "Ada" }] }
 set(obj, "a.b.c", 1);            // creates a.b.c chain
 ```
 
+**Prototype-pollution guard.** A path with a segment of `__proto__`, `constructor`, or `prototype` is rejected — the object is returned untouched. Matters whenever `path` comes from untrusted input (e.g. a JSON body walked into `set`).
+
+```ts
+set({}, "__proto__.polluted", 1); // {} — rejected, no throw
+```
+
 #### `has`
 
 ```ts
@@ -97,6 +103,8 @@ omit({ a: 1, b: 2 }, (_, k) => k === "a");      // { b: 2 }
 ```
 
 > `only` and `except` are kept as **`@deprecated` aliases** of `pick` and `omit` — prefer the new names.
+
+> `pick` and `omit` walk dot-notation paths through `set`/`get` internally and inherit the `__proto__`/`constructor`/`prototype` guard — a malicious path can't be used to read or reconstruct a polluted prototype.
 
 ## Cleanup — `compact`
 
@@ -182,6 +190,12 @@ merge({ list: [1, 2] }, { list: [2, 3] }, { arrays: "union" });
 
 Class instances are taken from the latest source rather than merged (cloning custom constructors is out of scope).
 
+**Prototype-pollution guard.** Source keys named `__proto__`, `constructor`, or `prototype` are silently skipped (not merged) at every recursion depth — merging untrusted JSON can never reach `Object.prototype`.
+
+```ts
+merge({}, JSON.parse('{"__proto__":{"polluted":1}}')); // {} — key skipped
+```
+
 #### `clone`
 
 ```ts
@@ -243,6 +257,8 @@ Mutating: fills only **`undefined`** keys on `target` from each source, left to 
 defaults({ a: 1 }, { a: 2, b: 3 });   // { a: 1, b: 3 }
 defaults({}, { a: 1 }, { a: 2 });     // { a: 1 }  (first source wins)
 ```
+
+Same prototype-pollution guard as `merge`: `__proto__` / `constructor` / `prototype` keys on any source are skipped.
 
 #### `invert`
 

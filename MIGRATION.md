@@ -1,5 +1,41 @@
 # Migration Guide
 
+## 3.x → 4.0
+
+Security release. Most consumers are unaffected — the prototype-pollution guards and the `repeatsOf` ReDoS fix are pure hardening with no API change. The one breaking change is in `Random`.
+
+### Breaking: `Random.string` / `id` / `nanoid` / `token` / `uuid` are no longer seedable
+
+These five now always draw from the runtime CSPRNG (`crypto.getRandomValues` / `crypto.randomUUID`) instead of falling back to the seedable PRNG when no CSPRNG was present.
+
+```diff
+  Random.seed(42);
+- Random.uuid();   // was reproducible if no CSPRNG was present; now always crypto-random
++ Random.uuid();   // always crypto-random — Random.seed() no longer affects it
+```
+
+**Who is affected:** only code that relied on `Random.seed(n)` to make `string`/`id`/`nanoid`/`token`/`uuid` output reproducible (e.g. golden-file fixtures, snapshot tests asserting an exact generated id). `int`/`float`/`bool`/`pick`/`sample`/`weighted`/`date`/`color` are unchanged and remain seedable.
+
+**What to do:** stop seeding for these five and use a fixed literal, an incrementing counter, or an explicitly-seeded id library for reproducible fixtures instead:
+
+```diff
+- Random.seed(42);
+- const id = Random.nanoid(); // used to be deterministic in some environments
++ const id = "test-nanoid-fixture"; // deterministic fixture, not generated
+```
+
+### Breaking (environment-dependent): these five now throw without a CSPRNG
+
+`Random.string`, `Random.id`, `Random.nanoid`, `Random.token`, and `Random.uuid` throw `"No CSPRNG available: crypto.getRandomValues is required"` on a runtime that exposes no `crypto.getRandomValues` (very old browsers, or Node < 15 without a global `crypto`). Previously they degraded silently to a predictable generator instead of failing loudly. If you target such a runtime, polyfill `crypto.getRandomValues` or avoid these five methods there.
+
+### Non-breaking hardening
+
+- **`set` / `pick` / `omit`** reject dot-paths containing a `__proto__`, `constructor`, or `prototype` segment (`set` returns the object unchanged instead of writing through to a prototype).
+- **`merge` / `defaults`** skip `__proto__` / `constructor` / `prototype` source keys instead of copying them.
+- **`repeatsOf`** now escapes `needle` before compiling it into a `RegExp` — always a literal match, never regex injection or ReDoS.
+
+None of the above change return values for any input that wasn't already an attempted prototype-pollution or regex-injection payload.
+
 ## 2.x → 3.0
 
 This major release fixes long-standing bugs in casing, equality, cloning, and merging; introduces ~80 new utilities; and tightens types throughout. Most consumers will only feel the renames below.

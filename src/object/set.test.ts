@@ -24,4 +24,37 @@ describe("reinforcements/object/set", () => {
   it("should not do anything if the first argument is not a valid object", () => {
     expect(set(anyValue(null), "c.f", 5)).toEqual(null);
   });
+
+  it("should reject __proto__ paths instead of polluting the prototype", () => {
+    const object: Record<string, any> = {};
+
+    expect(set(object, "__proto__.polluted", "x")).toBe(object);
+    expect(object).toEqual({});
+    expect(anyValue({}).polluted).toBeUndefined();
+  });
+
+  it("should reject constructor.prototype paths", () => {
+    const object: Record<string, any> = {};
+
+    expect(set(object, "constructor.prototype.polluted", "x")).toBe(object);
+    expect(object).toEqual({});
+    expect(anyValue({}).polluted).toBeUndefined();
+  });
+
+  it("should reject a forbidden segment anywhere in the path without creating containers", () => {
+    const object: Record<string, any> = {};
+
+    set(object, "a.__proto__.polluted", "x");
+    set(object, "a.b.prototype.polluted", "x");
+
+    expect(object).toEqual({});
+    expect(anyValue({}).polluted).toBeUndefined();
+  });
+
+  it("should still set legitimate paths", () => {
+    expect(set({}, "a.b.c", 1)).toEqual({ a: { b: { c: 1 } } });
+    expect(set({}, "users.0.name", "Ada")).toEqual({
+      users: [{ name: "Ada" }],
+    });
+  });
 });

@@ -16,4 +16,14 @@ describe("reinforcements/object/pick", () => {
   it("returns empty for non-objects", () => {
     expect(pick(null as any, ["a"])).toEqual({});
   });
+
+  it("does not pollute the prototype through dot-notation keys", () => {
+    const result = pick({ a: 1 } as any, [
+      "__proto__.polluted",
+      "constructor.prototype.polluted",
+    ]);
+
+    expect(({} as any).polluted).toBeUndefined();
+    expect(result).toEqual({});
+  });
 });

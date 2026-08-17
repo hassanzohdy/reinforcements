@@ -170,7 +170,7 @@ unset(user, ["profile.email"]);             // delete by path
 | Function | Description |
 | --- | --- |
 | `get(obj, path, default?)` | Typed dot-notation read; falsy values pass through correctly. |
-| `set(obj, path, value)` | Typed dot-notation write; auto-creates arrays when next segment is numeric. |
+| `set(obj, path, value)` | Typed dot-notation write; auto-creates arrays when next segment is numeric. Rejects `__proto__`/`constructor`/`prototype` path segments (returns the object unchanged) — safe against prototype pollution from untrusted paths. |
 | `has(obj, path)` | `true` if the path exists, even when the value is `undefined`. |
 | `unset(obj, paths)` | Mutating remove by dot-notation. |
 | `keys(obj)` / `values(obj)` / `entries(obj)` / `fromEntries(it)` | Typed wrappers. |
@@ -181,12 +181,12 @@ unset(user, ["profile.email"]);             // delete by path
 
 | Function | Description |
 | --- | --- |
-| `pick(obj, keys \| predicate)` | New object with only requested keys/paths or predicate-matching entries. |
-| `omit(obj, keys \| predicate)` | New object excluding requested keys/paths or predicate-matching entries. |
+| `pick(obj, keys \| predicate)` | New object with only requested keys/paths or predicate-matching entries. Inherits `set`'s prototype-pollution guard on path keys. |
+| `omit(obj, keys \| predicate)` | New object excluding requested keys/paths or predicate-matching entries. Inherits `set`'s prototype-pollution guard on path keys. |
 | `only` / `except` | Deprecated v2 aliases of `pick` / `omit` — still work. |
 | `compact(value, options?)` | Strip nullish / empty-string / empty-container entries. Recursive by default. Keeps `0`/`false`/`NaN`. |
 | `when(condition, value)` | Return `value` (or `value()`) when `condition` is truthy, else `{}`. For inline conditional spreading; factory value runs lazily. |
-| `defaults(target, ...sources)` | Fill `undefined` keys on `target` from `sources`, left-to-right. |
+| `defaults(target, ...sources)` | Fill `undefined` keys on `target` from `sources`, left-to-right. Skips `__proto__`/`constructor`/`prototype` source keys. |
 | `invert(obj)` | Swap keys and values (values coerced to strings). |
 | `mapValues(obj, fn)` / `mapKeys(obj, fn)` | Transform values or keys, return new object. |
 | `map(obj, fn)` | Map an object to an array via `(key, value, obj) => U`. |
@@ -214,6 +214,8 @@ flatten({ a: { b: 1 } }, { separator: "/" });          // { "a/b": 1 }
 ```
 
 `merge` is variadic and detects its options argument by shape (a trailing object whose single own key is `arrays`). `clone` handles `Date`, `RegExp`, `Error`, `Map`, `Set`, typed arrays, and circular references.
+
+> **`merge` and `defaults` are prototype-pollution-safe.** Source keys named `__proto__`, `constructor`, or `prototype` are skipped at every recursion depth, so merging or defaulting from untrusted JSON (e.g. a parsed request body) can never reach `Object.prototype`.
 
 > **Non-plain class instances are cloned by reference, not deep-copied.** Your class owns its own copy semantics — `clone` won't synthesize a half-broken instance from a `User` or `Decimal` you defined yourself. Implement `clone()` on the class if you need a deep copy.
 
@@ -285,7 +287,7 @@ mask("+201234567890", { start: 4, end: 2, char: "•" });         // "+201••
 | `replaceAll(s, search, replacement)` | Replace every occurrence (literal `search`, not regex). |
 | `replaceFirst(s, search, replacement)` / `replaceLast(...)` | Single-edge replacement. |
 | `removeFirst(s, needle)` / `removeLast(s, needle)` | Drop the first / last occurrence. |
-| `repeatsOf(s, needle, caseSensitive?)` | Count occurrences. |
+| `repeatsOf(s, needle, caseSensitive?)` | Count occurrences. `needle` is escaped before use, so it is always matched literally — regex metacharacters in `needle` can't inject a pattern or cause ReDoS. |
 | `trim(s, needle?)` / `ltrim` / `rtrim` | Trim arbitrary characters from both/either side. |
 | `pad(s, length, char?)` / `padStart(...)` / `padEnd(...)` | Padding helpers. |
 
@@ -478,7 +480,7 @@ const result = pipe(
 
 ## Random
 
-`Random` is a namespace class with a private constructor — every member is a static method. Defaults to `Math.random`; switch to a seeded mulberry32 PRNG with `Random.seed(n)` for reproducible output.
+`Random` is a namespace class with a private constructor — every member is a static method. `int` / `float` / `bool` / `pick` / `sample` / `weighted` / `date` / `color` default to `Math.random` and switch to a seeded mulberry32 PRNG with `Random.seed(n)` for reproducible output. `string` / `id` / `nanoid` / `token` / `uuid` are always CSPRNG-backed (`crypto.getRandomValues` / `crypto.randomUUID`), **ignore `Random.seed()` entirely**, and **throw** `"No CSPRNG available: crypto.getRandomValues is required"` on a runtime with no WebCrypto — see the callout below.
 
 ```ts
 import { Random } from "@mongez/reinforcements";
@@ -490,11 +492,11 @@ import { Random } from "@mongez/reinforcements";
 | `Random.int(min?, max?)` | Inclusive integer range (defaults `1` … `9_999_999`). |
 | `Random.float(min, max, precision?)` | Float in `[min, max)`, optionally rounded. |
 | `Random.bool()` | Coin flip. |
-| `Random.string(length?)` | Alphanumeric string (default 32 chars). |
-| `Random.id(length?, prefix?)` | Prefixed alphanumeric id (default `"el-"`). |
-| `Random.uuid()` | RFC 4122 v4 (uses `crypto.randomUUID` when available). |
-| `Random.nanoid(size?)` | URL-safe 21-char id by default. |
-| `Random.token(bytes?)` | Crypto-backed lowercase hex (default 16 bytes → 32 chars). |
+| `Random.string(length?)` | Alphanumeric string (default 32 chars). CSPRNG-backed, not seedable, throws without WebCrypto. |
+| `Random.id(length?, prefix?)` | Prefixed alphanumeric id (default `"el-"`). CSPRNG-backed, not seedable, throws without WebCrypto. |
+| `Random.uuid()` | RFC 4122 v4 (uses `crypto.randomUUID` when available, else `crypto.getRandomValues`). Not seedable, throws without WebCrypto. |
+| `Random.nanoid(size?)` | URL-safe 21-char id by default. CSPRNG-backed, not seedable, throws without WebCrypto. |
+| `Random.token(bytes?)` | Crypto-backed lowercase hex (default 16 bytes → 32 chars). Not seedable, throws without WebCrypto. |
 | `Random.color()` | Six-digit `#rrggbb` hex color. |
 | `Random.date({ min?, max? })` | Random `Date` in range. |
 | `Random.pick(array)` | One element, or `undefined`. |
@@ -522,7 +524,9 @@ const b = Random.int(1, 1000);
 a === b;                                    // true
 ```
 
-> **Random is for ids and sampling, not cryptography.** `Random.uuid` / `nanoid` / `token` use `crypto` when available so they're safe as identifiers. Don't use any of them for password derivation, key generation, or signing — reach for the Web Crypto API directly for that.
+> **Random is for ids and sampling, not cryptography.** `Random.uuid` / `nanoid` / `token` / `string` / `id` are always CSPRNG-backed, so they're safe as opaque identifiers. Don't use any of them for password derivation, key generation, or signing — reach for the Web Crypto API directly for that.
+>
+> **Breaking change (v4): `string` / `id` / `nanoid` / `token` / `uuid` are no longer seedable and can throw.** Before v4 these five fell back to the internal PRNG when no CSPRNG was present, which meant a predictable "random" identifier could leak wherever it was used as a token or invite code — a security bug, not a feature. They now always draw from `crypto.getRandomValues` and throw `"No CSPRNG available: crypto.getRandomValues is required"` instead of degrading silently. `Random.seed(n)` no longer has any effect on them. If you seeded these five for reproducible fixtures, switch to a fixed literal, a counter, or an explicitly-seeded id library instead. See [`MIGRATION.md`](./MIGRATION.md).
 
 ---
 
@@ -875,7 +879,7 @@ test("sample is deterministic when seeded", () => {
 });
 ```
 
-> **`Random.uuid` uses `crypto.randomUUID` when available.** The seed only affects the internal PRNG fallback. Tests that need deterministic uuids should mock `crypto.randomUUID` directly, or run in an environment where it isn't present.
+> **`Random.seed()` does not affect `string` / `id` / `nanoid` / `token` / `uuid`.** All five are always CSPRNG-backed (`crypto.getRandomValues` / `crypto.randomUUID`) and throw rather than fall back to the seedable PRNG. Tests that need deterministic ids should mock `crypto.randomUUID` / `crypto.getRandomValues` directly, or use a fixed literal instead of `Random` for that value.
 
 ### Mask PII for logs and display
 
