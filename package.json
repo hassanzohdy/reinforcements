@@ -18,10 +18,11 @@
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
-    "@vitest/coverage-v8": "^3.0.0",
-    "typescript": "^5.0.2",
-    "vite-tsconfig-paths": "^5.1.0",
-    "vitest": "^3.0.0"
+    "@vitest/coverage-v8": "^5.1.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^5.1.0"
   },
   "keywords": [
     "array",
@@ -44,5 +45,6 @@
     "typescript"
   ],
   "author": "hassanzohdy",
-  "license": "MIT"
+  "license": "MIT",
+  "packageManager": "pnpm@12.15.0"
 }
