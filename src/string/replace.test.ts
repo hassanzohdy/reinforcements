@@ -32,3 +32,30 @@ describe("reinforcements/string/removeFirst & removeLast", () => {
     expect(removeLast("foo bar foo", "foo")).toBe("foo bar ");
   });
 });
+
+describe("reinforcements/string/replace (literal semantics)", () => {
+  it("does not expand $ patterns in the replacement", () => {
+    expect(replaceAll("Hello {name}, bye", "{name}", "$'")).toBe(
+      "Hello $', bye",
+    );
+    expect(replaceAll("a-b", "-", "$&$&")).toBe("a$&$&b");
+    expect(replaceFirst("a-b", "-", "$`")).toBe("a$`b");
+  });
+
+  it("replaceFirst / removeFirst match needles with regex characters", () => {
+    expect(replaceFirst("a.b.c", ".", "-")).toBe("a-b.c");
+    expect(removeFirst("a.b.c", ".")).toBe("ab.c");
+    expect(replaceFirst("a+b", "+", "-")).toBe("a-b");
+  });
+
+  it("returns the string unchanged when the needle is absent", () => {
+    expect(replaceFirst("abc", "x", "y")).toBe("abc");
+    expect(replaceAll("abc", "x", "y")).toBe("abc");
+    expect(removeFirst("abc", "x")).toBe("abc");
+  });
+
+  it("keeps the old result for an empty needle", () => {
+    expect(replaceFirst("abc", "", "-")).toBe("-abc");
+    expect(replaceAll("ab", "", "-")).toBe("-a-b-");
+  });
+});

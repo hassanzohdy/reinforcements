@@ -38,4 +38,12 @@ describe("reinforcements/array/keyBy", () => {
   it("returns {} for a non-array", () => {
     expect(keyBy(null as any, "id")).toEqual({});
   });
+
+  it("keeps a __proto__ key as an own key", () => {
+    const result: any = keyBy([{ k: "__proto__", v: { isAdmin: true } }], "k");
+
+    expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
+    expect(Object.keys(result)).toEqual(["__proto__"]);
+    expect(result.isAdmin).toBeUndefined();
+  });
 });

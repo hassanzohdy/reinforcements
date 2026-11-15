@@ -1,4 +1,5 @@
-import poll, { PollOptions } from "./poll";
+import poll from "./poll";
+import type { PollOptions } from "./poll";
 
 export type WaitForOptions = Omit<PollOptions<boolean>, "until">;
 

@@ -1,15 +1,20 @@
-import escapeRegex from "../utils/escapeRegex";
-
 /**
- * Remove the given needle from the start of string
+ * Remove the given needle (repeated) from the start of string.
+ * An empty needle returns the string unchanged. Linear time.
  *
  * @param string needle
  * @return string
  */
 export default function ltrim(string: string, needle = " "): string {
   if (!string) return "";
-  const pattern = "^" + escapeRegex(needle) + "+",
-    regex = new RegExp(pattern, "g");
+  if (!needle) return string;
 
-  return string.replace(regex, "");
+  const length = needle.length;
+  let start = 0;
+
+  while (string.startsWith(needle, start)) {
+    start += length;
+  }
+
+  return string.slice(start);
 }

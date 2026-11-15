@@ -170,7 +170,7 @@ unset(user, ["profile.email"]);             // delete by path
 | Function | Description |
 | --- | --- |
 | `get(obj, path, default?)` | Typed dot-notation read; falsy values pass through correctly. |
-| `set(obj, path, value)` | Typed dot-notation write; auto-creates arrays when next segment is numeric. Rejects `__proto__`/`constructor`/`prototype` path segments (returns the object unchanged) — safe against prototype pollution from untrusted paths. |
+| `set(obj, path, value)` | Typed dot-notation write; auto-creates arrays when next segment is numeric. Rejects `__proto__`/`constructor`/`prototype` path segments, descends only through own properties (an inherited name such as `toString` gets its own container instead of writing onto the shared built-in), and returns the object unchanged when a segment is an existing primitive or function. Safe for untrusted paths. |
 | `has(obj, path)` | `true` if the path exists, even when the value is `undefined`. |
 | `unset(obj, paths)` | Mutating remove by dot-notation. |
 | `keys(obj)` / `values(obj)` / `entries(obj)` / `fromEntries(it)` | Typed wrappers. |
@@ -218,6 +218,8 @@ flatten({ a: { b: 1 } }, { separator: "/" });          // { "a/b": 1 }
 > **`merge` and `defaults` are prototype-pollution-safe.** Source keys named `__proto__`, `constructor`, or `prototype` are skipped at every recursion depth, so merging or defaulting from untrusted JSON (e.g. a parsed request body) can never reach `Object.prototype`.
 
 > **Non-plain class instances are cloned by reference, not deep-copied.** Your class owns its own copy semantics — `clone` won't synthesize a half-broken instance from a `User` or `Decimal` you defined yourself. Implement `clone()` on the class if you need a deep copy.
+
+> **Hostile input is bounded.** The recursive helpers throw a `NestingError` (a `RangeError` subclass; check `error.name === "NestingError"`, the class is not exported) for input nested deeper than 256 levels, instead of overflowing the stack. The helpers are `clone`, `merge`, `compact`, `flatten`, `sort`, `walk`, `freeze`, `areEqual` and `diff`. `flatten`, `compact`, `sort` and `walk` also throw on circular references, and `freeze` skips objects it has already visited. A JSON key named `__proto__` stays an ordinary own key in the results of `sort`, `compact`, `mapValues`, `mapKeys`, `pick`/`omit` (predicate form), `clone`, `flatten`, `diff`, `invert`, `keyBy` and `countBy`; it never becomes the result's prototype (`merge` and `set` skip it).
 
 ---
 
@@ -284,11 +286,11 @@ mask("+201234567890", { start: 4, end: 2, char: "•" });         // "+201••
 
 | Function | Description |
 | --- | --- |
-| `replaceAll(s, search, replacement)` | Replace every occurrence (literal `search`, not regex). |
-| `replaceFirst(s, search, replacement)` / `replaceLast(...)` | Single-edge replacement. |
+| `replaceAll(s, search, replacement)` | Replace every occurrence. Both `search` and `replacement` are literal: `$&`, `$1` and `$'` in the replacement are not expanded. |
+| `replaceFirst(s, search, replacement)` / `replaceLast(...)` | Single-edge replacement, literal needle and replacement (`replaceFirst("a.b.c", ".", "-")` → `"a-b.c"`). |
 | `removeFirst(s, needle)` / `removeLast(s, needle)` | Drop the first / last occurrence. |
 | `repeatsOf(s, needle, caseSensitive?)` | Count occurrences. `needle` is escaped before use, so it is always matched literally — regex metacharacters in `needle` can't inject a pattern or cause ReDoS. |
-| `trim(s, needle?)` / `ltrim` / `rtrim` | Trim arbitrary characters from both/either side. |
+| `trim(s, needle?)` / `ltrim` / `rtrim` | Trim a repeated needle (any length; `trim("ababXab", "ab")` → `"X"`) from both/either side. Linear time, no regex; an empty needle returns the string unchanged. |
 | `pad(s, length, char?)` / `padStart(...)` / `padEnd(...)` | Padding helpers. |
 
 ### HTML, file, Arabic, miscellaneous
@@ -296,7 +298,7 @@ mask("+201234567890", { start: 4, end: 2, char: "•" });         // "+201••
 | Function | Description |
 | --- | --- |
 | `escapeHtml(s)` / `unescapeHtml(s)` | Escape / unescape `& < > " '`. |
-| `stripHtmlTags(s, options?)` | Remove tags; `<script>` and `<style>` blocks are dropped with their content by default. |
+| `stripHtmlTags(s, options?)` | Remove tags; `<script>` and `<style>` blocks are dropped with their content by default. Linear time: unterminated tags, scripts and comments are left as text instead of being rescanned (no ReDoS). `replacement` is literal. |
 | `wordCount(s)` | Count whitespace-separated words. |
 | `charCount(s, { unicode? })` | UTF-16 code units (default) or graphemes (emoji-aware). |
 | `reverse(s)` | Unicode-safe reverse. |
@@ -443,7 +445,7 @@ const lookupByName = memoize(
 );
 ```
 
-> **The default cache key is `JSON.stringify(args)`.** If your arguments contain `undefined`, `Function`, `Symbol`, or circular refs, supply a custom `resolver` — `JSON.stringify` will either lose data or throw on those inputs.
+> **The cache holds at most `maxSize` entries (default 1000) and evicts the least recently used one.** Pass `{ maxSize: Infinity }` for an unbounded cache (`0` disables caching). Expired `ttl` entries are swept out at most once per `ttl` period, not kept forever. The default key is `JSON.stringify(args)` with `undefined` kept distinct from `null`. Arguments it cannot serialise (circular refs, `BigInt`) call the function without caching. `Function` and `Symbol` arguments still need a custom `resolver`.
 
 ### Other function helpers
 

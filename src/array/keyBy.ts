@@ -1,5 +1,6 @@
 import get from "../object/get";
-import { GenericObject } from "../types";
+import safeAssign from "../object/safeAssign";
+import type { GenericObject } from "../types";
 
 /**
  * Index `array` into an object keyed by each item's `key`. `key` may be
@@ -28,7 +29,7 @@ export default function keyBy<T>(
   for (let i = 0; i < array.length; i++) {
     const resolved = resolve(array[i], i) as PropertyKey;
 
-    result[resolved as string] = array[i];
+    safeAssign(result, resolved, array[i]);
   }
 
   return result;

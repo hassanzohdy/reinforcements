@@ -67,7 +67,10 @@ describe("reinforcements/object/flatten", () => {
 
   it("should descend into class instances", () => {
     class User {
-      constructor(public name: string, public age: number) {}
+      constructor(
+        public name: string,
+        public age: number,
+      ) {}
     }
     expect(flatten({ user: new User("Ahmed", 20) })).toEqual({
       "user.name": "Ahmed",
@@ -79,5 +82,47 @@ describe("reinforcements/object/flatten", () => {
     expect(flatten(null as any)).toEqual({});
     expect(flatten(42 as any)).toEqual({});
     expect(flatten("hello" as any)).toEqual({});
+  });
+
+  const deepJson = () =>
+    JSON.parse('{"a":'.repeat(3000) + "1" + "}".repeat(3000));
+  const protoJson = () =>
+    JSON.parse('{"__proto__":{"isAdmin":true},"name":"x"}');
+
+  it("keeps an own __proto__ key as an own key", () => {
+    const result: any = flatten(protoJson(), { keepNested: true });
+
+    expect(result.isAdmin).toBeUndefined();
+    expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
+    expect(Object.keys(result)).toEqual([
+      "__proto__",
+      "__proto__.isAdmin",
+      "name",
+    ]);
+  });
+
+  it("keeps an empty __proto__ child as an own key", () => {
+    const result: any = flatten(JSON.parse('{"__proto__":{}}'));
+
+    expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
+    expect(Object.keys(result)).toEqual(["__proto__"]);
+  });
+
+  it("throws a clear error for input nested deeper than 256 levels", () => {
+    expect(() => flatten(deepJson())).toThrow(/nested deeper than 256 levels/);
+  });
+
+  it("still honours a small maxDepth on deep input", () => {
+    expect(Object.keys(flatten(deepJson(), { maxDepth: 2 }))).toEqual([
+      "a.a",
+    ]);
+  });
+
+  it("throws a clear error for circular input", () => {
+    const object: any = { b: 1 };
+
+    object.self = object;
+
+    expect(() => flatten(object)).toThrow(/circular reference/);
   });
 });

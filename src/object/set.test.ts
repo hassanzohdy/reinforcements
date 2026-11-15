@@ -57,4 +57,49 @@ describe("reinforcements/object/set", () => {
       users: [{ name: "Ada" }],
     });
   });
+
+  it("never descends into inherited members or touches built-ins", () => {
+    const hasOwnCall = Object.prototype.hasOwnProperty.call;
+
+    try {
+      set({}, "hasOwnProperty.call", "x");
+      set({}, "toString.polluted", 1);
+      set([], "push.x", 1);
+
+      expect((Object.prototype.hasOwnProperty as any).call).toBe(hasOwnCall);
+      expect(({} as any).toString.polluted).toBeUndefined();
+      expect((Array.prototype.push as any).x).toBeUndefined();
+      expect((Object.prototype as any).polluted).toBeUndefined();
+    } finally {
+      // deleting the own `call` (if one was written) restores the inherited one
+      delete (Object.prototype.hasOwnProperty as any).call;
+      delete (Object.prototype.toString as any).polluted;
+      delete (Array.prototype.push as any).x;
+    }
+  });
+
+  it("shadows an inherited member with an own container", () => {
+    const object: Record<string, any> = {};
+
+    set(object, "toString.x", 1);
+
+    expect(Object.keys(object)).toEqual(["toString"]);
+    expect(object.toString).toEqual({ x: 1 });
+    expect(Object.prototype.toString.call({})).toBe("[object Object]");
+  });
+
+  it("returns the object untouched when a segment is a primitive", () => {
+    const object: Record<string, any> = { a: 1, s: "str" };
+
+    expect(set(object, "a.b", 2)).toEqual({ a: 1, s: "str" });
+    expect(set(object, "s.0", 1)).toEqual({ a: 1, s: "str" });
+  });
+
+  it("returns the object untouched when a segment is a function", () => {
+    const fn = () => 1;
+    const object: Record<string, any> = { fn };
+
+    expect(set(object, "fn.x", 1)).toEqual({ fn });
+    expect((fn as any).x).toBeUndefined();
+  });
 });

@@ -7,4 +7,12 @@ describe("reinforcements/object/mapKeys", () => {
       B: 2,
     });
   });
+
+  it("keeps a __proto__ result key as an own key", () => {
+    const result: any = mapKeys({ a: { isAdmin: true } }, () => "__proto__");
+
+    expect(result.isAdmin).toBeUndefined();
+    expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
+    expect(Object.keys(result)).toEqual(["__proto__"]);
+  });
 });

@@ -18,6 +18,7 @@ chunk<T>(array: T[] | string, size: number): T[][]
 
 ```ts
 chunk([1, 2, 3, 4, 5], 2);  // [[1, 2], [3, 4], [5]]
+chunk([1, 2, 3], 0);        // [] — size must be a positive integer
 chunk("abcdef", 2);         // [["a", "b"], ["c", "d"], ["e", "f"]]
 ```
 
@@ -139,7 +140,7 @@ median(array: any[], key?: string): number
 
 ```ts
 median([1, 2, 3, 4]); // 2.5
-median([3, 1, 2]);    // 2
+median([3, 1, 2]);    // 2 — the input array is not mutated
 ```
 
 ## `min()` / `max()`

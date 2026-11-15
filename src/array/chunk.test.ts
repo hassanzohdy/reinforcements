@@ -25,3 +25,11 @@ test("Invalid given value", () => {
   expect(chunk(anyValue(undefined), 2).length).toEqual(0);
   expect(chunk(anyValue(null), 2).length).toEqual(0);
 });
+
+test("Returns an empty array for a size that is not a positive integer", () => {
+  expect(chunk([1, 2, 3], 0)).toEqual([]);
+  expect(chunk([1, 2, 3], -1)).toEqual([]);
+  expect(chunk([1, 2, 3], NaN)).toEqual([]);
+  expect(chunk([1, 2, 3], 0.5)).toEqual([]);
+  expect(chunk("abc", 0)).toEqual([]);
+});

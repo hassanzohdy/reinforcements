@@ -1,7 +1,8 @@
-import escapeRegex from "../utils/escapeRegex";
-
 /**
- * Remove the given needle from the start and the end of string
+ * Remove the given needle from the start and the end of string.
+ * The whole needle is repeated, so `trim("ababXab", "ab")` is `"X"`.
+ * The default needle `" "` trims all whitespace. An empty needle
+ * returns the string unchanged. Linear time, no regular expressions.
  *
  * @param string $needle
  * @return string
@@ -10,13 +11,22 @@ export default function trim(string: string, needle = " "): string {
   if (!string) return "";
 
   if (needle === " ") {
-    return string.replace(/^\s+|\s+$/g, "");
+    return string.trim();
   }
 
-  needle = escapeRegex(needle);
+  if (!needle) return string;
 
-  const pattern = "^" + needle + "+|" + needle + "+$",
-    regex = new RegExp(pattern, "g");
+  const length = needle.length;
+  let start = 0;
+  let end = string.length;
 
-  return string.replace(regex, "");
+  while (string.startsWith(needle, start) && start + length <= end) {
+    start += length;
+  }
+
+  while (end - length >= start && string.startsWith(needle, end - length)) {
+    end -= length;
+  }
+
+  return string.slice(start, end);
 }

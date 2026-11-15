@@ -76,6 +76,8 @@ Random.token(16);          // 32-char hex
 
 > **Breaking change (v4):** prior to v4, `string`/`id`/`nanoid`/`token`/`uuid` fell back to the internal PRNG and therefore *could* be seeded/reproduced under test. That fallback was a security bug — a predictable "random" identifier is exploitable wherever it's used as a token, invite code, or session-adjacent value. If you relied on seeded output from these five methods for fixtures, generate fixture values a different way (a fixed literal, a counter, or an explicitly-seeded UUID library) — do not reach for `Random.seed()` expecting them to comply.
 
+Any length works: CSPRNG bytes are drawn in batches of at most 65,536 bytes (the `getRandomValues` limit), so `Random.string(100_000)` and `Random.token(100_000)` do not throw.
+
 **Use for ids only**, not for cryptographic key/token material beyond opaque identifiers — for anything security-sensitive, prefer the Web Crypto API directly and document the derivation.
 
 ## Dates & colors

@@ -14,9 +14,11 @@ describe("reinforcements/object/compact", () => {
   });
 
   it("keeps falsy-but-meaningful values (0, false, NaN)", () => {
-    expect(compact({ a: 0, b: false, c: NaN, d: null, e: undefined })).toEqual(
-      { a: 0, b: false, c: NaN },
-    );
+    expect(compact({ a: 0, b: false, c: NaN, d: null, e: undefined })).toEqual({
+      a: 0,
+      b: false,
+      c: NaN,
+    });
   });
 
   it("drops empty arrays and empty objects by default", () => {
@@ -48,18 +50,15 @@ describe("reinforcements/object/compact", () => {
 
   it("recursively cleans arrays of objects", () => {
     expect(
-      compact([
-        { name: "Ada", email: "" },
-        { name: "", email: "x@y.z" },
-        {},
-      ]),
+      compact([{ name: "Ada", email: "" }, { name: "", email: "x@y.z" }, {}]),
     ).toEqual([{ name: "Ada" }, { email: "x@y.z" }]);
   });
 
   it("can be configured to keep empties", () => {
-    expect(
-      compact({ tags: [], name: "Ada" }, { empties: false }),
-    ).toEqual({ tags: [], name: "Ada" });
+    expect(compact({ tags: [], name: "Ada" }, { empties: false })).toEqual({
+      tags: [],
+      name: "Ada",
+    });
   });
 
   it("can be configured shallow", () => {
@@ -70,10 +69,7 @@ describe("reinforcements/object/compact", () => {
 
   it("supports a custom predicate", () => {
     expect(
-      compact(
-        { a: 0, b: 1, c: -1, d: -1 },
-        { predicate: v => v === -1 },
-      ),
+      compact({ a: 0, b: 1, c: -1, d: -1 }, { predicate: v => v === -1 }),
     ).toEqual({ a: 0, b: 1 });
   });
 
@@ -88,5 +84,30 @@ describe("reinforcements/object/compact", () => {
     expect(compact("hello" as any)).toBe("hello");
     expect(compact(42 as any)).toBe(42);
     expect(compact(null as any)).toBe(null);
+  });
+
+  const deepJson = () =>
+    JSON.parse('{"a":'.repeat(3000) + "1" + "}".repeat(3000));
+  const protoJson = () =>
+    JSON.parse('{"__proto__":{"isAdmin":true},"name":"x"}');
+
+  it("keeps an own __proto__ key as an own key", () => {
+    const result: any = compact(protoJson());
+
+    expect(result.isAdmin).toBeUndefined();
+    expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
+    expect(Object.keys(result)).toEqual(["__proto__", "name"]);
+  });
+
+  it("throws a clear error for input nested deeper than 256 levels", () => {
+    expect(() => compact(deepJson())).toThrow(/nested deeper than 256 levels/);
+  });
+
+  it("throws a clear error for circular input", () => {
+    const object: any = { b: 1 };
+
+    object.self = object;
+
+    expect(() => compact(object)).toThrow(/circular reference/);
   });
 });

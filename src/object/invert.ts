@@ -1,3 +1,5 @@
+import safeAssign from "./safeAssign";
+
 /**
  * Return a new object where each key/value pair is swapped. Values
  * become keys (coerced to strings); collisions resolve to the
@@ -15,7 +17,7 @@ export default function invert<
   for (const key of Object.keys(object) as K[]) {
     const value = String(object[key]);
 
-    result[value] = key;
+    safeAssign(result, value, key);
   }
 
   return result;

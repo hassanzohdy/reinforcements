@@ -1,5 +1,8 @@
 import areEqual from "../mixed/areEqual/areEqual";
 import isPlainObject from "./isPlainObject";
+import safeAssign from "./safeAssign";
+
+const hasOwn = Object.prototype.hasOwnProperty;
 
 export type DiffResult = {
   added: Record<string, any>;
@@ -31,20 +34,20 @@ export default function diff(
   }
 
   for (const key of Object.keys(a)) {
-    if (!(key in b)) {
-      result.removed[key] = a[key];
+    if (!hasOwn.call(b, key)) {
+      safeAssign(result.removed, key, a[key]);
 
       continue;
     }
 
     if (!areEqual(a[key], b[key])) {
-      result.changed[key] = { from: a[key], to: b[key] };
+      safeAssign(result.changed, key, { from: a[key], to: b[key] });
     }
   }
 
   for (const key of Object.keys(b)) {
-    if (!(key in a)) {
-      result.added[key] = b[key];
+    if (!hasOwn.call(a, key)) {
+      safeAssign(result.added, key, b[key]);
     }
   }
 

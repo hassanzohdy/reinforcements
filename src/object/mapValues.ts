@@ -1,3 +1,5 @@
+import safeAssign from "./safeAssign";
+
 /**
  * Map each value of `object` through `transform`, returning a new
  * object with the same keys.
@@ -12,7 +14,7 @@ export default function mapValues<T extends Record<string, any>, U>(
   const result = {} as Record<keyof T & string, U>;
 
   for (const key of Object.keys(object) as Array<keyof T & string>) {
-    result[key] = transform(object[key], key, object);
+    safeAssign(result, key, transform(object[key], key, object));
   }
 
   return result;

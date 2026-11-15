@@ -26,4 +26,15 @@ describe("reinforcements/object/pick", () => {
     expect(({} as any).polluted).toBeUndefined();
     expect(result).toEqual({});
   });
+
+  it("keeps an own __proto__ key as an own key in the predicate form", () => {
+    const result: any = pick(
+      JSON.parse('{"__proto__":{"isAdmin":true},"name":"x"}'),
+      () => true,
+    );
+
+    expect(result.isAdmin).toBeUndefined();
+    expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
+    expect(Object.keys(result)).toEqual(["__proto__", "name"]);
+  });
 });

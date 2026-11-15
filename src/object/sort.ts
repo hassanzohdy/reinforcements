@@ -1,4 +1,6 @@
+import { NestingGuard } from "./nesting";
 import isPlainObject from "./isPlainObject";
+import safeAssign from "./safeAssign";
 
 /**
  * Return a new object with keys sorted alphabetically. When
@@ -12,9 +14,15 @@ import isPlainObject from "./isPlainObject";
  * sort({ b: 1, a: 2 }); // { a: 2, b: 1 }
  */
 export default function sort<T>(object: T, recursive = true): T {
+  return sortObject(object, recursive, new NestingGuard("sort"));
+}
+
+function sortObject<T>(object: T, recursive: boolean, guard: NestingGuard): T {
   if (!isPlainObject(object)) {
     return object;
   }
+
+  guard.enter(object);
 
   const sortedObject: Record<string, any> = {};
   const sortedKeys = Object.keys(object as object).sort();
@@ -22,8 +30,14 @@ export default function sort<T>(object: T, recursive = true): T {
   for (const key of sortedKeys) {
     const value = (object as any)[key];
 
-    sortedObject[key] = recursive ? sort(value, true) : value;
+    safeAssign(
+      sortedObject,
+      key,
+      recursive ? sortObject(value, true, guard) : value,
+    );
   }
+
+  guard.leave(object);
 
   return sortedObject as T;
 }

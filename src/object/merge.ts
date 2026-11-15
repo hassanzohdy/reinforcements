@@ -1,5 +1,7 @@
 import isForbiddenKey from "./isForbiddenKey";
+import { assertDepth } from "./nesting";
 import isPlainObject from "./isPlainObject";
+import safeAssign from "./safeAssign";
 
 export type MergeArrayStrategy = "replace" | "concat" | "union";
 
@@ -51,7 +53,7 @@ export default function merge(...args: any[]): any {
   let result = sources[0];
 
   for (let i = 1; i < sources.length; i++) {
-    result = mergeTwo(result, sources[i], options);
+    result = mergeTwo(result, sources[i], options, 0);
   }
 
   return result;
@@ -63,9 +65,7 @@ function extractOptions(args: any[]): {
 } {
   const last = args[args.length - 1];
   const isOptionsObject =
-    isPlainObject(last) &&
-    "arrays" in last &&
-    Object.keys(last).length === 1;
+    isPlainObject(last) && "arrays" in last && Object.keys(last).length === 1;
 
   if (isOptionsObject) {
     return {
@@ -84,6 +84,7 @@ function mergeTwo(
   target: any,
   source: any,
   options: Required<MergeOptions>,
+  depth: number,
 ): any {
   if (source === undefined) {
     return target;
@@ -98,7 +99,7 @@ function mergeTwo(
   }
 
   if (isPlainObject(target) && isPlainObject(source)) {
-    return mergePlainObjects(target, source, options);
+    return mergePlainObjects(target, source, options, depth + 1);
   }
 
   return source;
@@ -126,7 +127,10 @@ function mergePlainObjects(
   target: Record<string, any>,
   source: Record<string, any>,
   options: Required<MergeOptions>,
+  depth: number,
 ): Record<string, any> {
+  assertDepth(depth, "merge");
+
   const result: Record<string, any> = { ...target };
 
   for (const key of Object.keys(source)) {
@@ -138,7 +142,7 @@ function mergePlainObjects(
       continue;
     }
 
-    result[key] = mergeTwo(target[key], source[key], options);
+    safeAssign(result, key, mergeTwo(target[key], source[key], options, depth));
   }
 
   return result;

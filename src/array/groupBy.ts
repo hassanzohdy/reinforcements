@@ -1,5 +1,5 @@
-import { get } from "..";
-import { GenericObject } from "../types";
+import get from "../object/get";
+import type { GenericObject } from "../types";
 
 /**
  * Group the given array by the given key(s).

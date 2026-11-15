@@ -154,4 +154,10 @@ describe("reinforcements/arrays/median", () => {
       median(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"], "age"),
     ).toEqual(0);
   });
+
+  it("should not mutate the given array", () => {
+    const array = [3, 1, 2];
+    expect(median(array)).toEqual(2);
+    expect(array).toEqual([3, 1, 2]);
+  });
 });

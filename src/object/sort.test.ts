@@ -21,4 +21,29 @@ describe("reinforcements/object/sort", () => {
     expect(sort(42 as any)).toBe(42);
     expect(sort(null as any)).toBe(null);
   });
+
+  const deepJson = () =>
+    JSON.parse('{"a":'.repeat(3000) + "1" + "}".repeat(3000));
+  const protoJson = () =>
+    JSON.parse('{"__proto__":{"isAdmin":true},"name":"x"}');
+
+  it("keeps an own __proto__ key as an own key", () => {
+    const result: any = sort(protoJson());
+
+    expect(result.isAdmin).toBeUndefined();
+    expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
+    expect(Object.keys(result)).toEqual(["__proto__", "name"]);
+  });
+
+  it("throws a clear error for input nested deeper than 256 levels", () => {
+    expect(() => sort(deepJson())).toThrow(/nested deeper than 256 levels/);
+  });
+
+  it("throws a clear error for circular input", () => {
+    const object: any = { b: 1 };
+
+    object.self = object;
+
+    expect(() => sort(object)).toThrow(/circular reference/);
+  });
 });

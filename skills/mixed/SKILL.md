@@ -13,7 +13,7 @@ Deep clone, deep equality, shuffle, coalesce. Import from `@mongez/reinforcement
 clone<T>(value: T): T
 ```
 
-Handles `Date`, `RegExp`, `Error` (with own props), `Map`, `Set`, typed arrays, `ArrayBuffer`, and **circular references** via internal `WeakMap`. Non-plain class instances are **returned by reference** (cloning user constructors is out of scope — call your own `.clone()` if you have one).
+Handles `Date`, `RegExp`, `Error` (with own props), `Map`, `Set`, typed arrays and `DataView` (only the viewed bytes are copied, not the whole underlying buffer), `ArrayBuffer`, and **circular references** via internal `WeakMap`. Non-plain class instances are **returned by reference** (cloning user constructors is out of scope — call your own `.clone()` if you have one).
 
 ```ts
 const a: any = { name: "Ada" };
@@ -37,6 +37,8 @@ areEqual(a: any, b: any): boolean
 ```
 
 Non-mutating deep equality. **Respects element order in arrays.** Handles `Date`, `RegExp`, `Map`, `Set`, and circular references.
+
+**Depth limit.** `clone` and `areEqual` throw a `NestingError` (`RangeError` subclass, `error.name === "NestingError"`; the class itself is not exported) for data nested deeper than 256 levels instead of overflowing the call stack. Cycles and shared references are still supported. An own `"__proto__"` key (from `JSON.parse`) is cloned as an own key and never changes the clone's prototype.
 
 ```ts
 areEqual({ a: 1 }, { a: 1 });        // true

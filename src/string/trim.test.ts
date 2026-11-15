@@ -29,3 +29,38 @@ describe("reinforcements/string/rtrim", () => {
     expect(rtrim("hi//", "/")).toBe("hi");
   });
 });
+
+describe("reinforcements/string/trim (needles and performance)", () => {
+  it("repeats the whole multi-character needle", () => {
+    expect(trim("ababXab", "ab")).toBe("X");
+    expect(ltrim("abbbb-x", "ab")).toBe("bbb-x");
+    expect(rtrim("Xabab", "ab")).toBe("X");
+  });
+
+  it("returns the string unchanged for an empty needle", () => {
+    expect(trim("abc", "")).toBe("abc");
+    expect(ltrim("abc", "")).toBe("abc");
+    expect(rtrim("abc", "")).toBe("abc");
+  });
+
+  it("treats regex characters literally", () => {
+    expect(trim("..a.b..", ".")).toBe("a.b");
+    expect(trim("aaa", "aa")).toBe("a");
+    expect(trim("abab", "ab")).toBe("");
+  });
+
+  it("is linear on a long interior run", () => {
+    const input = "x" + " ".repeat(50000) + "y";
+    const started = performance.now();
+
+    expect(trim(input)).toBe(input);
+    expect(trim("--x" + "-".repeat(50000) + "y--", "-")).toBe(
+      "x" + "-".repeat(50000) + "y",
+    );
+    expect(ltrim(input)).toBe(input);
+    expect(rtrim(input)).toBe(input);
+    expect(rtrim(input, "ab")).toBe(input);
+
+    expect(performance.now() - started).toBeLessThan(200);
+  });
+});

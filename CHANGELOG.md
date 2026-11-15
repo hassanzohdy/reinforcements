@@ -2,6 +2,48 @@
 
 All notable changes to `@mongez/reinforcements` are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.1.0] — 2026-11-15
+
+Security and robustness fixes from the 2026-11-15 review, plus a new `memoize` `maxSize` option. Signatures are unchanged except for that option, and nothing new is exported.
+
+### Security
+
+- **`set` no longer writes onto shared built-ins.** Path segments are now descended only through own properties. `set({}, "hasOwnProperty.call", x)` used to replace `Object.prototype.hasOwnProperty.call` for the whole process, and `set({}, "toString.x", 1)` / `set([], "push.x", 1)` wrote onto shared prototype functions. An inherited name now gets its own container. A segment that is an existing primitive or function returns the object unchanged; a primitive used to throw `TypeError`, and a function used to get the property written onto it.
+- **An own `"__proto__"` key no longer replaces a result's prototype.** This could happen through `JSON.parse`, for example `{"__proto__":{"isAdmin":true}}`. Results are written with `Object.defineProperty`, so the key stays an own key, as with `{...obj}`. Affected helpers: `sort`, `compact`, `mapValues`, `mapKeys`, `pick` and `omit` (predicate forms), `clone`, `flatten`, `keyBy`, `diff`, `countBy` and `invert` (which used to drop a `"__proto__"` value). `merge` keeps skipping the key, as before.
+- **Quadratic-time inputs fixed (ReDoS):**
+  - `words`, and through it `slugify`, `toCamelCase`, `toSnakeCase`, `toKebabCase`, `toPascalCase`, `toStudlyCase`, `toConstantCase`, `toDotCase`, `toPathCase` and `toTitleCase`, took 2.5 s on 50 kB of capital letters.
+  - `trim`, `rtrim` and `startsWithArabic` took 2.6 s on a long interior run.
+  - `stripHtmlTags` took 1.4 s on 50 kB of unterminated tags (`"<a".repeat(25000)`), and 0.6 s on 70 kB of unterminated `<script` openers; `<style`, `<!--` and blocks without their closing tag were quadratic too.
+  - All of these now finish in about 1 ms at that size, with unchanged output for normal input.
+- **Deep or circular input:** these helpers throw a `NestingError` (a `RangeError` subclass) past 256 levels of nesting, instead of overflowing the stack (`RangeError: Maximum call stack size exceeded` at about 3,000 levels, an 18 kB JSON body): `clone`, `merge`, `compact`, `flatten`, `sort`, `walk`, `freeze`, `areEqual` and `diff`. Circular input to `flatten`, `compact`, `sort` and `walk` throws `NestingError` too, and `freeze` of a cyclic tree now terminates. Exactly 256 levels still work; data that is legitimately nested deeper now throws in these helpers. `NestingError` is not exported: check `error.name === "NestingError"` or `instanceof RangeError`.
+- **`chunk` no longer loops forever** when `size` is 0, negative, `NaN` or a fraction; it returns `[]`.
+
+### Added
+
+- **`memoize` `maxSize` option**, default **1000**. It is an LRU bound: a hit refreshes the entry, and the oldest entry is evicted once the cache is full. Pass `Infinity` for the old unbounded behaviour, or `0` to disable caching. Expired `ttl` entries are now swept out (at most once per `ttl` period) instead of kept forever.
+
+### Fixed
+
+- **`replaceAll` / `replaceFirst`** treat the replacement literally; `$&`, `$1`, `` $` `` and `$'` were expanded. `replaceFirst` and `removeFirst` now match needles that contain regex characters. Before, they never matched: `replaceFirst("a.b.c", ".", "-")` returned `"a.b.c"` and now returns `"a-b.c"`.
+- **`trim` / `ltrim` / `rtrim` repeat the whole needle.** `trim("ababXab", "ab")` was `"abX"` and is now `"X"`. An empty needle returns the string unchanged; it used to throw `SyntaxError`.
+- **`stripHtmlTags`** uses `replacement` literally; `$&` and the other `$` patterns were expanded. What gets stripped is unchanged for every input.
+- **`memoize` keys:** the default key keeps `undefined` distinct from `null`; they used to share a cache entry. An argument that cannot be serialised, such as a circular one or a `BigInt`, calls the function without caching instead of throwing. Keys for other arguments are still plain `JSON.stringify(args)`; only a key for an `undefined` argument (or a string argument starting with `"\u0000"`) changed, which matters only if you `forget()` such a hand-built key.
+- **`diff`** no longer treats inherited names like `toString` as present. **`countBy`** counts `"constructor"` (was `NaN`) and `"__proto__"` (was dropped).
+- **`clone`:**
+  - A typed-array view (`subarray`) copies only its own bytes. It used to copy the whole buffer, giving the wrong `length` and `byteOffset`.
+  - A `DataView` is copied instead of returned by reference.
+- **`median`** no longer sorts the caller's array in place.
+- **`Random.string`, `Random.nanoid` and `Random.token`** work for lengths above 65,536; they used to throw a `DOMException`.
+
+### Performance
+
+- `pushUnique` / `unshiftUnique` use a `Set` and insert in bulk instead of calling `includes` and `unshift` for each item. Results are unchanged.
+
+### Changed (development only)
+
+- Tooling: pnpm 12 with a standalone `pnpm-lock.yaml`, TypeScript 7, Vite 8 and Vitest 5. CI runs on Node 22 and 24. `tsconfig.json` sets `moduleResolution: "bundler"`.
+- Type-only imports use `import type`, and `groupBy` imports `get` directly, which removes an import cycle through the package index.
+
 ## [4.0.1] — 2026-08-17
 
 Declare Node 20+ engine — Random CSPRNG (string/nanoid/id/token/uuid) requires WebCrypto, unavailable by default before Node 19. No API change.

@@ -1,4 +1,6 @@
+import { NestingGuard } from "./nesting";
 import isPlainObject from "./isPlainObject";
+import safeAssign from "./safeAssign";
 
 export type CompactOptions = {
   /**
@@ -56,15 +58,12 @@ export default function compact<T extends Record<string, any>>(
 ): Partial<T>;
 export default function compact<T>(array: T[], options?: CompactOptions): T[];
 export default function compact(value: any, options?: CompactOptions): any;
-export default function compact(
-  value: any,
-  options: CompactOptions = {},
-): any {
+export default function compact(value: any, options: CompactOptions = {}): any {
   const predicate = options.predicate ?? DEFAULT_PREDICATE;
   const empties = options.empties ?? true;
   const deep = options.deep ?? true;
 
-  return walk(value, predicate, empties, deep);
+  return walk(value, predicate, empties, deep, new NestingGuard("compact"));
 }
 
 function walk(
@@ -72,13 +71,14 @@ function walk(
   predicate: (value: any) => boolean,
   empties: boolean,
   deep: boolean,
+  guard: NestingGuard,
 ): any {
   if (Array.isArray(value)) {
-    return cleanArray(value, predicate, empties, deep);
+    return cleanArray(value, predicate, empties, deep, guard);
   }
 
   if (isPlainObject(value)) {
-    return cleanObject(value, predicate, empties, deep);
+    return cleanObject(value, predicate, empties, deep, guard);
   }
 
   return value;
@@ -89,14 +89,17 @@ function cleanArray(
   predicate: (value: any) => boolean,
   empties: boolean,
   deep: boolean,
+  guard: NestingGuard,
 ): any[] {
   const result: any[] = [];
+
+  guard.enter(array);
 
   for (const item of array) {
     let cleaned = item;
 
     if (deep && (Array.isArray(item) || isPlainObject(item))) {
-      cleaned = walk(item, predicate, empties, deep);
+      cleaned = walk(item, predicate, empties, deep, guard);
     }
 
     if (predicate(cleaned)) {
@@ -110,6 +113,8 @@ function cleanArray(
     result.push(cleaned);
   }
 
+  guard.leave(array);
+
   return result;
 }
 
@@ -118,14 +123,17 @@ function cleanObject(
   predicate: (value: any) => boolean,
   empties: boolean,
   deep: boolean,
+  guard: NestingGuard,
 ): Record<string, any> {
   const result: Record<string, any> = {};
+
+  guard.enter(object);
 
   for (const key of Object.keys(object)) {
     let cleaned = object[key];
 
     if (deep && (Array.isArray(cleaned) || isPlainObject(cleaned))) {
-      cleaned = walk(cleaned, predicate, empties, deep);
+      cleaned = walk(cleaned, predicate, empties, deep, guard);
     }
 
     if (predicate(cleaned)) {
@@ -136,8 +144,10 @@ function cleanObject(
       continue;
     }
 
-    result[key] = cleaned;
+    safeAssign(result, key, cleaned);
   }
+
+  guard.leave(object);
 
   return result;
 }

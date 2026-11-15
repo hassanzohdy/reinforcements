@@ -1,7 +1,8 @@
 import escapeRegex from "../utils/escapeRegex";
 
 /**
- * Replace all matched occurrence with the given string
+ * Replace all matched occurrence with the given string.
+ * The replacement is literal: `$&`, `$1`, `` $` `` and `$'` are not expanded.
  *
  * @param   string searchText
  * @param   string replacement
@@ -13,5 +14,8 @@ export default function replaceAll(
   replacement: string,
 ): string {
   if (!string) return "";
-  return string.replace(new RegExp(escapeRegex(searchText), "g"), replacement);
+  return string.replace(
+    new RegExp(escapeRegex(searchText), "g"),
+    () => replacement,
+  );
 }

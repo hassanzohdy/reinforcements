@@ -243,4 +243,51 @@ describe("reinforcements/mixed/clone", () => {
 
     expect(clone(object)).toEqual(object);
   });
+
+  const deepJson = () =>
+    JSON.parse('{"a":'.repeat(3000) + "1" + "}".repeat(3000));
+  const protoJson = () =>
+    JSON.parse('{"__proto__":{"isAdmin":true},"name":"x"}');
+
+  it("keeps an own __proto__ key as an own key", () => {
+    const result: any = clone(protoJson());
+
+    expect(result.isAdmin).toBeUndefined();
+    expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
+    expect(Object.keys(result)).toEqual(["__proto__", "name"]);
+  });
+
+  it("throws a clear error for input nested deeper than 256 levels", () => {
+    expect(() => clone(deepJson())).toThrow(/nested deeper than 256 levels/);
+  });
+
+  it("clones only the viewed bytes of a typed array", () => {
+    const view = new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7]).subarray(2, 5);
+    const copy = clone(view);
+
+    expect(Array.from(copy)).toEqual([2, 3, 4]);
+    expect(copy.length).toBe(3);
+    expect(copy.byteOffset).toBe(0);
+    expect(copy.buffer.byteLength).toBe(3);
+    expect(copy.buffer).not.toBe(view.buffer);
+  });
+
+  it("clones only the byte range of a DataView", () => {
+    const buffer = new ArrayBuffer(16);
+    const view = new DataView(buffer, 4, 8);
+
+    view.setUint8(0, 42);
+
+    const copy = clone(view);
+
+    expect(copy).not.toBe(view);
+    expect(copy.byteLength).toBe(8);
+    expect(copy.byteOffset).toBe(0);
+    expect(copy.buffer.byteLength).toBe(8);
+    expect(copy.getUint8(0)).toBe(42);
+
+    copy.setUint8(0, 1);
+
+    expect(view.getUint8(0)).toBe(42);
+  });
 });

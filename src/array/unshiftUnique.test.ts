@@ -6,4 +6,8 @@ describe("reinforcements/arrays/unshiftUnique", () => {
     const result = unshiftUnique(array, 4, 5, 6);
     expect(result).toEqual([6, 5, 4, 1, 2, 3]);
   });
+
+  it("should skip duplicates inside the given items and keep order", () => {
+    expect(unshiftUnique([1], 2, 2, 1, 3)).toEqual([3, 2, 1]);
+  });
 });

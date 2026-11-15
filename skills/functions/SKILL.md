@@ -65,6 +65,7 @@ window.addEventListener("scroll", onScroll);
 memoize<T>(fn: T, options?: {
   resolver?: (...args: Parameters<T>) => string; // default JSON.stringify(args)
   ttl?: number;                                  // ms; default Infinity
+  maxSize?: number;                              // LRU bound; default 1000, Infinity = unbounded, 0 = no caching
 }): Memoized<T>
 
 type Memoized<T> = T & { clear(): void; forget(key: string): void };
@@ -78,6 +79,8 @@ lookup("u1");                       // cached
 lookup.forget(JSON.stringify(["u1"])); // surgical invalidation (default key = JSON.stringify(args))
 lookup.clear();                     // nuke everything
 ```
+
+The cache is bounded: past `maxSize` the least recently used entry is evicted (a hit refreshes an entry). An expired `ttl` entry is recomputed on its next call, and all expired entries are swept from the cache at most once per `ttl` period, so memory does not grow with dead entries. The default key is `JSON.stringify(args)` with `undefined` kept apart from `null` (an `undefined` argument, or a string starting with `"\u0000"`, gets an escaped key; every other argument keeps the plain `JSON.stringify` key, so `forget(JSON.stringify([...]))` still works). Arguments the default cannot serialize (cyclic objects, `BigInt`) skip the cache and call `fn` directly. A custom `resolver` is used as-is (its errors propagate).
 
 Custom key:
 

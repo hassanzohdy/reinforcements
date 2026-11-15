@@ -1,4 +1,5 @@
 import get from "./get";
+import safeAssign from "./safeAssign";
 import set from "./set";
 
 export type PickPredicate = (value: any, key: string) => boolean;
@@ -48,7 +49,7 @@ function pickByPredicate(
 
   for (const key of Object.keys(object)) {
     if (predicate(object[key], key)) {
-      result[key] = object[key];
+      safeAssign(result, key, object[key]);
     }
   }
 

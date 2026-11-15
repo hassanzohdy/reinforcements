@@ -22,7 +22,8 @@ export default function median(array: any[], key?: string): number {
 
   if (length === 0) return 0;
 
-  array.sort((a, b) => a - b);
+  // sort a copy, the caller's array must stay untouched
+  array = [...array].sort((a, b) => a - b);
 
   const middle = Math.floor(length / 2);
 

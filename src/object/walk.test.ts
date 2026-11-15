@@ -19,4 +19,30 @@ describe("reinforcements/object/walk", () => {
     walk({}, value => visited.push(value));
     expect(visited).toEqual([]);
   });
+
+  const deepJson = () =>
+    JSON.parse('{"a":'.repeat(3000) + "1" + "}".repeat(3000));
+
+  it("throws a clear error for input nested deeper than 256 levels", () => {
+    expect(() => walk(deepJson(), () => undefined)).toThrow(
+      /nested deeper than 256 levels/,
+    );
+  });
+
+  it("throws a clear error for circular input", () => {
+    const object: any = { b: 1 };
+
+    object.self = object;
+
+    expect(() => walk(object, () => undefined)).toThrow(/circular reference/);
+  });
+
+  it("visits shared (non-circular) references more than once", () => {
+    const shared = { x: 1 };
+    const paths: string[] = [];
+
+    walk({ a: shared, b: shared }, (_, path) => paths.push(path));
+
+    expect(paths).toEqual(["a.x", "b.x"]);
+  });
 });

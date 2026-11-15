@@ -1,7 +1,6 @@
-import escapeRegex from "../utils/escapeRegex";
-
 /**
- * Replace the First occurrence for the the give needle
+ * Replace the First occurrence for the the give needle. Both the needle
+ * and the replacement are literal (no regex or `$&` expansion).
  *
  * @param  string needle
  * @param  string replacement
@@ -13,5 +12,14 @@ export default function replaceFirst(
   replacement: string,
 ): string {
   if (!string) return "";
-  return string.replace(escapeRegex(needle), replacement);
+
+  const index = string.indexOf(needle);
+
+  if (index < 0) {
+    return string;
+  }
+
+  return (
+    string.slice(0, index) + replacement + string.slice(index + needle.length)
+  );
 }

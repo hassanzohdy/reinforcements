@@ -21,6 +21,7 @@ words(input: string): string[]
 words("XMLHttpRequest");  // ["XML", "Http", "Request"]
 words("AIAgent");         // ["AI", "Agent"]
 words("hello-world");     // ["hello", "world"]
+// linear time: a 50 kB run of capitals is safe (all casing helpers build on words)
 ```
 
 #### Casing family
@@ -53,16 +54,20 @@ capitalize("hello world"); // "Hello World"
 
 | Function | Signature | Notes |
 |---|---|---|
-| `trim` | `(str, needle?: string) => string` | Trims both ends (default whitespace) |
-| `ltrim` | `(str, needle?: string) => string` | Start only |
-| `rtrim` | `(str, needle?: string) => string` | End only |
+| `trim` | `(str, needle?: string) => string` | Trims both ends (default: all whitespace, like `String#trim`) |
+| `ltrim` | `(str, needle?: string) => string` | Start only (default needle `" "`: spaces only) |
+| `rtrim` | `(str, needle?: string) => string` | End only (default needle `" "`: spaces only) |
 
 ```ts
 trim("  hi  ");          // "hi"
 trim("---hi---", "-");   // "hi"
 ltrim("//path", "/");    // "path"
 rtrim("file.tmp", ".tmp"); // "file"
+trim("ababXab", "ab");   // "X" — the whole needle is repeated
+trim("abc", "");         // "abc" — empty needle is a no-op
 ```
+
+All three run in linear time with no regular expressions (index scans; `trim` with the default needle uses native `String#trim`), so a long run of spaces inside a 50 kB string cannot cause ReDoS. `needle` is matched literally, and a multi-character needle is removed whole (`ltrim("abab-x", "ab")` → `"-x"`, `ltrim("abbbb-x", "ab")` → `"bbb-x"`).
 
 ## Replacement family
 
@@ -74,7 +79,9 @@ removeFirst(str, needle): string     // = replaceFirst(str, needle, "")
 removeLast(str, needle): string      // = replaceLast(str, needle, "")
 ```
 
-`search`/`needle` are **literal strings** — they're regex-escaped internally.
+`search`/`needle` and `replacement` are literal in all of them: `$&`, `$1`, `` $` `` and `$'` in `replacement` are not expanded, and `replaceFirst`/`removeFirst` match needles containing regex characters (`replaceFirst("a.b.c", ".", "-")` → `"a-b.c"`).
+
+`replaceAll` regex-escapes `search` internally; the others use `indexOf` / `lastIndexOf`.
 
 ```ts
 replaceAll("a-b-c", "-", "_");        // "a_b_c"
@@ -179,7 +186,7 @@ stripHtmlTags(str, options?: {
 }): string
 ```
 
-**Not a sanitizer** — for untrusted HTML, use DOMPurify.
+**Not a sanitizer** — for untrusted HTML, use DOMPurify. Linear time: unterminated tags, `<script` / `<style` openers and `<!--` comments without their closer are left as text instead of being rescanned from every position (no ReDoS on 50 kB of `"<a"` or `"<script"`). Matches are the same as before (a tag runs from `<` + letter to the first `>`). `replacement` is used literally (`$&` is not expanded).
 
 ```ts
 stripHtmlTags("<p>Hello <b>world</b></p>");        // "Hello world"

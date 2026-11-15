@@ -1,3 +1,6 @@
+import { assertDepth } from "../../object/nesting";
+import safeAssign from "../../object/safeAssign";
+
 type SeenMap = WeakMap<object, any>;
 
 /**
@@ -21,10 +24,11 @@ export default function clone<T>(value: T): T {
     return value;
   }
 
-  return cloneDeep(value, new WeakMap()) as T;
+  // depth counts the containers on the current path, the root being 1
+  return cloneDeep(value, new WeakMap(), 1) as T;
 }
 
-function cloneDeep(value: any, seen: SeenMap): any {
+function cloneDeep(value: any, seen: SeenMap, depth: number): any {
   if (value === null || typeof value !== "object") {
     return value;
   }
@@ -41,23 +45,29 @@ function cloneDeep(value: any, seen: SeenMap): any {
     return cloneRegExp(value);
   }
 
+  assertDepth(depth, "clone");
+
   if (value instanceof Error) {
-    return cloneError(value, seen);
+    return cloneError(value, seen, depth + 1);
   }
 
   if (Array.isArray(value)) {
-    return cloneArray(value, seen);
+    return cloneArray(value, seen, depth + 1);
   }
 
   if (value instanceof Map) {
-    return cloneMap(value, seen);
+    return cloneMap(value, seen, depth + 1);
   }
 
   if (value instanceof Set) {
-    return cloneSet(value, seen);
+    return cloneSet(value, seen, depth + 1);
   }
 
-  if (ArrayBuffer.isView(value) && !(value instanceof DataView)) {
+  if (value instanceof DataView) {
+    return cloneDataView(value);
+  }
+
+  if (ArrayBuffer.isView(value)) {
     return cloneTypedArray(value);
   }
 
@@ -65,7 +75,7 @@ function cloneDeep(value: any, seen: SeenMap): any {
     return value.slice(0);
   }
 
-  return clonePlainObject(value, seen);
+  return clonePlainObject(value, seen, depth + 1);
 }
 
 function cloneRegExp(value: RegExp): RegExp {
@@ -76,7 +86,7 @@ function cloneRegExp(value: RegExp): RegExp {
   return copy;
 }
 
-function cloneError(value: Error, seen: SeenMap): Error {
+function cloneError(value: Error, seen: SeenMap, depth: number): Error {
   const Ctor = value.constructor as ErrorConstructor;
   const copy = new Ctor(value.message);
 
@@ -86,46 +96,58 @@ function cloneError(value: Error, seen: SeenMap): Error {
   seen.set(value, copy);
 
   for (const key of Object.keys(value)) {
-    (copy as any)[key] = cloneDeep((value as any)[key], seen);
+    safeAssign(copy, key, cloneDeep((value as any)[key], seen, depth));
   }
 
   return copy;
 }
 
-function cloneArray(value: any[], seen: SeenMap): any[] {
+function cloneArray(value: any[], seen: SeenMap, depth: number): any[] {
   const copy: any[] = [];
 
   seen.set(value, copy);
 
   for (const item of value) {
-    copy.push(cloneDeep(item, seen));
+    copy.push(cloneDeep(item, seen, depth));
   }
 
   return copy;
 }
 
-function cloneMap(value: Map<any, any>, seen: SeenMap): Map<any, any> {
+function cloneMap(
+  value: Map<any, any>,
+  seen: SeenMap,
+  depth: number,
+): Map<any, any> {
   const copy = new Map();
 
   seen.set(value, copy);
 
   for (const [key, val] of value) {
-    copy.set(cloneDeep(key, seen), cloneDeep(val, seen));
+    copy.set(cloneDeep(key, seen, depth), cloneDeep(val, seen, depth));
   }
 
   return copy;
 }
 
-function cloneSet(value: Set<any>, seen: SeenMap): Set<any> {
+function cloneSet(value: Set<any>, seen: SeenMap, depth: number): Set<any> {
   const copy = new Set();
 
   seen.set(value, copy);
 
   for (const item of value) {
-    copy.add(cloneDeep(item, seen));
+    copy.add(cloneDeep(item, seen, depth));
   }
 
   return copy;
+}
+
+// Copies only the bytes the view covers, not the whole underlying buffer.
+function sliceViewBuffer(value: ArrayBufferView): ArrayBuffer {
+  return (value.buffer as ArrayBuffer).slice(
+    value.byteOffset,
+    value.byteOffset + value.byteLength,
+  );
 }
 
 function cloneTypedArray(value: ArrayBufferView): ArrayBufferView {
@@ -133,10 +155,14 @@ function cloneTypedArray(value: ArrayBufferView): ArrayBufferView {
     buffer: ArrayBufferLike,
   ) => ArrayBufferView;
 
-  return new Ctor((value.buffer as ArrayBuffer).slice(0));
+  return new Ctor(sliceViewBuffer(value));
 }
 
-function clonePlainObject(value: object, seen: SeenMap): object {
+function cloneDataView(value: DataView): DataView {
+  return new DataView(sliceViewBuffer(value));
+}
+
+function clonePlainObject(value: object, seen: SeenMap, depth: number): object {
   const proto = Object.getPrototypeOf(value);
   const isPlain = proto === Object.prototype || proto === null;
 
@@ -151,7 +177,7 @@ function clonePlainObject(value: object, seen: SeenMap): object {
   seen.set(value, copy);
 
   for (const key of Object.keys(value)) {
-    copy[key] = cloneDeep((value as any)[key], seen);
+    safeAssign(copy, key, cloneDeep((value as any)[key], seen, depth));
   }
 
   return copy;

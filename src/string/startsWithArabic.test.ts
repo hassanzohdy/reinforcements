@@ -24,3 +24,13 @@ describe("reinforcements/string/containsArabic", () => {
     expect(containsArabic("hello")).toBe(false);
   });
 });
+
+describe("reinforcements/string/startsWithArabic (performance)", () => {
+  it("is linear on a long whitespace run", () => {
+    const started = performance.now();
+
+    expect(startsWithArabic("x" + " ".repeat(50000) + "y")).toBe(false);
+    expect(startsWithArabic(" ".repeat(50000) + "مرحبا")).toBe(true);
+    expect(performance.now() - started).toBeLessThan(200);
+  });
+});

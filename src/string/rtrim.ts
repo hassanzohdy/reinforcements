@@ -1,15 +1,20 @@
-import escapeRegex from "../utils/escapeRegex";
-
 /**
- * Remove the given needle from the start of string
+ * Remove the given needle (repeated) from the end of string.
+ * An empty needle returns the string unchanged. Linear time.
  *
  * @param string needle
  * @return string
  */
 export default function rtrim(string: string, needle = " "): string {
   if (!string) return "";
-  const pattern = escapeRegex(needle) + "+$",
-    regex = new RegExp(pattern, "g");
+  if (!needle) return string;
 
-  return string.replace(regex, "");
+  const length = needle.length;
+  let end = string.length;
+
+  while (end - length >= 0 && string.startsWith(needle, end - length)) {
+    end -= length;
+  }
+
+  return string.slice(0, end);
 }

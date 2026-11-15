@@ -55,3 +55,31 @@ describe("reinforcements/string/stripHtmlTags", () => {
     expect(stripHtmlTags("2 < 3 and 4 > 1")).toBe("2 < 3 and 4 > 1");
   });
 });
+
+describe("reinforcements/string/stripHtmlTags (performance)", () => {
+  it("is linear on unterminated tags, scripts, styles and comments", () => {
+    const started = performance.now();
+
+    expect(stripHtmlTags("<a".repeat(25000))).toBe("<a".repeat(25000));
+    // same match as before: the tag runs to the first `>`
+    expect(stripHtmlTags("<a".repeat(25000) + ">x")).toBe("x");
+    expect(stripHtmlTags("<script".repeat(10000))).toBe(
+      "<script".repeat(10000),
+    );
+    expect(stripHtmlTags("<style>".repeat(10000))).toBe("");
+    expect(stripHtmlTags("<!--".repeat(10000))).toBe("<!--".repeat(10000));
+    expect(performance.now() - started).toBeLessThan(200);
+  });
+
+  it("keeps the old matches around stray `<` characters", () => {
+    expect(stripHtmlTags("<a <b>x")).toBe("x");
+    expect(stripHtmlTags('<a title="1<2">x</a>')).toBe("x");
+    expect(stripHtmlTags("<script <b>x</script>y")).toBe("y");
+    expect(stripHtmlTags("<!-- a --> <!-- b")).toBe(" <!-- b");
+  });
+
+  it("uses the replacement literally", () => {
+    expect(stripHtmlTags("<b>x</b>", { replacement: "$&" })).toBe("$&x$&");
+    expect(stripHtmlTags("<!--c-->x", { replacement: "$'" })).toBe("$'x");
+  });
+});

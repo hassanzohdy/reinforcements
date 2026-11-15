@@ -179,4 +179,9 @@ describe("reinforcements/random/csprng", () => {
     // 64 URL-safe characters; rejection sampling keeps them equiprobable.
     expect(seen.size).toBe(64);
   });
+
+  it("should generate strings and tokens above 65,536 bytes", () => {
+    expect(Random.string(70000).length).toBe(70000);
+    expect(Random.token(70000).length).toBe(140000);
+  });
 });

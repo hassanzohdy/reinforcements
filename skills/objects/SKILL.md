@@ -37,7 +37,7 @@ set({}, "users.0.name", "Ada"); // { users: [{ name: "Ada" }] }
 set(obj, "a.b.c", 1);            // creates a.b.c chain
 ```
 
-**Prototype-pollution guard.** A path with a segment of `__proto__`, `constructor`, or `prototype` is rejected — the object is returned untouched. Matters whenever `path` comes from untrusted input (e.g. a JSON body walked into `set`).
+**Prototype-pollution guard.** A path with a segment of `__proto__`, `constructor`, or `prototype` is rejected — the object is returned untouched. Only OWN members are descended into: an inherited name such as `toString` or `push` is treated as missing (an own container shadows it), so a path can never reach `Object.prototype`, `Array.prototype` or a built-in function. A path that would descend into an existing primitive or function (`set({ a: 1 }, "a.b", 2)`) also returns the object untouched instead of throwing. Matters whenever `path` comes from untrusted input (e.g. a JSON body walked into `set`).
 
 ```ts
 set({}, "__proto__.polluted", 1); // {} — rejected, no throw
@@ -202,7 +202,7 @@ merge({}, JSON.parse('{"__proto__":{"polluted":1}}')); // {} — key skipped
 clone<T>(value: T): T
 ```
 
-Deep clone. Handles `Date`, `RegExp`, `Error` (with own props), `Map`, `Set`, typed arrays, `ArrayBuffer`, and **circular references** via internal `WeakMap`. Non-plain class instances are returned by reference.
+Deep clone. Handles `Date`, `RegExp`, `Error` (with own props), `Map`, `Set`, typed arrays and `DataView` (only the viewed bytes are copied), `ArrayBuffer`, and **circular references** via internal `WeakMap`. Non-plain class instances are returned by reference.
 
 ```ts
 const copy = clone({ user: { name: "Ada" }, tags: ["x"] });
@@ -357,3 +357,10 @@ Return a new object with keys sorted alphabetically. Arrays of objects are out o
 sort({ b: 1, a: 2, c: 3 });             // { a: 2, b: 1, c: 3 }
 sort({ b: { y: 1, x: 2 }, a: 1 });      // recursive by default
 ```
+
+## Hostile and very deep input
+
+- **Own `__proto__` keys.** `JSON.parse` produces `"__proto__"` as an ordinary own key. `sort`, `compact`, `mapValues`, `mapKeys`, `pick`/`omit` (predicate form), `clone`, `flatten`, `diff`, `invert` and `keyBy`/`countBy` write result keys with a define-property helper, so it stays an own key of the result (like `{ ...obj }`) and never swaps the result's prototype.
+- **Nesting limit.** `clone`, `merge`, `compact`, `flatten`, `sort`, `walk`, `freeze`, `diff` and `areEqual` accept up to 256 levels of nested objects/arrays and throw a `NestingError` past that (a `RangeError` subclass, message `"<helper>: input is nested deeper than 256 levels"`) instead of overflowing the call stack. The class is not exported: catch it with `error instanceof RangeError` or `error.name === "NestingError"`. `flatten`'s `maxDepth` keeps its meaning (a smaller `maxDepth` stops earlier).
+- **Cycles.** `flatten`, `compact`, `sort` and `walk` throw a `NestingError` (`"<helper>: circular reference detected"`) on circular input; shared (non-circular) references are fine. `clone` and `areEqual` keep supporting cycles; `freeze` skips objects it already visited.
+- `diff` compares keys by own-property check, so inherited names (`toString`, ...) are no longer treated as present.

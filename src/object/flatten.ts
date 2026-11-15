@@ -1,3 +1,6 @@
+import { NestingGuard } from "./nesting";
+import safeAssign from "./safeAssign";
+
 export type FlattenOptions = {
   /** Separator between path segments. Default: `"."`. */
   separator?: string;
@@ -12,6 +15,7 @@ type WalkContext = {
   separator: string;
   keepNested: boolean;
   maxDepth: number;
+  guard: NestingGuard;
 };
 
 /**
@@ -33,6 +37,7 @@ export default function flatten(
     separator: options.separator ?? ".",
     keepNested: options.keepNested ?? false,
     maxDepth: options.maxDepth ?? Infinity,
+    guard: new NestingGuard("flatten"),
   };
 
   walk(object, "", 0, context);
@@ -68,7 +73,7 @@ function walk(
 ): void {
   if (!canDescend(value) || depth >= context.maxDepth) {
     if (parent) {
-      context.root[parent] = value;
+      safeAssign(context.root, parent, value);
     }
 
     return;
@@ -80,18 +85,20 @@ function walk(
 
   if (keys.length === 0) {
     if (parent) {
-      context.root[parent] = value;
+      safeAssign(context.root, parent, value);
     }
 
     return;
   }
+
+  context.guard.enter(value);
 
   for (const key of keys) {
     const child = value[key];
     const path = parent ? parent + context.separator + key : key;
 
     if (typeof child === "function") {
-      context.root[path] = child;
+      safeAssign(context.root, path, child);
 
       continue;
     }
@@ -100,18 +107,20 @@ function walk(
       const isEmptyArray = Array.isArray(child) && child.length === 0;
 
       if (isEmptyArray) {
-        context.root[path] = child;
+        safeAssign(context.root, path, child);
 
         continue;
       }
 
       if (context.keepNested) {
-        context.root[path] = child;
+        safeAssign(context.root, path, child);
       }
 
       walk(child, path, depth + 1, context);
     } else {
-      context.root[path] = child;
+      safeAssign(context.root, path, child);
     }
   }
+
+  context.guard.leave(value);
 }

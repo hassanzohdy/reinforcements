@@ -1,3 +1,5 @@
+import { assertDepth } from "../../object/nesting";
+
 type SeenMap = WeakMap<object, any>;
 
 /**
@@ -15,10 +17,11 @@ type SeenMap = WeakMap<object, any>;
  * areEqual(new Date(0), new Date(0)); // true
  */
 export default function areEqual(a: any, b: any): boolean {
-  return deepEqual(a, b, new WeakMap());
+  // depth counts the containers on the current path, the root being 1
+  return deepEqual(a, b, new WeakMap(), 1);
 }
 
-function deepEqual(a: any, b: any, seen: SeenMap): boolean {
+function deepEqual(a: any, b: any, seen: SeenMap, depth: number): boolean {
   if (Object.is(a, b)) {
     return true;
   }
@@ -45,8 +48,10 @@ function deepEqual(a: any, b: any, seen: SeenMap): boolean {
     return a.source === b.source && a.flags === b.flags;
   }
 
+  assertDepth(depth, "areEqual");
+
   if (Array.isArray(a)) {
-    return Array.isArray(b) && equalArrays(a, b, seen);
+    return Array.isArray(b) && equalArrays(a, b, seen, depth + 1);
   }
 
   if (Array.isArray(b)) {
@@ -54,7 +59,7 @@ function deepEqual(a: any, b: any, seen: SeenMap): boolean {
   }
 
   if (a instanceof Map) {
-    return b instanceof Map && equalMaps(a, b, seen);
+    return b instanceof Map && equalMaps(a, b, seen, depth + 1);
   }
 
   if (b instanceof Map) {
@@ -69,16 +74,21 @@ function deepEqual(a: any, b: any, seen: SeenMap): boolean {
     return false;
   }
 
-  return equalObjects(a, b, seen);
+  return equalObjects(a, b, seen, depth + 1);
 }
 
-function equalArrays(a: any[], b: any[], seen: SeenMap): boolean {
+function equalArrays(
+  a: any[],
+  b: any[],
+  seen: SeenMap,
+  depth: number,
+): boolean {
   if (a.length !== b.length) {
     return false;
   }
 
   for (let i = 0; i < a.length; i++) {
-    if (!deepEqual(a[i], b[i], seen)) {
+    if (!deepEqual(a[i], b[i], seen, depth)) {
       return false;
     }
   }
@@ -90,6 +100,7 @@ function equalMaps(
   a: Map<any, any>,
   b: Map<any, any>,
   seen: SeenMap,
+  depth: number,
 ): boolean {
   if (a.size !== b.size) {
     return false;
@@ -100,7 +111,7 @@ function equalMaps(
       return false;
     }
 
-    if (!deepEqual(value, b.get(key), seen)) {
+    if (!deepEqual(value, b.get(key), seen, depth)) {
       return false;
     }
   }
@@ -122,7 +133,7 @@ function equalSets(a: Set<any>, b: Set<any>): boolean {
   return true;
 }
 
-function equalObjects(a: any, b: any, seen: SeenMap): boolean {
+function equalObjects(a: any, b: any, seen: SeenMap, depth: number): boolean {
   const aKeys = Object.keys(a);
   const bKeys = Object.keys(b);
 
@@ -135,7 +146,7 @@ function equalObjects(a: any, b: any, seen: SeenMap): boolean {
       return false;
     }
 
-    if (!deepEqual(a[key], b[key], seen)) {
+    if (!deepEqual(a[key], b[key], seen, depth)) {
       return false;
     }
   }

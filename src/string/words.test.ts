@@ -26,3 +26,23 @@ describe("reinforcements/string/words", () => {
     expect(words(undefined as any)).toEqual([]);
   });
 });
+
+describe("reinforcements/string/words (performance)", () => {
+  it("is linear on a long run of capitals", () => {
+    const input = "A".repeat(50000);
+    const started = performance.now();
+
+    expect(words(input)).toEqual([input]);
+    expect(performance.now() - started).toBeLessThan(200);
+  });
+
+  it("keeps acronym boundaries", () => {
+    expect(words("ABCdef")).toEqual(["AB", "Cdef"]);
+    expect(words("getHTTPResponseCode")).toEqual([
+      "get",
+      "HTTP",
+      "Response",
+      "Code",
+    ]);
+  });
+});

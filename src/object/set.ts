@@ -1,6 +1,7 @@
 import isForbiddenKey from "./isForbiddenKey";
 
 const NUMERIC_SEGMENT = /^\d+$/;
+const hasOwn = Object.prototype.hasOwnProperty;
 
 /**
  * Set `value` at `path` in `object`. Creates intermediate objects (or
@@ -8,7 +9,9 @@ const NUMERIC_SEGMENT = /^\d+$/;
  * Mutates and returns the input.
  *
  * Paths containing `__proto__`, `constructor` or `prototype` are
- * rejected — the object is returned untouched.
+ * rejected — the object is returned untouched. Only own members are
+ * descended into, and a path that would descend into a primitive or a
+ * function is also rejected (the object is returned untouched).
  *
  * @example
  * set({}, "a.b.c", 1); // { a: { b: { c: 1 } } }
@@ -48,11 +51,16 @@ export default function set<T extends Record<string, any>>(
       return object;
     }
 
-    const nextSegmentIsIndex = NUMERIC_SEGMENT.test(segments[i + 1]);
-    const needsContainer = current[key] === undefined || current[key] === null;
+    // Only OWN members are descended into: an inherited member such as
+    // `toString` or `push` is treated as missing, so a path can never
+    // reach a shared prototype or built-in function.
+    const existing = hasOwn.call(current, key) ? current[key] : undefined;
 
-    if (needsContainer) {
-      current[key] = nextSegmentIsIndex ? [] : {};
+    if (existing === undefined || existing === null) {
+      current[key] = NUMERIC_SEGMENT.test(segments[i + 1]) ? [] : {};
+    } else if (typeof existing !== "object") {
+      // A primitive or a function cannot hold children.
+      return object;
     }
 
     current = current[key];

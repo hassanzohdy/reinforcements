@@ -35,9 +35,23 @@ function requireCsprng(): RandomValues {
   return cryptoRef.getRandomValues.bind(cryptoRef);
 }
 
+/** `crypto.getRandomValues` rejects requests above 65,536 bytes. */
+const MAX_RANDOM_BYTES = 65536;
+
+/** Fill a fresh `Uint8Array` of `size` bytes, in batches the CSPRNG accepts. */
+function fillRandom(getRandomValues: RandomValues, size: number): Uint8Array {
+  const bytes = new Uint8Array(size);
+
+  for (let offset = 0; offset < size; offset += MAX_RANDOM_BYTES) {
+    getRandomValues(bytes.subarray(offset, offset + MAX_RANDOM_BYTES));
+  }
+
+  return bytes;
+}
+
 /** Cryptographically secure random bytes. Throws without a CSPRNG. */
 export function cryptoBytes(size: number): Uint8Array {
-  return requireCsprng()(new Uint8Array(size));
+  return fillRandom(requireCsprng(), size);
 }
 
 /**
@@ -56,7 +70,7 @@ export function cryptoStringOf(charset: string, length: number): string {
   let text = "";
 
   while (text.length < length) {
-    const bytes = getRandomValues(new Uint8Array(length - text.length));
+    const bytes = fillRandom(getRandomValues, length - text.length);
 
     for (let i = 0; i < bytes.length && text.length < length; i++) {
       if (bytes[i] >= limit) continue;

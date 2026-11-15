@@ -12,4 +12,22 @@ describe("reinforcements/object/freeze", () => {
     expect(freeze(42 as any)).toBe(42);
     expect(freeze("hi" as any)).toBe("hi");
   });
+
+  const deepJson = () =>
+    JSON.parse('{"a":'.repeat(3000) + "1" + "}".repeat(3000));
+
+  it("throws a clear error for input nested deeper than 256 levels", () => {
+    expect(() => freeze(deepJson())).toThrow(/nested deeper than 256 levels/);
+  });
+
+  it("freezes circular input without overflowing", () => {
+    const object: any = { child: {} };
+
+    object.child.parent = object;
+
+    freeze(object);
+
+    expect(Object.isFrozen(object)).toBe(true);
+    expect(Object.isFrozen(object.child)).toBe(true);
+  });
 });

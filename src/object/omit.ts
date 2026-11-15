@@ -1,3 +1,4 @@
+import safeAssign from "./safeAssign";
 import unset from "./unset";
 
 export type OmitPredicate = (value: any, key: string) => boolean;
@@ -46,7 +47,7 @@ function omitByPredicate(
 
   for (const key of Object.keys(object)) {
     if (!predicate(object[key], key)) {
-      result[key] = object[key];
+      safeAssign(result, key, object[key]);
     }
   }
 

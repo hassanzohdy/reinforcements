@@ -1,3 +1,4 @@
+import { NestingGuard } from "./nesting";
 import isPlainObject from "./isPlainObject";
 
 export type WalkVisitor = (
@@ -22,8 +23,19 @@ export default function walk(
   visitor: WalkVisitor,
   parentPath = "",
 ): void {
+  walkValue(object, visitor, parentPath, new NestingGuard("walk"));
+}
+
+function walkValue(
+  object: any,
+  visitor: WalkVisitor,
+  parentPath: string,
+  guard: NestingGuard,
+): void {
   if (Array.isArray(object)) {
-    walkArray(object, visitor, parentPath);
+    guard.enter(object);
+    walkArray(object, visitor, parentPath, guard);
+    guard.leave(object);
 
     return;
   }
@@ -32,19 +44,22 @@ export default function walk(
     return;
   }
 
-  walkObject(object, visitor, parentPath);
+  guard.enter(object);
+  walkObject(object, visitor, parentPath, guard);
+  guard.leave(object);
 }
 
 function walkArray(
   array: any[],
   visitor: WalkVisitor,
   parentPath: string,
+  guard: NestingGuard,
 ): void {
   array.forEach((item, index) => {
     const path = parentPath ? `${parentPath}.${index}` : String(index);
 
     if (isPlainObject(item) || Array.isArray(item)) {
-      walk(item, visitor, path);
+      walkValue(item, visitor, path, guard);
 
       return;
     }
@@ -57,13 +72,14 @@ function walkObject(
   object: Record<string, any>,
   visitor: WalkVisitor,
   parentPath: string,
+  guard: NestingGuard,
 ): void {
   for (const key of Object.keys(object)) {
     const value = object[key];
     const path = parentPath ? `${parentPath}.${key}` : key;
 
     if (isPlainObject(value) || Array.isArray(value)) {
-      walk(value, visitor, path);
+      walkValue(value, visitor, path, guard);
 
       continue;
     }

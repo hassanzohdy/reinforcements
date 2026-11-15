@@ -74,4 +74,13 @@ describe("reinforcements/mixed/areEqual", () => {
     expect(areEqual("", 0)).toEqual(false);
     expect(areEqual(Symbol("a"), Symbol("a"))).toEqual(false);
   });
+
+  it("throws a clear error for input nested deeper than 256 levels", () => {
+    const deep = () =>
+      JSON.parse('{"a":'.repeat(3000) + "1" + "}".repeat(3000));
+
+    expect(() => areEqual(deep(), deep())).toThrow(
+      /nested deeper than 256 levels/,
+    );
+  });
 });

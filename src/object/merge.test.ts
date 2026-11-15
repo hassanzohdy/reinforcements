@@ -12,10 +12,7 @@ describe("reinforcements/object/merge", () => {
 
   it("should deep-merge nested objects", () => {
     expect(
-      merge(
-        { a: 1, b: 2, c: { d: 3, e: 4 } },
-        { c: { f: 5, g: 6 }, h: 7 },
-      ),
+      merge({ a: 1, b: 2, c: { d: 3, e: 4 } }, { c: { f: 5, g: 6 }, h: 7 }),
     ).toEqual({
       a: 1,
       b: 2,
@@ -25,9 +22,9 @@ describe("reinforcements/object/merge", () => {
   });
 
   it("should replace arrays by default", () => {
-    expect(
-      merge({ list: [1, 2, 3] }, { list: [4, 5, 6] }),
-    ).toEqual({ list: [4, 5, 6] });
+    expect(merge({ list: [1, 2, 3] }, { list: [4, 5, 6] })).toEqual({
+      list: [4, 5, 6],
+    });
   });
 
   it("should concatenate arrays when arrays: 'concat'", () => {
@@ -95,5 +92,24 @@ describe("reinforcements/object/merge", () => {
     expect(
       merge({ a: 1 }, JSON.parse('{"__proto__":{"polluted":"x"},"b":2}')),
     ).toEqual({ a: 1, b: 2 });
+  });
+
+  const deepJson = () =>
+    JSON.parse('{"a":'.repeat(3000) + "1" + "}".repeat(3000));
+  const protoJson = () =>
+    JSON.parse('{"__proto__":{"isAdmin":true},"name":"x"}');
+
+  it("keeps an own __proto__ key of the target as an own key", () => {
+    const result: any = merge(protoJson(), { other: 1 });
+
+    expect(result.isAdmin).toBeUndefined();
+    expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
+    expect(Object.keys(result)).toEqual(["__proto__", "name", "other"]);
+  });
+
+  it("throws a clear error for input nested deeper than 256 levels", () => {
+    expect(() => merge(deepJson(), deepJson())).toThrow(
+      /nested deeper than 256 levels/,
+    );
   });
 });
