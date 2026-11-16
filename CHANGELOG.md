@@ -2,7 +2,7 @@
 
 All notable changes to `@mongez/reinforcements` are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [4.1.0] — 2026-11-15
+## [4.1.0] — 2026-11-16
 
 Security and robustness fixes from the 2026-11-15 review, plus a new `memoize` `maxSize` option. Signatures are unchanged except for that option, and nothing new is exported.
 
