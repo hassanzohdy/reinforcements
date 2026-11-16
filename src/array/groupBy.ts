@@ -1,4 +1,5 @@
 import get from "../object/get";
+import safeAssign from "../object/safeAssign";
 import type { GenericObject } from "../types";
 
 /**
@@ -47,7 +48,7 @@ export default function groupBy(
       };
 
       for (const groupByKeyData of baseKeys) {
-        groupedDataList[groupByKeyData.key] = groupByKeyData.value;
+        safeAssign(groupedDataList, groupByKeyData.key, groupByKeyData.value);
       }
 
       groupedData[dataKey] = groupedDataList;

@@ -170,7 +170,7 @@ unset(user, ["profile.email"]);             // delete by path
 | Function | Description |
 | --- | --- |
 | `get(obj, path, default?)` | Typed dot-notation read; falsy values pass through correctly. |
-| `set(obj, path, value)` | Typed dot-notation write; auto-creates arrays when next segment is numeric. Rejects `__proto__`/`constructor`/`prototype` path segments, descends only through own properties (an inherited name such as `toString` gets its own container instead of writing onto the shared built-in), and returns the object unchanged when a segment is an existing primitive or function. Safe for untrusted paths. |
+| `set(obj, path, value)` | Typed dot-notation write; auto-creates arrays when next segment is numeric. Rejects `__proto__`/`constructor`/`prototype` path segments, descends only through own properties (an inherited name such as `toString` gets its own container instead of writing onto the shared built-in), and returns the object unchanged when a segment is an existing primitive or function. Safe for untrusted paths. A new container is an array only when the next numeric segment is at most 10,000; a larger index (`a.4294967294`) creates a plain object, so a short untrusted path cannot build a huge sparse array. Existing arrays are written as they are. |
 | `has(obj, path)` | `true` if the path exists, even when the value is `undefined`. |
 | `unset(obj, paths)` | Mutating remove by dot-notation. |
 | `keys(obj)` / `values(obj)` / `entries(obj)` / `fromEntries(it)` | Typed wrappers. |
@@ -212,6 +212,16 @@ clone(new Date(0));                                    // new Date instance
 flatten({ a: { b: 1 } });                              // { "a.b": 1 }
 flatten({ a: { b: 1 } }, { separator: "/" });          // { "a/b": 1 }
 ```
+
+> **`merge` shares sub-objects by reference.** The result is a new top-level object, and objects present in only one input (or a single source) are the same references as in that input. Only keys where both sides are plain objects get a new object, and arrays are copied. Mutating a nested value of the result therefore mutates the input. `clone()` the result before mutating it:
+>
+> ```ts
+> const a = { shared: { x: 1 } };
+> const r = merge(a, { other: 1 });
+> r.shared === a.shared;            // true
+> const safe = clone(merge(a, { other: 1 }));
+> safe.shared === a.shared;         // false
+> ```
 
 `merge` is variadic and detects its options argument by shape (a trailing object whose single own key is `arrays`). `clone` handles `Date`, `RegExp`, `Error`, `Map`, `Set`, typed arrays, and circular references.
 
@@ -693,7 +703,7 @@ import { clone, areEqual, shuffle, coalesce } from "@mongez/reinforcements";
 | --- | --- |
 | `clone(value)` | Deep clone — re-exported from `object/clone`. |
 | `areEqual(a, b)` | Deep value equality (handles Date, RegExp, Map, Set, circular). Non-mutating. |
-| `shuffle(value, { mutate? })` | Fisher–Yates shuffle for arrays or strings. Non-mutating by default. |
+| `shuffle(value, { mutate? })` | Fisher–Yates shuffle for arrays or strings, driven by the CSPRNG (`crypto.getRandomValues`) when available, falling back to `Math.random` without one. Non-mutating by default. |
 | `coalesce(...values)` | First non-nullish; `0` / `""` / `false` pass through unlike `\|\|`. |
 
 ```ts

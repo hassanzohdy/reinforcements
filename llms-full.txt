@@ -128,7 +128,7 @@ get(arr, "0.name"); // numeric segments index arrays
 set<T>(obj: T, path: string, value: unknown): T
 ```
 
-Mutating write by dot-notation. **Auto-creates arrays** when the next segment is a numeric index.
+Mutating write by dot-notation. **Auto-creates arrays** when the next segment is a numeric index of at most 10,000.
 
 ```ts
 set({}, "users.0.name", "Ada"); // { users: [{ name: "Ada" }] }
@@ -136,6 +136,8 @@ set(obj, "a.b.c", 1);            // creates a.b.c chain
 ```
 
 **Prototype-pollution guard.** A path with a segment of `__proto__`, `constructor`, or `prototype` is rejected — the object is returned untouched. Only OWN members are descended into: an inherited name such as `toString` or `push` is treated as missing (an own container shadows it), so a path can never reach `Object.prototype`, `Array.prototype` or a built-in function. A path that would descend into an existing primitive or function (`set({ a: 1 }, "a.b", 2)`) also returns the object untouched instead of throwing. Matters whenever `path` comes from untrusted input (e.g. a JSON body walked into `set`).
+
+**Array-index bound.** A newly created container is an array only when the next numeric segment is at most 10,000; a larger index (`set({}, "a.4294967294", "x")`) creates a plain object `{ a: { "4294967294": "x" } }`, so an untrusted path cannot build a huge sparse array. Existing arrays are written as they are, whatever the index.
 
 ```ts
 set({}, "__proto__.polluted", 1); // {} — rejected, no throw
@@ -284,6 +286,15 @@ merge({ list: [1, 2] }, { list: [3, 4] }, { arrays: "concat" });
 
 merge({ list: [1, 2] }, { list: [2, 3] }, { arrays: "union" });
 // { list: [1, 2, 3] }
+```
+
+**Sub-objects are shared by reference.** The result is a new top-level object, but objects that exist in only one input (or when only one source is given) are the same references as in that input; only keys where both sides are plain objects get a new object, and arrays are copied. Mutating a nested value of the result mutates the input, so `clone()` the result first:
+
+```ts
+const a = { shared: { x: 1 } };
+const r = merge(a, { other: 1 });
+r.shared === a.shared;                  // true
+clone(merge(a, { other: 1 })).shared === a.shared; // false
 ```
 
 Class instances are taken from the latest source rather than merged (cloning custom constructors is out of scope).
@@ -458,7 +469,7 @@ sort({ b: { y: 1, x: 2 }, a: 1 });      // recursive by default
 
 ## Hostile and very deep input
 
-- **Own `__proto__` keys.** `JSON.parse` produces `"__proto__"` as an ordinary own key. `sort`, `compact`, `mapValues`, `mapKeys`, `pick`/`omit` (predicate form), `clone`, `flatten`, `diff`, `invert` and `keyBy`/`countBy` write result keys with a define-property helper, so it stays an own key of the result (like `{ ...obj }`) and never swaps the result's prototype.
+- **Own `__proto__` keys.** `JSON.parse` produces `"__proto__"` as an ordinary own key. `sort`, `compact`, `mapValues`, `mapKeys`, `pick`/`omit` (predicate form), `clone`, `flatten`, `diff`, `invert`, `keyBy`/`countBy` and `groupBy` write result keys with a define-property helper, so it stays an own key of the result (like `{ ...obj }`) and never swaps the result's prototype.
 - **Nesting limit.** `clone`, `merge`, `compact`, `flatten`, `sort`, `walk`, `freeze`, `diff` and `areEqual` accept up to 256 levels of nested objects/arrays and throw a `NestingError` past that (a `RangeError` subclass, message `"<helper>: input is nested deeper than 256 levels"`) instead of overflowing the call stack. The class is not exported: catch it with `error instanceof RangeError` or `error.name === "NestingError"`. `flatten`'s `maxDepth` keeps its meaning (a smaller `maxDepth` stops earlier).
 - **Cycles.** `flatten`, `compact`, `sort` and `walk` throw a `NestingError` (`"<helper>: circular reference detected"`) on circular input; shared (non-circular) references are fine. `clone` and `areEqual` keep supporting cycles; `freeze` skips objects it already visited.
 - `diff` compares keys by own-property check, so inherited names (`toString`, ...) are no longer treated as present.
@@ -981,7 +992,7 @@ shuffle<T>(value: T[], options?: { mutate?: boolean }): T[]
 shuffle(value: string, options?: { mutate?: boolean }): string
 ```
 
-Non-mutating by default. Pass `{ mutate: true }` to shuffle the array in place.
+Non-mutating by default. Pass `{ mutate: true }` to shuffle the array in place. Positions come from the CSPRNG (`crypto.getRandomValues`, with rejection sampling), so the order is unbiased, unpredictable and unseedable (`Random.seed` has no effect on it). Without a CSPRNG (for example Hermes with no polyfill) it falls back to `Math.random` rather than throwing.
 
 ```ts
 shuffle([1, 2, 3, 4]);                  // e.g. [3, 1, 4, 2]; original untouched
@@ -1023,7 +1034,7 @@ import { Random, type RandomDateOptions, type WeightedItem } from "@mongez/reinf
 Random.seed(seed?: number): void
 ```
 
-Switches the RNG to a deterministic mulberry32 PRNG. Call with no args (or `undefined`) to restore `Math.random`.
+Switches the RNG to a deterministic mulberry32 PRNG. Call with no args (or `undefined`) to restore `Math.random`. It does not affect `shuffle`, which always uses the CSPRNG (falling back to `Math.random`).
 
 ```ts
 Random.seed(42);
@@ -1863,6 +1874,7 @@ groupBy(array: object[], key: string | string[], listAs?: string): object[]
 groupBy(students, "class");             // [{ class: "A", data: [...] }, ...]
 groupBy(students, ["class", "grade"]);  // multi-key grouping
 groupBy(students, "class", "items");    // rename "data" → "items"
+groupBy(items, "__proto__");            // the group stays an own key (not dropped)
 ```
 
 ## `countBy()`

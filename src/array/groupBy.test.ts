@@ -24,3 +24,12 @@ test("Group by multiple keys", () => {
   expect(studentsGroupedByClassAndGrade[0].class).toEqual("A");
   expect(studentsGroupedByClassAndGrade[0].grade).toEqual(1);
 });
+
+test("Group by a __proto__ key keeps it as an own group key", () => {
+  const items = [JSON.parse('{"__proto__":"x","id":1}')];
+  const [group] = groupBy(items, "__proto__");
+
+  expect(Object.keys(group)).toContain("__proto__");
+  expect(Object.getPrototypeOf(group)).toBe(Object.prototype);
+  expect(({} as any).x).toBeUndefined();
+});

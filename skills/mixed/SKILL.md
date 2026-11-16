@@ -63,7 +63,7 @@ shuffle<T>(value: T[], options?: { mutate?: boolean }): T[]
 shuffle(value: string, options?: { mutate?: boolean }): string
 ```
 
-Non-mutating by default. Pass `{ mutate: true }` to shuffle the array in place.
+Non-mutating by default. Pass `{ mutate: true }` to shuffle the array in place. Positions come from the CSPRNG (`crypto.getRandomValues`), so the order is unpredictable and unseedable (`Random.seed` has no effect). Without a CSPRNG (for example Hermes with no polyfill) it falls back to `Math.random` rather than throwing.
 
 ```ts
 shuffle([1, 2, 3, 4]);                  // e.g. [3, 1, 4, 2]; original untouched

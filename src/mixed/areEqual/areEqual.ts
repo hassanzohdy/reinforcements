@@ -17,6 +17,21 @@ type SeenMap = WeakMap<object, any>;
  * areEqual(new Date(0), new Date(0)); // true
  */
 export default function areEqual(a: any, b: any): boolean {
+  if (Object.is(a, b)) {
+    return true;
+  }
+
+  if (
+    a === null ||
+    b === null ||
+    typeof a !== "object" ||
+    typeof b !== "object"
+  ) {
+    return false;
+  }
+
+  // the `seen` map is only needed once we recurse into containers, so it is
+  // allocated here and never for primitives or identical references
   // depth counts the containers on the current path, the root being 1
   return deepEqual(a, b, new WeakMap(), 1);
 }

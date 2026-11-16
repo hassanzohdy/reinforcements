@@ -102,4 +102,29 @@ describe("reinforcements/object/set", () => {
     expect(set(object, "fn.x", 1)).toEqual({ fn });
     expect((fn as any).x).toBeUndefined();
   });
+
+  it("should create an array for a numeric segment up to the limit", () => {
+    expect(Array.isArray((set({}, "a.10000", "x") as any).a)).toBe(true);
+    expect(Array.isArray((set({}, "a.0", "x") as any).a)).toBe(true);
+  });
+
+  it("should create a plain object, not a sparse array, above the limit", () => {
+    const result: any = set({}, "a.4294967294", "x");
+
+    expect(Array.isArray(result.a)).toBe(false);
+    expect(result).toEqual({ a: { "4294967294": "x" } });
+
+    const nested: any = set({}, "a.10001.b", "x");
+
+    expect(Array.isArray(nested.a)).toBe(false);
+    expect(nested.a["10001"].b).toBe("x");
+  });
+
+  it("should still write a large index into an existing array", () => {
+    const list: any[] = [];
+
+    set({ list }, "list.20000", "x");
+
+    expect(list.length).toBe(20001);
+  });
 });

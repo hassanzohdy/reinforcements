@@ -83,4 +83,20 @@ describe("reinforcements/mixed/areEqual", () => {
       /nested deeper than 256 levels/,
     );
   });
+
+  it("should not allocate a WeakMap for primitives or identical references", () => {
+    const spy = vi.spyOn(globalThis, "WeakMap");
+    const shared = { a: 1 };
+
+    expect(areEqual(1, 1)).toBe(true);
+    expect(areEqual("a", "b")).toBe(false);
+    expect(areEqual(null, {})).toBe(false);
+    expect(areEqual(shared, shared)).toBe(true);
+    expect(spy).not.toHaveBeenCalled();
+
+    expect(areEqual({ a: 1 }, { a: 1 })).toBe(true);
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    spy.mockRestore();
+  });
 });

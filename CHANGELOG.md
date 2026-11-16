@@ -34,6 +34,9 @@ Security and robustness fixes from the 2026-11-15 review, plus a new `memoize` `
   - A `DataView` is copied instead of returned by reference.
 - **`median`** no longer sorts the caller's array in place.
 - **`Random.string`, `Random.nanoid` and `Random.token`** work for lengths above 65,536; they used to throw a `DOMException`.
+- **`set()` no longer builds huge sparse arrays.** A missing container becomes an array only when the next segment is an index up to 10,000; a larger index creates a plain object key. `set({}, "a.4294967294", x)` used to make an array of length 4,294,967,295, and stringifying `a.100000000` took 6.7 s. Existing arrays are written as before.
+- **`groupBy(items, "__proto__")`** keeps the group as an own key; it used to be dropped.
+- **`areEqual`** allocates its cycle-tracking `WeakMap` only when it recurses, not on every call (2,000 primitive comparisons allocated 2,000 maps).
 
 ### Performance
 
@@ -43,6 +46,18 @@ Security and robustness fixes from the 2026-11-15 review, plus a new `memoize` `
 
 - Tooling: pnpm 12 with a standalone `pnpm-lock.yaml`, TypeScript 7, Vite 8 and Vitest 5. CI runs on Node 22 and 24. `tsconfig.json` sets `moduleResolution: "bundler"`.
 - Type-only imports use `import type`, and `groupBy` imports `get` directly, which removes an import cycle through the package index.
+
+### Changed
+
+- `shuffle` draws positions from the CSPRNG (`crypto.getRandomValues`) with rejection sampling, so the order is unbiased and cannot be predicted; it falls back to `Math.random` where the runtime has no CSPRNG (for example Hermes without a polyfill). Draws are batched (one `getRandomValues` call per up to 16,384 positions), so large arrays stay fast. As before, `Random.seed` does not affect it.
+
+### Documentation
+
+- `merge` shares nested objects from its sources by reference (unlike `lodash.merge`); README and the objects skill now say so, with an example. `clone()` the result before mutating it.
+
+### Upgrading
+
+- `set` with a path index above 10,000 on a missing container now creates an object key instead of an array element.
 
 ## [4.0.1] — 2026-08-17
 

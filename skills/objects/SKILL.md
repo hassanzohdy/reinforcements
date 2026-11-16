@@ -39,6 +39,8 @@ set(obj, "a.b.c", 1);            // creates a.b.c chain
 
 **Prototype-pollution guard.** A path with a segment of `__proto__`, `constructor`, or `prototype` is rejected — the object is returned untouched. Only OWN members are descended into: an inherited name such as `toString` or `push` is treated as missing (an own container shadows it), so a path can never reach `Object.prototype`, `Array.prototype` or a built-in function. A path that would descend into an existing primitive or function (`set({ a: 1 }, "a.b", 2)`) also returns the object untouched instead of throwing. Matters whenever `path` comes from untrusted input (e.g. a JSON body walked into `set`).
 
+**Array-index bound.** A newly created container is an array only when the next numeric segment is at most 10,000; a larger index (`set({}, "a.4294967294", "x")`) creates a plain object `{ a: { "4294967294": "x" } }`, so an untrusted path cannot build a huge sparse array. Existing arrays are written as they are, whatever the index.
+
 ```ts
 set({}, "__proto__.polluted", 1); // {} — rejected, no throw
 ```
@@ -186,6 +188,15 @@ merge({ list: [1, 2] }, { list: [3, 4] }, { arrays: "concat" });
 
 merge({ list: [1, 2] }, { list: [2, 3] }, { arrays: "union" });
 // { list: [1, 2, 3] }
+```
+
+**Sub-objects are shared by reference.** The result is a new top-level object, but objects that exist in only one input (or when only one source is given) are the same references as in that input; only keys where both sides are plain objects get a new object, and arrays are copied. Mutating a nested value of the result mutates the input, so `clone()` the result first:
+
+```ts
+const a = { shared: { x: 1 } };
+const r = merge(a, { other: 1 });
+r.shared === a.shared;                  // true
+clone(merge(a, { other: 1 })).shared === a.shared; // false
 ```
 
 Class instances are taken from the latest source rather than merged (cloning custom constructors is out of scope).
